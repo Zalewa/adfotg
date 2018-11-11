@@ -1,0 +1,36 @@
+{
+  "name": "adfotg",
+  "version": "0.1.0",
+  "description": "ADF On-The-Go",
+  "main": "site/index.tsx",
+  "dependencies": {
+    "@types/react": "^16.7.2",
+    "@types/react-dom": "^16.0.9",
+    "react": "^16.6.1",
+    "react-dom": "^16.6.1"
+  },
+  "devDependencies": {
+    "awesome-typescript-loader": "^5.2.1",
+    "copy-webpack-plugin": "^4.6.0",
+    "css-loader": "^1.0.1",
+    "file-loader": "^2.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "less": "^3.8.1",
+    "less-loader": "^4.1.0",
+    "source-map-loader": "^0.2.4",
+    "style-loader": "^0.23.1",
+    "typescript": "^3.1.6",
+    "webpack": "^4.25.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "./node_modules/.bin/webpack-dev-server --mode development",
+    "dist": "./node_modules/.bin/webpack --mode production"
+  },
+  "author": "Robikz",
+  "email": "zalewapl@gmail.com",
+  "homepage": "https://github.com/Zalewa/adfotg",
+  "license": "MIT"
+}
