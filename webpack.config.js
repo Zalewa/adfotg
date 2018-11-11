@@ -38,5 +38,11 @@ module.exports = {
 	devServer: {
 		contentBase: __dirname + '/site/dist',
 		historyApiFallback: true
+	},
+	node: {
+		console: true,
+		fs: 'empty',
+		net: 'empty',
+		tls: 'empty'
 	}
 }

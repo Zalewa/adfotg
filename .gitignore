@@ -3,6 +3,7 @@
 __pycache__
 
 node_modules/
+site/dist/
 npm-debug.log
 bower_components/
 .module-cache

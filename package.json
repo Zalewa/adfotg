@@ -6,8 +6,11 @@
   "dependencies": {
     "@types/react": "^16.7.2",
     "@types/react-dom": "^16.0.9",
+    "@types/superagent": "^3.8.4",
     "react": "^16.6.1",
-    "react-dom": "^16.6.1"
+    "react-dom": "^16.6.1",
+    "react-dropzone": "^7.0.1",
+    "superagent": "^4.0.0-beta.5"
   },
   "devDependencies": {
     "awesome-typescript-loader": "^5.2.1",
@@ -24,7 +27,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "./node_modules/.bin/webpack-dev-server --mode development",
+    "selfdev": "./node_modules/.bin/webpack-dev-server --mode development",
+    "dev": "./node_modules/.bin/webpack --mode development --progress --watch",
     "dist": "./node_modules/.bin/webpack --mode production"
   },
   "author": "Robikz",

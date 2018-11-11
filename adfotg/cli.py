@@ -1,13 +1,16 @@
 # coding: utf-8
 from . import version
+import adfotg
 
 from optparse import OptionParser
 import os
 import sys
 
+PROFILE_ENV = "ADFOTG_PROFILE"
+
 
 def main():
-    profile_file = os.environ.get(config.PROFILE_ENV)
+    profile_file = os.environ.get(PROFILE_ENV)
     if profile_file:
         import yappi
         yappi.start()
@@ -17,7 +20,7 @@ def main():
         if options.version:
             exit(0)
         print("", file=sys.stderr)
-        # TODO run program
+        adfotg.app.run(host='0.0.0.0', port=options.port)
     finally:
         if profile_file:
             yappi.stop()
@@ -37,6 +40,8 @@ def print_version(file=sys.stderr):
 
 def parse_args():
     opt_parser = OptionParser()
+    opt_parser.add_option('-p', '--port', dest='port', type=int,
+                          help='port on which to host the service')
     opt_parser.add_option('-V', '--version', dest='version', default=False,
                           action='store_true', help='display version and quit')
     options, _ = opt_parser.parse_args()

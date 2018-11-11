@@ -21,6 +21,7 @@ setup(
     license=license,
     include_package_data=True,
     packages=['adfotg'],
+    url='https://github.com/Zalewa/adfotg',
     install_requires=[
         'Flask',
     ],
