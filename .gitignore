@@ -1,0 +1,8 @@
+*.pyc
+*.pyo
+__pycache__
+
+node_modules/
+npm-debug.log
+bower_components/
+.module-cache
