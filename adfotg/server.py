@@ -1,9 +1,9 @@
-from adfotg import app
+from . import app
 
-from flask import abort, request, send_from_directory
+from flask import abort, send_from_directory
 from werkzeug.exceptions import NotFound
 
-import os.path
+import os
 
 
 @app.route('/', defaults={'path': 'index.html'})
@@ -24,13 +24,3 @@ def serve_file(path):
                          " Your installation is broken")
         else:
             raise
-
-
-@app.route("/upload", methods=['POST'])
-def upload():
-    print(request)
-    print(request.files)
-    for filename, file in request.files.items():
-        #file.save(os.path.join("/tmp/szsz", filename))
-        pass
-    return ""

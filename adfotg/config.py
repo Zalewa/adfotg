@@ -1,4 +1,4 @@
-from adfotg import version
+from . import error, version
 
 from configparser import ConfigParser
 import os
@@ -23,7 +23,7 @@ DEFAULT_UPLOAD_DIR = os.path.join(_DATA_DIR, 'upload')
 config = None
 
 
-class ConfigError(Exception):
+class ConfigError(error.AdfotgError):
     pass
 
 

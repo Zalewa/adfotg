@@ -1,0 +1,2 @@
+class AdfotgError(Exception):
+    pass
