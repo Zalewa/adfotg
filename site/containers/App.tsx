@@ -18,7 +18,7 @@ export default class App extends Component {
 		console.log(rejected);
 		const req = request.post('/upload');
 		accepted.forEach(file => {
-			req.attach(file.name, file.name);
+			req.attach(file.name, file);
 		});
 		req.end((err, res) => {
 			console.log("DONE", err, res);
