@@ -13,6 +13,11 @@ own drive and swap them freely.
   -----------       ------------     ---------     ---------
 ```
 
+Status
+======
+
+Work-in-Progress. At the moment it's completely unusable.
+
 Background
 ==========
 
