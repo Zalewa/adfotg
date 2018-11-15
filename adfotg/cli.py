@@ -23,7 +23,7 @@ def main():
             exit(0)
         print("", file=sys.stderr)
         try:
-            config.config = config.load(options.cfgfile)
+            config.load(options.cfgfile)
         except config.ConfigError as cfg_error:
             print(cfg_error, file=sys.stderr)
             exit(1)

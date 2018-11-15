@@ -1,7 +1,7 @@
-from . import app, error
+from . import app, error, storage
 from .config import config
 
-from flask import abort, request, safe_join, send_from_directory
+from flask import abort, jsonify, request, safe_join, send_from_directory
 
 import os
 
@@ -16,20 +16,22 @@ def upload():
     # 1. Detect if what we uploaded is ADF or not.
     # 2. If ADF, put it into ADF directory.
     # 3. If not ADF, put it into uploads directory.
+    print("what is config?", config)
     print(request)
     print(request.files)
+    os.makedirs(config.upload_dir, exist_ok=True)
     for filename, file in request.files.items():
         file.save(safe_join(config.upload_dir, filename))
     return ""
 
 
-@app.route("/upload")
+@app.route("/upload", methods=['GET'])
 def list_uploads():
     # TODO
     # 1. Also return details, such as creation date and modification time.
     # 2. Allow to choose sorting.
     # 3. Pagination.
-    return os.listdir(config.upload_dir)
+    return jsonify(storage.listdir(config.upload_dir))
 
 
 @app.route("/upload/<name>", methods=["GET"])

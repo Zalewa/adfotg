@@ -19,16 +19,13 @@ _DATA_DIR = '/var/lib/{}'.format(_PROGNAME)
 DEFAULT_ADF_DIR = os.path.join(_DATA_DIR, 'adf')
 DEFAULT_UPLOAD_DIR = os.path.join(_DATA_DIR, 'upload')
 
-# This is a globally accessible object loaded at app startup.
-config = None
-
 
 class ConfigError(error.AdfotgError):
     pass
 
 
 class _Config:
-    def __init__(self, parser):
+    def load(self, parser):
         SECTION = _PROGNAME
         self.port = parser.getint(SECTION, 'port', fallback=DEFAULT_PORT)
         self.adf_dir = parser.get(SECTION, 'adf_dir', fallback=DEFAULT_ADF_DIR)
@@ -36,6 +33,9 @@ class _Config:
 
 
 def load(filenames=None):
+    '''Config is loaded into the 'config' object which can be imported from
+    this module elsewhere. Failure to load results in ConfigError throw.
+    '''
     if filenames is None:
         locations_dirs = [
             os.curdir,
@@ -52,6 +52,11 @@ def load(filenames=None):
     for filename in filenames:
         cfgparser = ConfigParser()
         if cfgparser.read(filename):
-            return _Config(cfgparser)
+            config.load(cfgparser)
+            return
     raise ConfigError("could not load config file from any of these locations: {}"
                       .format(', '.join(locations)))
+
+
+# This is a globally accessible object loaded at app startup.
+config = _Config()
