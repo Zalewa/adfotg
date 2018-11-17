@@ -72,7 +72,7 @@ def list_adfs(filter_pattern):
             def name_filter(name):
                 return filter_pattern in name.lower()
     full_list = storage.listdir(config.adf_dir, name_filter=name_filter)
-    return full_list
+    return jsonify(full_list)
 
 
 @app.route("/adf/<path:filepath>", methods=["GET"])
