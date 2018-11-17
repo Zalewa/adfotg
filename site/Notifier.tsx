@@ -63,7 +63,7 @@ export default class Notifier extends Component<{}, NotifierState> {
 	render() {
 		let notifications: JSX.Element[] = [];
 		this.state.notes.forEach(note => {
-			notifications.push(<Notification note={note}
+			notifications.push(<Notification key={note.key} note={note}
 				onClose={this.onClose} />)
 		});
 		return (<div className="notifier">
@@ -86,7 +86,8 @@ export default class Notifier extends Component<{}, NotifierState> {
 
 interface NotificationProps {
 	onClose: (key: number) => void,
-	note: Note
+	note: Note,
+	key: number
 }
 
 class Notification extends Component<NotificationProps> {
