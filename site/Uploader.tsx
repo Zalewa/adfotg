@@ -3,8 +3,11 @@ import { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
 
+import FileTable, { FileTableEntry } from './FileTable';
+import { dispatchRequestError } from './Notifier';
+
 interface UploaderState {
-	listing: any[]
+	listing: FileTableEntry[]
 }
 
 export default class Uploader extends Component<{}, UploaderState> {
@@ -26,11 +29,14 @@ export default class Uploader extends Component<{}, UploaderState> {
 	}
 
 	refreshUploads() {
-		const req = request.get('/upload');
-		req.end((err, res) => {
-			this.setState({
-				listing: res.body
-			})
+		request.get('/upload').end((err, res) => {
+			if (res.error) {
+				dispatchRequestError(res.error);
+			} else {
+				this.setState({
+					listing: res.body
+				});
+			}
 		});
 	}
 }
@@ -51,15 +57,19 @@ class UploadZone extends Component<UploadZoneProps> {
 	}
 
 	onDrop(accepted: File[], rejected: File[]): void {
-		console.log(accepted);
-		console.log(rejected);
+		console.log(accepted); // XXX
+		console.log(rejected); // XXX
 		const req = request.post('/upload');
 		accepted.forEach(file => {
 			req.attach(file.name, file);
 		});
 		req.end((err, res) => {
-			console.log("DONE", err, res);
-			this.props.onUpload();
+			console.log("DONE", err, res); // XXX
+			if (res.error) {
+				dispatchRequestError(res.error);
+			} else {
+				this.props.onUpload();
+			}
 		});
 	}
 }
@@ -70,35 +80,6 @@ class ListerProps {
 
 class Lister extends Component<ListerProps> {
 	render() {
-		console.log("listing", this.props.listing);
-		var rows: JSX.Element[] = [];
-		this.props.listing.forEach((e: ListerEntryProps) => {
-			rows.push(<ListerEntry {...e} key={e.name} />);
-		});
-		return (
-			<table className="lister">
-				<tbody>
-					{rows}
-				</tbody>
-			</table>
-		);
-	}
-
-	componentDidMount() {
-		console.log("Lister did mount");
+		return <FileTable {...this.props} />
 	}
 }
-
-interface ListerEntryProps {
-	name: string,
-	mtime: number,
-	size: number;
-}
-
-const ListerEntry = (props: ListerEntryProps) => {
-	return <tr>
-		<td>{props.name}</td>
-		<td>{props.size}</td>
-		<td>{props.mtime}</td>
-	</tr>
-};

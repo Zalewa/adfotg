@@ -1,4 +1,4 @@
-from . import app, error, storage
+from . import app, error, storage, version
 from .config import config
 
 from flask import abort, jsonify, request, safe_join, send_from_directory
@@ -65,11 +65,13 @@ def list_adfs(filter_pattern):
     # TODO - recurse into subdirectories or support more ADF dirs than one.
     # Users could potentially store hundreds of those and pagination is required.
     # Also do same features as in list_uploads()
-    full_list = os.listdir(config.adf_dir)
+    name_filter = None
     if filter_pattern:
         filter_pattern = filter_pattern.strip().lower()
         if filter_pattern:
-            return [e for e in full_list if filter_pattern in e.lower()]
+            def name_filter(name):
+                return filter_pattern in name.lower()
+    full_list = storage.listdir(config.adf_dir, name_filter=name_filter)
     return full_list
 
 
@@ -108,3 +110,11 @@ def unmount_flash_drive():
     #    the ADF on local system?
     print("requested unmount")
     return ""
+
+
+@app.route("/version")
+def get_version():
+    return jsonify(
+        version=version.VERSION,
+        yearspan=version.YEARSPAN
+    )
