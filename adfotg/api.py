@@ -28,10 +28,9 @@ def upload():
 @app.route("/upload", methods=['GET'])
 def list_uploads():
     # TODO
-    # 1. Also return details, such as creation date and modification time.
-    # 2. Allow to choose sorting.
     # 3. Pagination.
-    return jsonify(storage.listdir(config.upload_dir))
+    sorting = _sorting()
+    return jsonify(storage.listdir(config.upload_dir, sort=sorting))
 
 
 @app.route("/upload/<name>", methods=["GET"])
@@ -59,19 +58,29 @@ def upload_to_adf():
     # TODO rest of the method
 
 
-@app.route("/adf", defaults={"filter_pattern": None})
-@app.route("/adf?filter=<filter_pattern>")
-def list_adfs(filter_pattern):
+@app.route("/adf", methods=["GET"])
+def list_adfs():
+    '''
+    Query args (all optional):
+    - filter -- name filter, matched as "contains case-insensitive";
+      defaults to nothing which disables the filter
+    - sort -- sort field, valid values: name, size, mtime; defaults to name
+    - dir -- sort direction, valid values: asc, desc; defaults to asc
+    '''
     # TODO - recurse into subdirectories or support more ADF dirs than one.
     # Users could potentially store hundreds of those and pagination is required.
     # Also do same features as in list_uploads()
+    filter_pattern = request.args.get("filter")
+    sort, direction = _sorting()
+
     name_filter = None
     if filter_pattern:
         filter_pattern = filter_pattern.strip().lower()
         if filter_pattern:
             def name_filter(name):
                 return filter_pattern in name.lower()
-    full_list = storage.listdir(config.adf_dir, name_filter=name_filter)
+    full_list = storage.listdir(config.adf_dir, name_filter=name_filter,
+                                sort=(sort, direction))
     return jsonify(full_list)
 
 
@@ -118,3 +127,9 @@ def get_version():
         version=version.VERSION,
         yearspan=version.YEARSPAN
     )
+
+
+def _sorting():
+    sort = request.args.get("sort", "name")
+    direction = request.args.get("dir", "asc")
+    return sort, direction

@@ -3,40 +3,54 @@ import { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
 
-import FileTable, { FileTableEntry } from './FileTable';
+import FileTable, { FileTableEntry, Field, Sort, createSort } from './FileTable';
 import { dispatchRequestError } from './Notifier';
 
 interface UploaderState {
 	listing: FileTableEntry[]
+	sort: Sort
 }
 
 export default class Uploader extends Component<{}, UploaderState> {
 	state: Readonly<UploaderState> = {
-		listing: []
+		listing: [],
+		sort: createSort(Field.Mtime)
 	}
 
 	render() {
+		const onHeaderClick: (field: Field) => void = this.onHeaderClick.bind(this);
 		return (
 			<div className="uploader">
-				<UploadZone onUpload={() => this.refreshUploads()} />
-				<Lister listing={this.state.listing} />
+				<UploadZone onUpload={() => this.refreshUploads(this.state.sort)} />
+				<FileTable listing={this.state.listing}
+					onHeaderClick={onHeaderClick} />
 			</div>
 		);
 	}
 
 	componentDidMount() {
-		this.refreshUploads();
+		this.refreshUploads(this.state.sort);
 	}
 
-	refreshUploads() {
-		request.get('/upload').end((err, res) => {
+	private onHeaderClick(field: Field) {
+		this.refreshUploads(createSort(field, this.state.sort));
+	}
+
+	private refreshUploads(sort: Sort) {
+		request.get('/upload').query({
+			sort: sort.field,
+			dir: sort.ascending ? "asc" : "desc"
+		}).end((err, res) => {
+			let listing: FileTableEntry[] = [];
 			if (res.error) {
 				dispatchRequestError(res.error);
 			} else {
-				this.setState({
-					listing: res.body
-				});
+				listing = res.body;
 			}
+			this.setState({
+				listing: res.body,
+				sort: sort
+			});
 		});
 	}
 }
@@ -80,6 +94,6 @@ class ListerProps {
 
 class Lister extends Component<ListerProps> {
 	render() {
-		return <FileTable {...this.props} />
+		return <FileTable listing={this.props.listing} />
 	}
 }

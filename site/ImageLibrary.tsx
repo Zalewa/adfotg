@@ -2,35 +2,51 @@ import * as React from 'react';
 import { Component } from 'react';
 import * as request from 'superagent';
 
-import FileTable, { FileTableEntry } from './FileTable';
+import FileTable, { FileTableEntry, Field, Sort, createSort }
+	from './FileTable';
 import { dispatchRequestError } from './Notifier';
 
 interface ImageLibraryState {
-	listing: FileTableEntry[]
+	listing: FileTableEntry[],
+	sort: Sort
 }
 
 export default class ImageLibrary extends Component<{}, ImageLibraryState> {
 	state: Readonly<ImageLibraryState> = {
-		listing: []
+		listing: [],
+		sort: createSort(Field.Name)
 	}
 
 	render() {
-		return (<div><FileTable listing={this.state.listing} /></div>);
+		const onHeaderClick: (field: Field) => void = this.onHeaderClick.bind(this);
+		return (<div><FileTable listing={this.state.listing}
+			showSize={false} onHeaderClick={onHeaderClick} /></div>);
 	}
 
 	componentDidMount() {
-		this.refresh();
+		this.refresh(this.state.sort);
 	}
 
-	private refresh() {
-		request.get("/adf").end((err, res) => {
+	private onHeaderClick(field: Field) {
+		this.refresh(createSort(field, this.state.sort));
+	}
+
+	private refresh(sort: Sort) {
+		request.get("/adf").query({
+			filter: '',
+			sort: sort.field,
+			dir: sort.ascending ? 'asc' : 'desc'
+		}).end((err, res) => {
+			let listing: FileTableEntry[] = [];
 			if (res.error) {
 				dispatchRequestError(res.error);
 			} else {
-				this.setState({
-					listing: res.body
-				});
+				listing = res.body;
 			}
+			this.setState({
+				listing: listing,
+				sort: sort
+			});
 		})
 	}
 }
