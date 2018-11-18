@@ -23,11 +23,33 @@ Security
 It doesn't even put a basic HTTP authentication in place. When you host it
 on your device, keep it in a private network without remote access.
 
+This software requires **'root' privileges** to perform certain
+operations. While it will run as normal user, it will abuse `sudo` to
+do so. Ensure your RPi user can `sudo` without password prompt.
+
 
 Status
 ======
 
 Work-in-Progress. At the moment it's completely unusable.
+
+
+Requirements
+============
+
+Software:
+
+* Python 3
+* Python 2 (for xdftool)
+* mtools
+* sudo privileges
+
+Hardware:
+
+* Raspberry Pi Zero
+* Gotek
+* An Amiga
+
 
 Background
 ==========
@@ -54,3 +76,6 @@ it has many applications, we are only interested in one. It allows to
 make the RPi appear to be an USB flash drive - a flash drive which
 contents we can fully control and change on-the-fly using Linux command
 line tools and which we can program to serve the content we want.
+
+Guide for setting up OTG mode on Raspberry Pi can be found here:
+https://gist.github.com/gbaman/50b6cca61dd1c3f88f41

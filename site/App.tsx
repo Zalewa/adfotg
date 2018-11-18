@@ -4,6 +4,7 @@ import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
 
 import ImageLibrary from './ImageLibrary';
+import Mount from './Mount';
 import Notifier from './Notifier';
 import Title from './Title';
 import Uploader from './Uploader';
@@ -15,6 +16,7 @@ export default class App extends Component {
 			<Title />
 			<Notifier />
 			<Uploader />
+			<Mount />
 			<ImageLibrary />
 			</ErrorBoundary>);
 	}

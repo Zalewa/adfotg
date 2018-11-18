@@ -1,12 +1,15 @@
-from . import app, error, storage, version
+from . import Mount, app
+from . import adf, storage, version
 from .config import config
+from .error import AdfotgError
 
 from flask import abort, jsonify, request, safe_join, send_from_directory
 
 import os
+import traceback
 
 
-class ApiError(error.AdfotgError):
+class ApiError(AdfotgError):
     pass
 
 
@@ -99,13 +102,30 @@ def mount_flash_drive():
     # TODO
     # 1. Get this to work.
     # 2. When list of ADFs is passed, mount them all as one drive.
-    # 3. When Amiga modifies ADF, how do we save it back to the
-    #    local system?
+    mount = Mount()
     if request.method == "POST":
-        adfs = request.get_json()["adfs"]
-        print("requested mount of {}", adfs)
+        adfs = request.get_json().get("adfs")
+        # If we already have an image then list of ADFs is optional
+        # and the existing image will get remounted. If ADFs are
+        # specified, the existing image is replaced with a new one.
+        #
+        # ALSO: TODO this is convoluted so may let's split this into
+        # separate APIs?
+        if mount.state() == adf.MountStatus.NoImage and not adfs:
+            return abort(400, "no ADFs specified")
+        elif mount.state() == adf.MountStatus.Mounted:
+            return abort(400, "unmount first")
+        mount.mount(adfs)
     elif request.method == "GET":
-        print("say here what is mounted")
+        try:
+            listing = mount.list()
+        except AdfotgError as e:
+            traceback.print_exc()
+            return jsonify(status=adf.MountStatus.BadImage.value,
+                           error=str(e))
+        else:
+            return jsonify(status=mount.state().value,
+                           listing=listing)
     else:
         raise ApiError("unhandled HTTP method")
     return ""
@@ -113,12 +133,27 @@ def mount_flash_drive():
 
 @app.route("/adf/unmount", methods=["POST"])
 def unmount_flash_drive():
-    # TODO
-    # 1. Get this to work.
-    # 2. When ADF is modified from Amiga, do we wish to overwrite
-    #    the ADF on local system?
-    print("requested unmount")
-    return ""
+    '''
+    Body args:
+    - how -- required; either 'discard' or 'save'. When 'save',
+      contents of the image are saved back to disk, overwriting
+      locally stored ADFs.
+    '''
+    how = request.get_json().get("how")
+    try:
+        how = adf.UnmountType.interpret(how)
+    except ValueError:
+        return abort(400, "unknown discard method '{}'".format(how))
+    mount = Mount()
+    if mount.state() is adf.MountStatus.Mounted:
+        mount.unmount()
+    if how is adf.UnmountType.Discard:
+        mount.delete_image()
+    elif how is adf.UnmountType.Save:
+        mount.save_image_contents(config.adf_dir)
+    else:
+        raise ValueError("unhandled how: '{}'".format(how))
+    return 'OK'
 
 
 @app.route("/version")

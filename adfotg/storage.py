@@ -1,23 +1,16 @@
+from .util import Interpretable
+
 from enum import Enum
 import os
 
 
-class _Interpretable:
-    @classmethod
-    def interpret(cls, o):
-        if o in cls:
-            return o
-        else:
-            return cls(o)
-
-
-class Field(_Interpretable, Enum):
+class Field(Interpretable, Enum):
     NAME = "name"
     SIZE = "size"
     MTIME = "mtime"
 
 
-class Direction(_Interpretable, Enum):
+class Direction(Interpretable, Enum):
     ASCENDING = "asc"
     DESCENDING = "desc"
 

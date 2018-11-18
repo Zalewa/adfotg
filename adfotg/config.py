@@ -15,9 +15,11 @@ DEFAULT_CONFIG_DIRS = [os.path.join(dirp, _CFG_FILENAME) for dirp in [
 
 DEFAULT_PORT = 43164  # AMIGA
 
+# TODO ${INSTALL_PREFIX}
 _DATA_DIR = '/var/lib/{}'.format(_PROGNAME)
 DEFAULT_ADF_DIR = os.path.join(_DATA_DIR, 'adf')
 DEFAULT_UPLOAD_DIR = os.path.join(_DATA_DIR, 'upload')
+DEFAULT_WORK_DIR = _DATA_DIR
 
 
 class ConfigError(error.AdfotgError):
@@ -30,6 +32,7 @@ class _Config:
         self.port = parser.getint(SECTION, 'port', fallback=DEFAULT_PORT)
         self.adf_dir = parser.get(SECTION, 'adf_dir', fallback=DEFAULT_ADF_DIR)
         self.upload_dir = parser.get(SECTION, 'upload_dir', fallback=DEFAULT_UPLOAD_DIR)
+        self.work_dir = parser.get(SECTION, 'work_dir', fallback=DEFAULT_WORK_DIR)
 
 
 def load(filenames=None):
