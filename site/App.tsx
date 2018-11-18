@@ -40,8 +40,8 @@ class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
 
 	render() {
 		if (this.state.error != null) {
-			return (<div className="error">
-				<h1>Something went wrong.</h1>
+			return (<div className="guruMeditation">
+				<h1>GURU MEDITATION</h1>
 				<p>{this.state.error.toString()}</p>
 			</div>);
 		}
