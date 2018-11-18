@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Component } from 'react';
+import { Component, PureComponent } from 'react';
 
 import { LinkText, formatDate, formatSize } from './ui';
 
@@ -44,31 +44,82 @@ interface FileTableProps {
 	sort: Sort
 }
 
-export default class FileTable extends Component<FileTableProps> {
+interface FileTableState {
+	selected: string[],
+	selectedAll: boolean
+}
+
+export default class FileTable extends Component<FileTableProps, FileTableState> {
 	public static defaultProps: Partial<FileTableProps> = {
 		showSize: true
+	}
+
+	state: Readonly<FileTableState> = {
+		selected: [],
+		selectedAll: false
+	}
+
+	constructor(props: FileTableProps) {
+		super(props);
+		this.onSelect = this.onSelect.bind(this);
+		this.onSelectAll = this.onSelectAll.bind(this);
 	}
 
 	render() {
 		let rows: JSX.Element[] = [];
 		if (this.props.listing) {
 			this.props.listing.forEach((e: FileTableEntry) => {
-				rows.push(<FileTableRow showSize={this.props.showSize}
-					entry={e} key={e.name} />);
+				rows.push(<FileTableRow
+					entry={e} key={e.name} showSize={this.props.showSize}
+					selected={this.isSelected(e.name)}
+					onSelected={this.onSelect}
+				/>);
 			});
 		}
 		return (
 			<table className="fileTable">
-				<Header {...this.props} />
+				<Header {...this.props} selected={this.state.selectedAll} onSelected={this.onSelectAll} />
 				<tbody>
 					{rows}
 				</tbody>
 			</table>
 		);
 	}
+
+	private isSelected(name: string): boolean {
+		return this.state.selected.indexOf(name) > -1;
+	}
+
+	private onSelectAll() {
+		const select: boolean = !this.state.selectedAll;
+		const selected: string[] = select ?
+			this.props.listing.map(e => e.name) :
+			[];
+		this.setState({selected: selected, selectedAll: select})
+	}
+
+	private onSelect(e: React.ChangeEvent<HTMLInputElement>): void {
+		this.select(e.target.name);
+	}
+
+	private select(name: string): void {
+		const selected = this.state.selected;
+		const idx: number = selected.indexOf(name);
+		if (idx == -1) {
+			selected.push(name);
+		} else {
+			selected.splice(idx, 1);
+		}
+		this.setState({selected: selected});
+	}
 }
 
-class Header extends Component<FileTableProps> {
+interface HeaderProps extends FileTableProps {
+	selected: boolean,
+	onSelected: () => void
+}
+
+class Header extends Component<HeaderProps> {
 	render() {
 		let { onHeaderClick } = this.props;
 		if (!onHeaderClick)
@@ -82,6 +133,11 @@ class Header extends Component<FileTableProps> {
 			sizeTd = (<HeaderCell {...headerProps} field={Field.Size} label="Size" />);
 		return (<thead>
 			<tr>
+				<th>
+					<input name="selectAll" type="checkbox"
+						checked={this.props.selected}
+						onChange={this.props.onSelected} />
+				</th>
 				<HeaderCell {...headerProps} field={Field.Name} label="Name" />
 				{sizeTd}
 				<HeaderCell {...headerProps} field={Field.Mtime} label="Modified Date" />
@@ -114,17 +170,27 @@ const HeaderCell = (props: HeaderCellProps) => {
 
 interface FileTableRowProps {
 	entry: FileTableEntry,
-	showSize: boolean
+	showSize: boolean,
+	selected: boolean,
+	onSelected: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const FileTableRow = (props: FileTableRowProps) => {
-	let date = new Date(props.entry.mtime * 1000);
-	let sizeTd = null;
-	if (props.showSize)
-		sizeTd = (<td>{formatSize(props.entry.size)}</td>);
-	return <tr>
-		<td>{props.entry.name}</td>
-		{sizeTd}
-		<td>{formatDate(date)}</td>
-	</tr>
+class FileTableRow extends PureComponent<FileTableRowProps> {
+	render() {
+		const props = this.props;
+		let date = new Date(props.entry.mtime * 1000);
+		let sizeTd = null;
+		if (props.showSize)
+			sizeTd = (<td>{formatSize(props.entry.size)}</td>);
+		return (<tr>
+			<td>
+				<input name={props.entry.name} type="checkbox"
+				checked={props.selected}
+				onChange={props.onSelected} />
+			</td>
+			<td>{props.entry.name}</td>
+			{sizeTd}
+			<td>{formatDate(date)}</td>
+		</tr>);
+	}
 };
