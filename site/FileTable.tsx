@@ -73,17 +73,43 @@ class Header extends Component<FileTableProps> {
 		let { onHeaderClick } = this.props;
 		if (!onHeaderClick)
 			onHeaderClick = ()=>{};
+		const headerProps = {
+			...this.props,
+			onHeaderClick: onHeaderClick
+		}
 		let sizeTd = null;
 		if (this.props.showSize)
-			sizeTd = (<td><LinkText onClick={() => onHeaderClick(Field.Size)}>Size</LinkText></td>);
+			sizeTd = (<HeaderCell {...headerProps} field={Field.Size} label="Size" />);
 		return (<thead>
 			<tr>
-				<td><LinkText onClick={() => onHeaderClick(Field.Name)}>Name</LinkText></td>
+				<HeaderCell {...headerProps} field={Field.Name} label="Name" />
 				{sizeTd}
-				<td><LinkText onClick={() => onHeaderClick(Field.Mtime)}>Modified Date</LinkText></td>
+				<HeaderCell {...headerProps} field={Field.Mtime} label="Modified Date" />
 			</tr>
 		</thead>);
 	}
+}
+
+// Such inheritance is a code-smell, but done so regardless
+// because it's convenient.
+interface HeaderCellProps extends FileTableProps {
+	field: Field,
+	label: string,
+	onHeaderClick: (field: Field) => void
+}
+
+const HeaderCell = (props: HeaderCellProps) => {
+	let klass = "fileTable__headerCell";
+	const sortedBy: boolean = props.sort.field == props.field;
+	if (sortedBy) {
+		if (props.sort.ascending)
+			klass += " fileTable__headerCell--sortedByAsc";
+		else
+			klass += " fileTable__headerCell--sortedByDesc";
+	}
+	return <th className={klass}>
+		<LinkText onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>
+	</th>
 }
 
 interface FileTableRowProps {

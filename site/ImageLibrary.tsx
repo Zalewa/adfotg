@@ -20,7 +20,8 @@ export default class ImageLibrary extends Component<{}, ImageLibraryState> {
 	render() {
 		const onHeaderClick: (field: Field) => void = this.onHeaderClick.bind(this);
 		return (<div><FileTable listing={this.state.listing}
-			showSize={false} onHeaderClick={onHeaderClick} /></div>);
+			showSize={false} onHeaderClick={onHeaderClick}
+			sort={this.state.sort} /></div>);
 	}
 
 	componentDidMount() {

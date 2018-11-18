@@ -23,7 +23,7 @@ export default class Uploader extends Component<{}, UploaderState> {
 			<div className="uploader">
 				<UploadZone onUpload={() => this.refreshUploads(this.state.sort)} />
 				<FileTable listing={this.state.listing}
-					onHeaderClick={onHeaderClick} />
+					onHeaderClick={onHeaderClick} sort={this.state.sort} />
 			</div>
 		);
 	}
