@@ -24,8 +24,9 @@ It doesn't even put a basic HTTP authentication in place. When you host it
 on your device, keep it in a private network without remote access.
 
 This software requires **'root' privileges** to perform certain
-operations. While it will run as normal user, it will abuse `sudo` to
-do so. Ensure your RPi user can `sudo` without password prompt.
+operations. While the application will run as a normal user, it will abuse
+`sudo` to obtain root privileges when needed. Ensure your RPi user can `sudo`
+without password prompt.
 
 
 Status
