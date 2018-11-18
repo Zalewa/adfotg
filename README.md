@@ -13,6 +13,17 @@ own drive and swap them freely.
   -----------       ------------     ---------     ---------
 ```
 
+
+Security
+========
+
+**This is important!**
+**There's no security provided by the app itself!**
+
+It doesn't even put a basic HTTP authentication in place. When you host it
+on your device, keep it in a private network without remote access.
+
+
 Status
 ======
 
