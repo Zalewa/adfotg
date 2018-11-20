@@ -48,7 +48,7 @@ export default class Mount extends Component<{}, MountState> {
 	}
 
 	private refresh(): void {
-		request.get("/adf/mount").end((err, res) => {
+		request.get("/mount").end((err, res) => {
 			let mountStatus: MountStatus = null;
 			if (res.error) {
 				dispatchRequestError(res.error);
@@ -65,7 +65,7 @@ export default class Mount extends Component<{}, MountState> {
 
 	private mount(): void {
 		// TODO we need to pass the selected adfs to this method somehow
-		request.post("/adf/mount")
+		request.post("/mount")
 		.send({adfs: []})
 		.end((err, res) => {
 			if (res.error) {
@@ -84,7 +84,7 @@ export default class Mount extends Component<{}, MountState> {
 	}
 
 	private unmount(how: string): void {
-		request.post("/adf/unmount").send({how: how}).end(
+		request.post("/unmount").send({how: how}).end(
 			(err, res) => {
 				if (res.error) {
 					dispatchRequestError(res.error);

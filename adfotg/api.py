@@ -1,5 +1,5 @@
 from . import Mount, app
-from . import adf, storage, version
+from . import mountimg, storage, version
 from .config import config
 from .error import AdfotgError
 
@@ -97,7 +97,7 @@ def del_adf(filepath):
     os.unlink(safe_join(config.adf_dir, filepath))
 
 
-@app.route("/adf/mount", methods=["GET", "POST"])
+@app.route("/mount", methods=["GET", "POST"])
 def mount_flash_drive():
     # TODO
     # 1. Get this to work.
@@ -111,9 +111,9 @@ def mount_flash_drive():
         #
         # ALSO: TODO this is convoluted so may let's split this into
         # separate APIs?
-        if mount.state() == adf.MountStatus.NoImage and not adfs:
+        if mount.state() == mountimg.MountStatus.NoImage and not adfs:
             return abort(400, "no ADFs specified")
-        elif mount.state() == adf.MountStatus.Mounted:
+        elif mount.state() == mountimg.MountStatus.Mounted:
             return abort(400, "unmount first")
         mount.mount(adfs)
     elif request.method == "GET":
@@ -121,7 +121,7 @@ def mount_flash_drive():
             listing = mount.list()
         except AdfotgError as e:
             traceback.print_exc()
-            return jsonify(status=adf.MountStatus.BadImage.value,
+            return jsonify(status=mountimg.MountStatus.BadImage.value,
                            error=str(e))
         else:
             return jsonify(status=mount.state().value,
@@ -131,7 +131,7 @@ def mount_flash_drive():
     return ""
 
 
-@app.route("/adf/unmount", methods=["POST"])
+@app.route("/mount/unmount", methods=["POST"])
 def unmount_flash_drive():
     '''
     Body args:
@@ -141,15 +141,15 @@ def unmount_flash_drive():
     '''
     how = request.get_json().get("how")
     try:
-        how = adf.UnmountType.interpret(how)
+        how = mountimg.UnmountType.interpret(how)
     except ValueError:
         return abort(400, "unknown discard method '{}'".format(how))
     mount = Mount()
-    if mount.state() is adf.MountStatus.Mounted:
+    if mount.state() is mountimg.MountStatus.Mounted:
         mount.unmount()
-    if how is adf.UnmountType.Discard:
+    if how is mountimg.UnmountType.Discard:
         mount.delete_image()
-    elif how is adf.UnmountType.Save:
+    elif how is mountimg.UnmountType.Save:
         mount.save_image_contents(config.adf_dir)
     else:
         raise ValueError("unhandled how: '{}'".format(how))

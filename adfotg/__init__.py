@@ -1,5 +1,5 @@
 # coding: utf-8
-from . import adf, version
+from . import mountimg, version
 from .config import config as _config
 
 import flask
@@ -9,9 +9,9 @@ __version__ = version.VERSION
 app = flask.Flask(__name__)
 
 
-class Mount(adf.Mount):
+class Mount(mountimg.Mount):
     def __init__(self):
         super(Mount, self).__init__(os.path.join(
-            _config.work_dir, adf.MOUNT_FILENAME))
+            _config.work_dir, mountimg.MOUNT_FILENAME))
 
 from . import api, server  # noqa
