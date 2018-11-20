@@ -1,7 +1,8 @@
-from . import Mount, app
+from . import app
 from . import mountimg, storage, version
 from .config import config
 from .error import AdfotgError
+from .mountimg import Mount
 
 from flask import abort, jsonify, request, safe_join, send_from_directory
 
@@ -31,7 +32,7 @@ def upload():
 @app.route("/upload", methods=['GET'])
 def list_uploads():
     # TODO
-    # 3. Pagination.
+    # 3. Pagination and filtering.
     sorting = _sorting()
     return jsonify(storage.listdir(config.upload_dir, sort=sorting))
 
@@ -74,7 +75,7 @@ def list_adfs():
     # Users could potentially store hundreds of those and pagination is required.
     # Also do same features as in list_uploads()
     filter_pattern = request.args.get("filter")
-    sort, direction = _sorting()
+    sorting = _sorting()
 
     name_filter = None
     if filter_pattern:
@@ -83,7 +84,7 @@ def list_adfs():
             def name_filter(name):
                 return filter_pattern in name.lower()
     full_list = storage.listdir(config.adf_dir, name_filter=name_filter,
-                                sort=(sort, direction))
+                                sort=sorting)
     return jsonify(full_list)
 
 
@@ -97,63 +98,70 @@ def del_adf(filepath):
     os.unlink(safe_join(config.adf_dir, filepath))
 
 
-@app.route("/mount", methods=["GET", "POST"])
-def mount_flash_drive():
+@app.route("/mount", methods=["GET"])
+def get_mounted_flash_drive():
     # TODO
     # 1. Get this to work.
     # 2. When list of ADFs is passed, mount them all as one drive.
-    mount = Mount()
-    if request.method == "POST":
-        adfs = request.get_json().get("adfs")
-        # If we already have an image then list of ADFs is optional
-        # and the existing image will get remounted. If ADFs are
-        # specified, the existing image is replaced with a new one.
-        #
-        # ALSO: TODO this is convoluted so may let's split this into
-        # separate APIs?
-        if mount.state() == mountimg.MountStatus.NoImage and not adfs:
-            return abort(400, "no ADFs specified")
-        elif mount.state() == mountimg.MountStatus.Mounted:
-            return abort(400, "unmount first")
-        mount.mount(adfs)
-    elif request.method == "GET":
-        try:
-            listing = mount.list()
-        except AdfotgError as e:
-            traceback.print_exc()
-            return jsonify(status=mountimg.MountStatus.BadImage.value,
-                           error=str(e))
-        else:
-            return jsonify(status=mount.state().value,
-                           listing=listing)
+    mount = Mount.current()
+    if not mount:
+        return jsonify(status=mountimg.MountStatus.Unmounted.value)
+    imagefile = None
+    try:
+        imagefile = mount.imagefile
+        if not imagefile.startswith(config.mount_images_dir):
+            return jsonify(status=mountimg.MountStatus.OtherImageMounted,
+                           error="mounted image is unknown to the app")
+        imagefile = imagefile[len(config.mount_images_dir):].lstrip("/")
+        listing = mount.list()
+    except AdfotgError as e:
+        traceback.print_exc()
+        return jsonify(status=mountimg.MountStatus.BadImage.value,
+                       file=imagefile,
+                       error=str(e))
     else:
-        raise ApiError("unhandled HTTP method")
+        return jsonify(status=mount.state().value,
+                       file=imagefile,
+                       listing=listing)
+
+
+@app.route("/mount/<filename>", methods=["POST"])
+def mount_flash_drive(filename):
+    mount = Mount(safe_join(config.mount_images_dir, filename))
+    mount.mount()
     return ""
 
 
-@app.route("/mount/unmount", methods=["POST"])
+@app.route("/unmount", methods=["POST"])
 def unmount_flash_drive():
-    '''
-    Body args:
-    - how -- required; either 'discard' or 'save'. When 'save',
-      contents of the image are saved back to disk, overwriting
-      locally stored ADFs.
-    '''
-    how = request.get_json().get("how")
-    try:
-        how = mountimg.UnmountType.interpret(how)
-    except ValueError:
-        return abort(400, "unknown discard method '{}'".format(how))
-    mount = Mount()
+    mount = Mount.current()
     if mount.state() is mountimg.MountStatus.Mounted:
         mount.unmount()
-    if how is mountimg.UnmountType.Discard:
-        mount.delete_image()
-    elif how is mountimg.UnmountType.Save:
-        mount.save_image_contents(config.adf_dir)
     else:
-        raise ValueError("unhandled how: '{}'".format(how))
+        abort(400, "cannot unmount as nothing is mounted")
     return 'OK'
+
+
+@app.route("/mount_image", methods=["GET"])
+def list_mount_images():
+    # TODO same as list_adfs and list_uploads
+    sorting = _sorting()
+    return jsonify(storage.listdir(config.mount_images_dir, sort=sorting))
+
+
+@app.route("/mount_image/<filename>", methods=["GET"])
+def get_mount_image(filename):
+    return send_from_directory(config.mount_images_dir, filename)
+
+
+@app.route("/mount_image/<filename>/pack_adfs", methods=["PUT"])
+def mount_pack_flash_drive_image(filename):
+    '''
+    Body args:
+    - adfs -- list of ADFs to put into the image.
+      Names must be as returned by GET /adf.
+    '''
+    pass
 
 
 @app.route("/version")

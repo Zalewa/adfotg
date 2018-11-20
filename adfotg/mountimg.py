@@ -1,5 +1,4 @@
 from .error import ActionError, AdfotgError
-from .util import Interpretable
 
 from enum import Enum
 import os
@@ -8,48 +7,57 @@ import shlex
 import subprocess
 
 
-MOUNT_FILENAME = "adfmount"
-
-
 class MountStatus(Enum):
     Mounted = "mounted"
     Unmounted = "unmounted"
-    NoImage = "noimage"
-    BadImage = "badimage"
-
-
-class UnmountType(Interpretable, Enum):
-    Discard = 'discard'
-    Save = 'save'
+    NoImage = "no_image"
+    BadImage = "bad_image"
+    OtherImageMounted = "other_image_mounted"
 
 
 class Mount:
-    def __init__(self, mountfile):
-        if _is_faking_it():
-            self._mounter = _FakeMount(mountfile)
+    @classmethod
+    def current(cls):
+        mounter = _mk_mounter()
+        imagefile = mounter.mounted()
+        if imagefile:
+            return cls(imagefile)
         else:
-            self._mounter = _RealMount(mountfile)
-        self._mountimage = _MountImage(mountfile)
+            return None
+
+    def __init__(self, mountfile):
+        self._mounter = _mk_mounter()
+        self._mountimage = MountImage(mountfile)
+
+    @property
+    def imagefile(self):
+        return self._mountimage.imagefile
 
     def state(self):
-        mounted = self._mounter.is_mounted()
-        if mounted:
+        mounted = self._mounter.mounted()
+        if mounted == self._mountimage.imagefile:
             return MountStatus.Mounted
         elif not self._mountimage.exists():
             return MountStatus.NoImage
+        elif mounted:
+            return MountStatus.OtherImageMounted
         else:
             # Image exists but is not mounted.
             return MountStatus.Unmounted
 
-    def mount(self, files=None):
-        if self._mounter.is_mounted():
-            raise ActionError("image is already mounted; unmount it first")
-        if files:
-            self._mountimage.pack(files)
-        self._mounter.mount()
+    def mount(self):
+        mount_state = self.state()
+        if mount_state == MountStatus.Mounted:
+            # Image is already mounted, no-op.
+            return
+        elif mount_state == MountStatus.OtherImageMounted:
+            raise ActionError("an image is already mounted; unmount it first")
+        elif mount_state == MountStatus.NoImage:
+            raise ActionError("image doesn't exist, cannot mount")
+        self._mounter.mount(self._mountimage.imagefile)
 
     def unmount(self):
-        if not self._mounter.is_mounted():
+        if self.state() != MountStatus.Mounted:
             raise ActionError("cannot unmount when not mounted")
         self._mounter.unmount()
 
@@ -62,17 +70,18 @@ class Mount:
     def delete_image(self):
         self._mountimage.delete()
 
-    def save_image_contents(self, destdir):
-        self._mountimage.unpack(destdir)
 
-
-class _MountImage:
+class MountImage:
     '''Requires mtools, because 'mount' requires root and mtools don't.'''
     # TODO do we need that? How much do we need that?
     _BUFFER_SPACE = 4 * 1024 * 1024
 
     def __init__(self, imagefile):
         self._imagefile = imagefile
+
+    @property
+    def imagefile(self):
+        return self._imagefile
 
     def delete(self):
         try:
@@ -121,49 +130,53 @@ class _RealMount:
     '''https://gist.github.com/gbaman/50b6cca61dd1c3f88f41
 
     root privileges are needed to manipulate kernel modules
+
+    Currently mounted file is available in
+    /sys/module/g_mass_storage/parameters/file
     '''
     def __init__(self, imagefile):
         self._imagefile = imagefile
 
-    def is_mounted(self):
-        with open('/proc/modules', 'r') as mods:
-            for line in mods:
-                if not line:
-                    # Can this ever happen?
-                    continue
-                name = line.split(" ")[0]
-                if name == "g_mass_storage":
-                    return True
-        return False
+    def mounted(self):
+        try:
+            with open('/sys/module/g_mass_storage/parameters/file', 'r') as f:
+                return f.read()
+        except FileNotFoundError:
+            return None
 
-    def mount(self):
+    def mount(self, imagefile):
+        self.unmount()
         subprocess.check_call(
             ['sudo', 'modprobe', 'g_mass_storage',
-             'file={}'.format(shlex.quote(self._imagefile)),
-             'stall=0'])
+             'file={}'.format(shlex.quote(imagefile)),
+             'stall=0', 'removable=1'])
 
     def unmount(self):
-        subprocess.check_call(['sudo', 'modprobe', '-d', 'g_mass_storage'])
+        subprocess.check_call(['sudo', 'modprobe', '-r', 'g_mass_storage'])
 
 
 class _FakeMount:
     # Mount state is global, this is true on the real
     # system, and should be true in the faker as well.
     _state = {
-        'mounted': False
+        'mounted': None
     }
 
-    def __init__(self, imagefile):
-        self._imagefile = imagefile
-
-    def is_mounted(self):
+    def mounted(self):
         return self._state['mounted']
 
-    def mount(self):
-        self._state['mounted'] = True
+    def mount(self, imagefile):
+        self._state['mounted'] = imagefile
 
     def unmount(self):
-        self._state['mounted'] = False
+        self._state['mounted'] = None
+
+
+def _mk_mounter():
+    if _is_faking_it():
+        return _FakeMount()
+    else:
+        return _RealMount()
 
 
 def _is_faking_it():

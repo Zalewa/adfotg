@@ -33,6 +33,7 @@ class _Config:
         self.adf_dir = parser.get(SECTION, 'adf_dir', fallback=DEFAULT_ADF_DIR)
         self.upload_dir = parser.get(SECTION, 'upload_dir', fallback=DEFAULT_UPLOAD_DIR)
         self.work_dir = parser.get(SECTION, 'work_dir', fallback=DEFAULT_WORK_DIR)
+        self.mount_images_dir = os.path.join(self.work_dir, "mount_images")
 
 
 def load(filenames=None):

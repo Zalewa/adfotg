@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { Component } from 'react';
 import * as request from 'superagent';
+
+import FileTable, { FileTableEntry, Field, Sort, createSort }
+from './FileTable';
 import { dispatchRequestError } from './Notifier';
 
 
@@ -14,14 +17,20 @@ const enum MountStatus {
 interface MountState {
 	mountStatus: MountStatus,
 	error?: string,
-	listing?: string[]
+	mountedImageName: string,
+	imageContentsListing: string[],
+	imagesListing: FileTableEntry[],
+	sortImages: Sort
 }
 
 export default class Mount extends Component<{}, MountState> {
 	readonly state: MountState = {
 		mountStatus: null,
 		error: null,
-		listing: []
+		mountedImageName: "",
+		imageContentsListing: [],
+		imagesListing: [],
+		sortImages: createSort(Field.Name)
 	}
 
 	constructor(props: {}) {
@@ -29,22 +38,30 @@ export default class Mount extends Component<{}, MountState> {
 		this.mount = this.mount.bind(this);
 		this.unmountDiscard = this.unmountDiscard.bind(this);
 		this.unmountSave = this.unmountSave.bind(this);
+		this.onImagesHeaderClick = this.onImagesHeaderClick.bind(this);
 	}
 
 	render() {
 		return (<div className="mount">
 			<MountStatusDisplay {...this.state} />
-			<Listing listing={this.state.listing} />
+			<span className="mount__imageName">{this.state.mountedImageName}</span>
+			<Listing listing={this.state.imageContentsListing} />
 			<MountActions mountStatus={this.state.mountStatus}
 				onMount={this.mount}
 				onUnmountAndDiscard={this.unmountDiscard}
 				onUnmountAndSave={this.unmountSave}
+				/>
+			<FileTable listing={this.state.imagesListing}
+				onHeaderClick={this.onImagesHeaderClick}
+				sort={this.state.sortImages}
+				fileLinkPrefix="/mount_image/"
 				/>
 		</div>);
 	}
 
 	componentDidMount() {
 		this.refresh();
+		this.refreshImages(this.state.sortImages);
 	}
 
 	private refresh(): void {
@@ -58,21 +75,39 @@ export default class Mount extends Component<{}, MountState> {
 			this.setState({
 				mountStatus: mountStatus,
 				error: err ? err.toString() : res.body.error,
-				listing: res.body.listing
+				mountedImageName: res.body.file,
+				imageContentsListing: res.body.listing
 			});
 		})
 	}
 
-	private mount(): void {
-		// TODO we need to pass the selected adfs to this method somehow
-		request.post("/mount")
-		.send({adfs: []})
-		.end((err, res) => {
+	private refreshImages(sort: Sort): void {
+		request.get("/mount_image").query({
+			sort: sort.field,
+			dir: sort.ascending ? "asc" : "desc"
+		}).end((err, res) => {
+			let listing: FileTableEntry[] = [];
 			if (res.error) {
 				dispatchRequestError(res.error);
+			} else {
+				listing = res.body;
 			}
-			this.refresh();
-		});
+			this.setState({
+				imagesListing: listing,
+				sortImages: sort
+			})
+		})
+	}
+
+	private mount(): void {
+		// TODO we need to pass the selected image to this method somehow
+		request.post("/mount")
+			.end((err, res) => {
+				if (res.error) {
+					dispatchRequestError(res.error);
+				}
+				this.refresh();
+			});
 	}
 
 	private unmountDiscard(): void {
@@ -91,6 +126,10 @@ export default class Mount extends Component<{}, MountState> {
 				}
 				this.refresh();
 			});
+	}
+
+	private onImagesHeaderClick(field: Field) {
+		this.refreshImages(createSort(field, this.state.sortImages));
 	}
 }
 

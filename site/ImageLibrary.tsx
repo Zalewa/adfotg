@@ -21,7 +21,7 @@ export default class ImageLibrary extends Component<{}, ImageLibraryState> {
 		const onHeaderClick: (field: Field) => void = this.onHeaderClick.bind(this);
 		return (<div><FileTable listing={this.state.listing}
 			showSize={false} onHeaderClick={onHeaderClick}
-			sort={this.state.sort} fileLinkPrefix="adf/" /></div>);
+			sort={this.state.sort} fileLinkPrefix="/adf/" /></div>);
 	}
 
 	componentDidMount() {
