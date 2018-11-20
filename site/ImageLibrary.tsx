@@ -6,22 +6,31 @@ import FileTable, { FileTableEntry, Field, Sort, createSort }
 	from './FileTable';
 import { dispatchRequestError } from './Notifier';
 
+interface ImageLibraryProps {
+	onCreateImage: (adfs: string[]) => void
+}
+
 interface ImageLibraryState {
 	listing: FileTableEntry[],
+	selection: string[],
 	sort: Sort
 }
 
-export default class ImageLibrary extends Component<{}, ImageLibraryState> {
+export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibraryState> {
 	state: Readonly<ImageLibraryState> = {
 		listing: [],
+		selection: [],
 		sort: createSort(Field.Name)
 	}
 
 	render() {
 		const onHeaderClick: (field: Field) => void = this.onHeaderClick.bind(this);
-		return (<div><FileTable listing={this.state.listing}
-			showSize={false} onHeaderClick={onHeaderClick}
-			sort={this.state.sort} fileLinkPrefix="/adf/" /></div>);
+		return (<div>
+			<button onClick={() => this.props.onCreateImage(this.state.selection)}>Create Mount Image</button>
+			<FileTable listing={this.state.listing}
+				showSize={false} onHeaderClick={onHeaderClick}
+				sort={this.state.sort} fileLinkPrefix="/adf/" />
+		</div>);
 	}
 
 	componentDidMount() {

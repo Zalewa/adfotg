@@ -4,21 +4,64 @@ import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
 
 import ImageLibrary from './ImageLibrary';
-import Mount from './Mount';
+import Mount, { CreateMountImage, CreateMountImageProps } from './Mount';
 import Notifier from './Notifier';
 import Title from './Title';
 import Uploader from './Uploader';
 
-export default class App extends Component {
+enum View {
+	Main,
+	CreateMountImage,
+}
+
+interface AppState {
+	view: View,
+	viewProps?: CreateMountImageProps
+}
+
+export default class App extends Component<{}, AppState> {
+	readonly state: AppState = {
+		view: View.Main
+	}
+
+	constructor(props: {}) {
+		super(props);
+		this.onCreateImage = this.onCreateImage.bind(this);
+	}
+
 	render () {
 		return (
 			<ErrorBoundary>
-			<Title />
-			<Notifier />
-			<Uploader />
-			<Mount />
-			<ImageLibrary />
+				{this.getOverlayWidget()}
+				<Title />
+				<Notifier />
+				<Uploader />
+				<Mount />
+				<ImageLibrary onCreateImage={this.onCreateImage} />
 			</ErrorBoundary>);
+	}
+
+	private getOverlayWidget(): JSX.Element {
+		const widget = this.getOverlayInnerWidget();
+		return widget ? <Overlay onClose={() => this.setState({view: View.Main})}>{widget}</Overlay> : null;
+	}
+
+	private getOverlayInnerWidget(): JSX.Element {
+		switch (this.state.view) {
+			case View.CreateMountImage:
+				return <CreateMountImage {...this.state.viewProps} />;
+			default:
+				return null;
+		}
+	}
+
+	private onCreateImage(adfs: string[]): void {
+		this.setState({
+			view: View.CreateMountImage,
+			viewProps: {
+				adfs: adfs
+			}
+		})
 	}
 }
 
@@ -49,5 +92,18 @@ class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
 		}
 
 		return this.props.children;
+	}
+}
+
+interface OverlayProps {
+	onClose: ()=>void
+}
+
+class Overlay extends React.Component<OverlayProps> {
+	render() {
+		return <div className="overlay">
+			<button className="overlay__close" onClick={this.props.onClose}>X</button>
+			{this.props.children}
+		</div>;
 	}
 }

@@ -133,6 +133,21 @@ export default class Mount extends Component<{}, MountState> {
 	}
 }
 
+export interface CreateMountImageProps {
+	adfs: string[]
+}
+
+export class CreateMountImage extends React.Component<CreateMountImageProps> {
+	render() {
+		return (<div className="createMountImage">
+			<span>Create Mount Image with following ADFs:</span>
+			<Listing listing={this.props.adfs} />
+			<input type="text" />
+			<input type="button" value="Create" />
+		</div>)
+	}
+}
+
 interface MountStatusProps extends MountState {}
 
 type Display = {
