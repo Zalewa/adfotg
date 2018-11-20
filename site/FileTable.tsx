@@ -41,7 +41,8 @@ interface FileTableProps {
 	listing: FileTableEntry[]
 	showSize: boolean,
 	onHeaderClick?: (field: Field) => void,
-	sort: Sort
+	sort: Sort,
+	fileLinkPrefix?: string
 }
 
 interface FileTableState {
@@ -69,8 +70,12 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 		let rows: JSX.Element[] = [];
 		if (this.props.listing) {
 			this.props.listing.forEach((e: FileTableEntry) => {
+				const url = this.props.fileLinkPrefix ?
+					this.props.fileLinkPrefix + e.name :
+					null;
 				rows.push(<FileTableRow
 					entry={e} key={e.name} showSize={this.props.showSize}
+					url={url}
 					selected={this.isSelected(e.name)}
 					onSelected={this.onSelect}
 				/>);
@@ -172,23 +177,31 @@ interface FileTableRowProps {
 	entry: FileTableEntry,
 	showSize: boolean,
 	selected: boolean,
-	onSelected: (e: React.ChangeEvent<HTMLInputElement>) => void
+	onSelected: (e: React.ChangeEvent<HTMLInputElement>) => void,
+	url?: string
 }
 
 class FileTableRow extends PureComponent<FileTableRowProps> {
 	render() {
 		const props = this.props;
-		let date = new Date(props.entry.mtime * 1000);
+		let nameTd: JSX.Element
+		if (this.props.url != null) {
+			nameTd = (<td><a className="fileTable__fileLink"
+				href={props.url}>{props.entry.name}</a></td>);
+		} else {
+			nameTd = <td>{props.entry.name}</td>;
+		}
 		let sizeTd = null;
 		if (props.showSize)
 			sizeTd = (<td>{formatSize(props.entry.size)}</td>);
+		const date = new Date(props.entry.mtime * 1000);
 		return (<tr>
 			<td>
 				<input name={props.entry.name} type="checkbox"
 				checked={props.selected}
 				onChange={props.onSelected} />
 			</td>
-			<td>{props.entry.name}</td>
+			{nameTd}
 			{sizeTd}
 			<td>{formatDate(date)}</td>
 		</tr>);
