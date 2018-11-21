@@ -36,9 +36,8 @@ class VersionInfo extends Component<{}, VersionInfoState> {
 
 	componentDidMount() {
 		request.get("/version").end((err, res) => {
-			if (res.error) {
-				dispatchRequestError(res.error);
-			} else {
+			dispatchRequestError(err);
+			if (!err) {
 				this.setState(res.body);
 			}
 		})

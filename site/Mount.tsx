@@ -73,10 +73,9 @@ export default class Mount extends Component<MountProps, MountState> {
 
 	private refresh(): void {
 		request.get("/mount").end((err, res) => {
+			dispatchRequestError(err);
 			let mountStatus: MountStatus = null;
-			if (res.error) {
-				dispatchRequestError(res.error);
-			} else {
+			if (!err) {
 				mountStatus = res.body.status;
 			}
 			this.setState({
@@ -94,10 +93,9 @@ export default class Mount extends Component<MountProps, MountState> {
 			sort: sort.field,
 			dir: sort.ascending ? "asc" : "desc"
 		}).end((err, res) => {
+			dispatchRequestError(err);
 			let listing: FileTableEntry[] = [];
-			if (res.error) {
-				dispatchRequestError(res.error);
-			} else {
+			if (!err) {
 				listing = res.body;
 			}
 			this.setState({
@@ -110,9 +108,7 @@ export default class Mount extends Component<MountProps, MountState> {
 	@boundMethod
 	private mount(image: string): void {
 		request.post("/mount/" + image).end((err, res) => {
-			if (res.error) {
-				dispatchRequestError(res.error);
-			}
+			dispatchRequestError(err);
 			this.refresh();
 		});
 	}
@@ -120,9 +116,7 @@ export default class Mount extends Component<MountProps, MountState> {
 	@boundMethod
 	private unmount(): void {
 		request.post("/unmount").end((err, res) => {
-			if (res.error) {
-				dispatchRequestError(res.error);
-			}
+			dispatchRequestError(err);
 			this.refresh();
 		});
 	}

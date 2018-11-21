@@ -62,10 +62,9 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 			sort: sort.field,
 			dir: sort.ascending ? 'asc' : 'desc'
 		}).end((err, res) => {
+			dispatchRequestError(err);
 			let listing: FileTableEntry[] = [];
-			if (res.error) {
-				dispatchRequestError(res.error);
-			} else {
+			if (!err) {
 				listing = res.body;
 			}
 			this.setState({

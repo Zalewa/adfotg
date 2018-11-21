@@ -1,6 +1,6 @@
 from . import app
 
-from flask import abort, send_from_directory
+from flask import abort, jsonify, send_from_directory
 from werkzeug.exceptions import NotFound
 
 import os
@@ -24,3 +24,12 @@ def serve_file(path):
                          " Your installation is broken")
         else:
             raise
+
+
+@app.errorhandler(500)
+def error_500(exception):
+    return (
+        jsonify({"error": str(exception)}),
+        500,
+        {'Content-Type': 'application/json'}
+    )

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { ResponseError } from 'superagent';
+import { Response } from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 enum NoteType {
@@ -18,11 +18,20 @@ let __nextNoteId: number = 1;
 /**
  * Meant to handle superagent.request errors.
  */
-export function dispatchRequestError(e: ResponseError) {
-	dispatch({
-		type: NoteType.Error,
-		message: e.message
-	})
+export function dispatchRequestError(err: Error) {
+	if (err) {
+		let res: Response = (err as any).response;
+		let message: string;
+		if (res.body.error) {
+			message = res.body.error;
+		} else {
+			message = err.toString();
+		}
+		dispatch({
+			type: NoteType.Error,
+			message: res.error.message + " -- " + message
+		});
+	}
 }
 
 export function dispatchError(e: Error) {

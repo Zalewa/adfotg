@@ -55,10 +55,9 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 			sort: sort.field,
 			dir: sort.ascending ? "asc" : "desc"
 		}).end((err, res) => {
+			dispatchRequestError(err);
 			let listing: FileTableEntry[] = [];
-			if (res.error) {
-				dispatchRequestError(res.error);
-			} else {
+			if (!err) {
 				listing = res.body;
 			}
 			this.setState({
@@ -86,17 +85,13 @@ class UploadZone extends Component<UploadZoneProps> {
 
 	@boundMethod
 	onDrop(accepted: File[], rejected: File[]): void {
-		console.log(accepted); // XXX
-		console.log(rejected); // XXX
 		const req = request.post('/upload');
 		accepted.forEach(file => {
 			req.attach(file.name, file);
 		});
 		req.end((err, res) => {
-			console.log("DONE", err, res); // XXX
-			if (res.error) {
-				dispatchRequestError(res.error);
-			} else {
+			dispatchRequestError(err);
+			if (!err) {
 				this.props.onUpload();
 			}
 		});
