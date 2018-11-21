@@ -1,6 +1,15 @@
 import * as React from 'react';
 import { Component } from 'react';
 
+
+export const DeleteButton = (props: any) => {
+	let klass: string = "deleteButton"
+	if (props.className) {
+		klass += " " + props.className;
+	}
+	return <button {...props} className={klass}>Delete</button>
+}
+
 export const ErrorLabel = (props: {error: Error}) => {
 	return <div className="errorLabel">
 		{props.error.toString()}

@@ -126,7 +126,10 @@ def get_mounted_flash_drive():
 @app.route("/mount/<filename>", methods=["POST"])
 def mount_flash_drive(filename):
     imagefile = safe_join(config.mount_images_dir, filename)
-    if not MountImage(imagefile).is_valid():
+    mountimg = MountImage(imagefile)
+    if not mountimg.exists():
+        return abort(404, "image not found")
+    if not mountimg.is_valid():
         return abort(500, "tried to mount an invalid mass storage image")
     mount = Mount(imagefile)
     mount.mount()
@@ -139,7 +142,7 @@ def unmount_flash_drive():
     if mount.state() is mountimg.MountStatus.Mounted:
         mount.unmount()
     else:
-        abort(400, "cannot unmount as nothing is mounted")
+        return abort(400, "cannot unmount as nothing is mounted")
     return 'OK'
 
 
@@ -153,6 +156,39 @@ def list_mount_images():
 @app.route("/mount_image/<filename>", methods=["GET"])
 def get_mount_image(filename):
     return send_from_directory(config.mount_images_dir, filename)
+
+
+@app.route("/mount_image", methods=["DELETE"])
+def del_mount_images():
+    '''Bulk delete of mount images.
+
+    Body args:
+    - names -- list of strings denoting image names to delete.
+
+    Returns: list of tuples which can be either: (200, filename, '')
+    or (error_code, filename, error). There are as many elements
+    in the returned list as there are images in the request.
+    '''
+    filenames = request.get_json().get('names', [])
+    deleted = []
+    for filename in filenames:
+        mountimg = MountImage(safe_join(config.mount_images_dir, filename))
+        if not mountimg.exists():
+            deleted.append((404, filename, "image not found"))
+        try:
+            mountimg.delete()
+        except Exception as e:
+            deleted.append((500, filename, str(e)))
+    return jsonify(deleted)
+
+
+@app.route("/mount_image/<filename>", methods=["DELETE"])
+def del_mount_image(filename):
+    mountimg = MountImage(safe_join(config.mount_images_dir, filename))
+    if not mountimg.exists():
+        return abort(404, "image not found")
+    mountimg.delete()
+    return ""
 
 
 @app.route("/mount_image/<filename>/pack_adfs", methods=["PUT"])

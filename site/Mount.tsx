@@ -5,8 +5,10 @@ import { boundMethod } from 'autobind-decorator';
 
 import FileTable, { FileTableEntry, Field, Sort, createSort }
 	from './FileTable';
-import { dispatchRequestError } from './Notifier';
-import { ErrorLabel } from './ui';
+import { dispatchApiErrors, dispatchRequestError } from './Notifier';
+import { DeleteButton, ErrorLabel } from './ui';
+import Section from './Section';
+import { Actions, ActionSet } from './Actions';
 
 
 const enum MountStatus {
@@ -42,22 +44,33 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	render() {
-		return (<div className="mount">
+		return (<Section title="Mounting" className="mount">
 			<MountStatusDisplay {...this.state} />
 			<span className="mount__imageName">{this.state.mountedImageName}</span>
 			<Listing listing={this.state.imageContentsListing} />
-			<MountActions mountStatus={this.state.mountStatus}
-				images={this.state.imagesSelection}
-				onMount={this.mount}
-				onUnmount={this.unmount}
-				/>
+			<Actions>
+				<ActionSet>
+					<MountActions mountStatus={this.state.mountStatus}
+						images={this.state.imagesSelection}
+						onMount={this.mount}
+						onUnmount={this.unmount}
+					/>
+				</ActionSet>
+				<ActionSet right={true}>
+					<DeleteButton
+						disabled={this.state.imagesSelection.length == 0}
+						onClick={this.deleteSelected}
+					/>
+				</ActionSet>
+			</Actions>
 			<FileTable listing={this.state.imagesListing}
 				onHeaderClick={this.onImagesHeaderClick}
 				sort={this.state.sortImages}
 				fileLinkPrefix="/mount_image/"
+				selected={this.state.imagesSelection}
 				onSelected={this.onImagesSelected}
 				/>
-		</div>);
+		</Section>);
 	}
 
 	componentDidMount() {
@@ -72,6 +85,7 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	private refresh(): void {
+		this.setState({})
 		request.get("/mount").end((err, res) => {
 			dispatchRequestError(err);
 			let mountStatus: MountStatus = null;
@@ -129,6 +143,19 @@ export default class Mount extends Component<MountProps, MountState> {
 	@boundMethod
 	private onImagesSelected(images: string[]) {
 		this.setState({imagesSelection: images});
+	}
+
+	@boundMethod
+	private deleteSelected() {
+		request.delete("/mount_image")
+			.send({names: this.state.imagesSelection})
+			.end((err, res) => {
+				dispatchRequestError(err);
+				if (res.body)
+					dispatchApiErrors('Delete images', res.body);
+				this.setState({imagesSelection: []})
+				this.refresh();
+			});
 	}
 }
 

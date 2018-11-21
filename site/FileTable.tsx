@@ -43,22 +43,22 @@ interface FileTableProps {
 	showSize: boolean,
 	onHeaderClick?: (field: Field) => void,
 	onSelected?: (entries: string[]) => void,
+	selected: string[],
 	sort: Sort,
 	fileLinkPrefix?: string
 }
 
 interface FileTableState {
-	selected: string[],
 	selectedAll: boolean
 }
 
 export default class FileTable extends Component<FileTableProps, FileTableState> {
 	public static defaultProps: Partial<FileTableProps> = {
-		showSize: true
+		showSize: true,
+		selected: []
 	}
 
 	state: Readonly<FileTableState> = {
-		selected: [],
 		selectedAll: false
 	}
 
@@ -79,7 +79,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 		}
 		return (
 			<table className="fileTable">
-				<Header {...this.props} selected={this.state.selectedAll} onSelected={this.onSelectAll} />
+				<Header {...this.props} selectedAll={this.state.selectedAll} onSelected={this.onSelectAll} />
 				<tbody>
 					{rows}
 				</tbody>
@@ -88,7 +88,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 	}
 
 	private isSelected(name: string): boolean {
-		return this.state.selected.indexOf(name) > -1;
+		return this.props.selected && this.props.selected.indexOf(name) > -1;
 	}
 
 	@boundMethod
@@ -97,7 +97,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 		const selected: string[] = select ?
 			this.props.listing.map(e => e.name) :
 			[];
-		this.setState({selected: selected, selectedAll: select})
+		this.setState({selectedAll: select})
 		this.callbackSelected(selected);
 	}
 
@@ -107,14 +107,13 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 	}
 
 	private select(name: string): void {
-		const selected = this.state.selected;
+		const selected = this.props.selected;
 		const idx: number = selected.indexOf(name);
 		if (idx == -1) {
 			selected.push(name);
 		} else {
 			selected.splice(idx, 1);
 		}
-		this.setState({selected: selected});
 		this.callbackSelected(selected);
 	}
 
@@ -125,7 +124,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 }
 
 interface HeaderProps extends FileTableProps {
-	selected: boolean,
+	selectedAll: boolean,
 	onSelected: () => void
 }
 
@@ -145,7 +144,7 @@ class Header extends Component<HeaderProps> {
 			<tr>
 				<th>
 					<input name="selectAll" type="checkbox"
-						checked={this.props.selected}
+						checked={this.props.selectedAll}
 						onChange={this.props.onSelected} />
 				</th>
 				<HeaderCell {...headerProps} field={Field.Name} label="Name" />

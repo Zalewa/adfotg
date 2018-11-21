@@ -6,6 +6,7 @@ import { boundMethod } from 'autobind-decorator';
 import FileTable, { FileTableEntry, Field, Sort, createSort }
 from './FileTable';
 import { dispatchRequestError } from './Notifier';
+import Section from './Section';
 
 interface ImageLibraryProps {
 	onCreateImage: (adfs: string[]) => void,
@@ -26,14 +27,15 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	}
 
 	render() {
-		return (<div>
+		return (<Section title="ADFs" className="imageLibrary">
 			<button onClick={() => this.props.onCreateImage(this.state.selection)}
 				disabled={this.state.selection.length == 0}>Create Mount Image</button>
 			<FileTable listing={this.state.listing}
 				showSize={false} onHeaderClick={this.onHeaderClick}
+				selected={this.state.selection}
 				onSelected={this.onImagesSelected}
 				sort={this.state.sort} fileLinkPrefix="/adf/" />
-		</div>);
+		</Section>);
 	}
 
 	componentDidMount() {

@@ -6,6 +6,7 @@ import { boundMethod } from 'autobind-decorator';
 
 import FileTable, { FileTableEntry, Field, Sort, createSort } from './FileTable';
 import { dispatchRequestError } from './Notifier';
+import Section from './Section';
 
 
 interface UploaderProps {
@@ -25,13 +26,13 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 
 	render() {
 		return (
-			<div className="uploader">
+			<Section title="Upload Zone" className="uploader">
 				<UploadZone onUpload={this.onUpload} />
 				<FileTable listing={this.state.listing}
 					fileLinkPrefix="/upload/"
 					onHeaderClick={this.onHeaderClick}
 					sort={this.state.sort} />
-			</div>
+			</Section>
 		);
 	}
 

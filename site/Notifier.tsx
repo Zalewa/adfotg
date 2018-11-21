@@ -13,6 +13,8 @@ interface Note {
 	key?: number
 }
 
+type ApiResult = [number, string, string];
+
 let __nextNoteId: number = 1;
 
 /**
@@ -22,7 +24,7 @@ export function dispatchRequestError(err: Error) {
 	if (err) {
 		let res: Response = (err as any).response;
 		let message: string;
-		if (res.body.error) {
+		if (res.body && res.body.error) {
 			message = res.body.error;
 		} else {
 			message = err.toString();
@@ -32,6 +34,18 @@ export function dispatchRequestError(err: Error) {
 			message: res.error.message + " -- " + message
 		});
 	}
+}
+
+export function dispatchApiErrors(title: string, apiResults: ApiResult[]) {
+	apiResults.forEach((res: ApiResult) => {
+		const [ code, label, message ] = res;
+		if (code != 200) {
+			dispatch({
+				type: NoteType.Error,
+				message: title + " -- " + label + " -- " + message
+			});
+		}
+	});
 }
 
 export function dispatchError(e: Error) {
