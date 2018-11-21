@@ -2,6 +2,7 @@
 *.pyo
 __pycache__
 
+adfotg.egg-info/
 node_modules/
 site/dist/
 npm-debug.log
