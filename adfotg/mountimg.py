@@ -122,7 +122,7 @@ class MountImage:
 
     def _create(self, size=64 * 1024 * 1024):
         with open(self._imagefile, 'wb') as f:
-            f.write('\0' * size)
+            f.write(b'\0' * size)
         subprocess.check_call(['mkdosfs', self._imagefile])
 
 

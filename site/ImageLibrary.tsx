@@ -27,9 +27,11 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 
 	render() {
 		return (<div>
-			<button onClick={() => this.props.onCreateImage(this.state.selection)}>Create Mount Image</button>
+			<button onClick={() => this.props.onCreateImage(this.state.selection)}
+				disabled={this.state.selection.length == 0}>Create Mount Image</button>
 			<FileTable listing={this.state.listing}
 				showSize={false} onHeaderClick={this.onHeaderClick}
+				onSelected={this.onImagesSelected}
 				sort={this.state.sort} fileLinkPrefix="/adf/" />
 		</div>);
 	}
@@ -47,6 +49,11 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	@boundMethod
 	private onHeaderClick(field: Field) {
 		this.refresh(createSort(field, this.state.sort));
+	}
+
+	@boundMethod
+	private onImagesSelected(entries: string[]) {
+		this.setState({selection: entries});
 	}
 
 	private refresh(sort: Sort) {

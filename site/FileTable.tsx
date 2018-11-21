@@ -42,6 +42,7 @@ interface FileTableProps {
 	listing: FileTableEntry[]
 	showSize: boolean,
 	onHeaderClick?: (field: Field) => void,
+	onSelected?: (entries: string[]) => void,
 	sort: Sort,
 	fileLinkPrefix?: string
 }
@@ -97,6 +98,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 			this.props.listing.map(e => e.name) :
 			[];
 		this.setState({selected: selected, selectedAll: select})
+		this.callbackSelected(selected);
 	}
 
 	@boundMethod
@@ -113,6 +115,12 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 			selected.splice(idx, 1);
 		}
 		this.setState({selected: selected});
+		this.callbackSelected(selected);
+	}
+
+	private callbackSelected(entries: string[]) {
+		if (this.props.onSelected)
+			this.props.onSelected(entries)
 	}
 }
 

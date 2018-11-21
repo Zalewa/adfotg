@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { Component } from 'react';
 
+export const ErrorLabel = (props: {error: Error}) => {
+	return <div className="errorLabel">
+		{props.error.toString()}
+	</div>
+}
+
 interface LabelledProps {
 	label: string,
 	contents: string|number

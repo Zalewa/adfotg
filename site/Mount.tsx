@@ -4,8 +4,9 @@ import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 import FileTable, { FileTableEntry, Field, Sort, createSort }
-from './FileTable';
+	from './FileTable';
 import { dispatchRequestError } from './Notifier';
+import { ErrorLabel } from './ui';
 
 
 const enum MountStatus {
@@ -13,6 +14,10 @@ const enum MountStatus {
 	Unmounted = "unmounted",
 	NoImage = "noimage",
 	BadImage = "badimage"
+}
+
+interface MountProps {
+	refresh: boolean
 }
 
 interface MountState {
@@ -24,7 +29,7 @@ interface MountState {
 	sortImages: Sort
 }
 
-export default class Mount extends Component<{}, MountState> {
+export default class Mount extends Component<MountProps, MountState> {
 	readonly state: MountState = {
 		mountStatus: null,
 		error: null,
@@ -55,6 +60,13 @@ export default class Mount extends Component<{}, MountState> {
 	componentDidMount() {
 		this.refresh();
 		this.refreshImages(this.state.sortImages);
+	}
+
+	componentWillReceiveProps(props: MountProps) {
+		if (this.props.refresh !== props.refresh) {
+			this.refresh();
+			this.refreshImages(this.state.sortImages);
+		}
 	}
 
 	private refresh(): void {
@@ -131,17 +143,70 @@ export default class Mount extends Component<{}, MountState> {
 }
 
 export interface CreateMountImageProps {
-	adfs: string[]
+	adfs: string[],
+	onDone?: ()=>void
 }
 
-export class CreateMountImage extends React.Component<CreateMountImageProps> {
+interface CreateMountImageState {
+	error: Error,
+	imageName: string
+}
+
+export class CreateMountImage extends React.Component<CreateMountImageProps, CreateMountImageState> {
+	readonly state: CreateMountImageState = {
+		error: null,
+		imageName: ""
+	}
+
 	render() {
 		return (<div className="createMountImage">
 			<span>Create Mount Image with following ADFs:</span>
-			<Listing listing={this.props.adfs} />
-			<input type="text" />
-			<input type="button" value="Create" />
-		</div>)
+			<Listing listing={this.sortedAdfs()} />
+			<input autoFocus type="text" value={this.state.imageName}
+				onChange={e => this.onNameChange(e.target.value)}
+				onKeyPress={e => {
+					if (e.key === "Enter") {
+						this.create();
+					}
+				}} />
+			<input type="button" value="Create" onClick={this.create}
+				disabled={this.state.imageName.length == 0} />
+			{this.errorWidget()}
+		</div>);
+	}
+
+	private sortedAdfs(): string[] {
+		let cloned = this.props.adfs.slice(0);
+		cloned.sort((a: string, b: string) => a.localeCompare(b));
+		return cloned;
+	}
+
+	private errorWidget(): JSX.Element {
+		if (this.state.error) {
+			return <ErrorLabel error={this.state.error} />;
+		}
+		return null;
+	}
+
+	@boundMethod
+	private create(): void {
+		if (!this.state.imageName)
+			return;
+		request.put("/mount_image/" + this.state.imageName + "/pack_adfs")
+			.send({adfs: this.sortedAdfs()})
+			.end((err, res) => {
+				if (err) {
+					this.setState({error: err});
+				} else {
+					if (this.props.onDone)
+						this.props.onDone();
+				}
+			});
+	}
+
+	@boundMethod
+	private onNameChange(value: string): void {
+		this.setState({imageName: value});
 	}
 }
 

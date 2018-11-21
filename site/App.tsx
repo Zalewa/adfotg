@@ -7,6 +7,7 @@ import * as request from 'superagent';
 import ImageLibrary from './ImageLibrary';
 import Mount, { CreateMountImage, CreateMountImageProps } from './Mount';
 import Notifier from './Notifier';
+import Overlay from './Overlay';
 import Title from './Title';
 import Uploader from './Uploader';
 
@@ -33,8 +34,8 @@ export default class App extends Component<{}, AppState> {
 				{this.getOverlayWidget()}
 				<Title />
 				<Notifier />
-				<Uploader onUpload={this.onUpload} />
-				<Mount />
+				<Uploader onUpload={this.promptRefresh} />
+				<Mount refresh={this.state.refreshSwitch} />
 				<ImageLibrary refresh={this.state.refreshSwitch} onCreateImage={this.onCreateImage} />
 			</ErrorBoundary>);
 	}
@@ -47,7 +48,8 @@ export default class App extends Component<{}, AppState> {
 	private getOverlayInnerWidget(): JSX.Element {
 		switch (this.state.view) {
 			case View.CreateMountImage:
-				return <CreateMountImage {...this.state.viewProps} />;
+				return <CreateMountImage {...this.state.viewProps}
+					onDone={this.returnToMain} />;
 			default:
 				return null;
 		}
@@ -64,10 +66,19 @@ export default class App extends Component<{}, AppState> {
 	}
 
 	@boundMethod
-	private onUpload(): void {
+	private promptRefresh(): void {
 		this.setState({
 			refreshSwitch: !this.state.refreshSwitch
 		})
+	}
+
+	@boundMethod
+	private returnToMain(): void {
+		this.setState({
+			view: View.Main,
+			viewProps: null
+		});
+		this.promptRefresh();
 	}
 }
 
@@ -98,18 +109,5 @@ class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
 		}
 
 		return this.props.children;
-	}
-}
-
-interface OverlayProps {
-	onClose: ()=>void
-}
-
-class Overlay extends React.Component<OverlayProps> {
-	render() {
-		return <div className="overlay">
-			<button className="overlay__close" onClick={this.props.onClose}>X</button>
-			{this.props.children}
-		</div>;
 	}
 }

@@ -2,7 +2,7 @@ from . import app
 from . import adf, mountimg, storage, version
 from .config import config
 from .error import AdfotgError
-from .mountimg import Mount
+from .mountimg import Mount, MountImage
 
 from flask import abort, jsonify, request, safe_join, send_from_directory
 
@@ -159,7 +159,23 @@ def mount_pack_flash_drive_image(filename):
     - adfs -- list of ADFs to put into the image.
       Names must be as returned by GET /adf.
     '''
-    pass
+    args = request.get_json()
+    adfs = args.get("adfs")
+    if not adfs:
+        return abort(400, "no ADFs specified")
+    adfs_paths = [
+        safe_join(config.adf_dir, adf)
+        for adf in adfs
+    ]
+    for adf_, adf_path in zip(adfs, adfs_paths):
+        if not os.path.isfile(adf_path):
+            return abort(400, "ADF '{}' not found".format(adf_))
+    imagefile = safe_join(config.mount_images_dir, filename)
+    image = MountImage(imagefile)
+    if image.exists():
+        return abort(400, "image '{}' already exists".format(filename))
+    image.pack(adfs_paths)
+    return ""
 
 
 @app.route("/version")
