@@ -3,5 +3,8 @@
 		"@babel/react",
 		"@babel/typescript",
 		["@babel/env", { "modules": false }]
+	],
+	"plugins": [
+		["@babel/plugin-proposal-decorators", { "legacy": true }],
 	]
 }

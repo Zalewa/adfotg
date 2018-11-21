@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { ResponseError } from 'superagent';
+import { boundMethod } from 'autobind-decorator';
 
 enum NoteType {
 	Error = "error"
@@ -41,16 +42,10 @@ interface NotifierState {
 }
 
 export default class Notifier extends Component<{}, NotifierState> {
-	private boundNotify: (e: CustomEvent<Note>) => void;
-
-	constructor(props: {}) {
-		super(props);
-		this.onClose = this.onClose.bind(this);
-		this.onNotify = this.onNotify.bind(this);
-		this.state = {
-			notes: []
-		}
+	readonly state: NotifierState = {
+		notes: []
 	}
+	private boundNotify: (e: CustomEvent<Note>) => void;
 
 	componentDidMount() {
 		window.addEventListener("__notify", this.onNotify);
@@ -71,12 +66,14 @@ export default class Notifier extends Component<{}, NotifierState> {
 		</div>);
 	}
 
+	@boundMethod
 	onClose(key: number) {
 		let notes = this.state.notes;
 		notes = notes.filter(note => note.key != key);
 		this.setState({notes: notes});
 	}
 
+	@boundMethod
 	onNotify(e: CustomEvent<Note>) {
 		let notes = this.state.notes;
 		notes.push(e.detail);

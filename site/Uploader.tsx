@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
+import { boundMethod } from 'autobind-decorator';
 
 import FileTable, { FileTableEntry, Field, Sort, createSort } from './FileTable';
 import { dispatchRequestError } from './Notifier';
@@ -22,19 +23,14 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 		sort: createSort(Field.Mtime)
 	}
 
-	constructor(props: UploaderProps) {
-		super(props);
-		this.onUpload = this.onUpload.bind(this);
-	}
-
 	render() {
-		const onHeaderClick: (field: Field) => void = this.onHeaderClick.bind(this);
 		return (
 			<div className="uploader">
 				<UploadZone onUpload={this.onUpload} />
 				<FileTable listing={this.state.listing}
 					fileLinkPrefix="/upload/"
-					onHeaderClick={onHeaderClick} sort={this.state.sort} />
+					onHeaderClick={this.onHeaderClick}
+					sort={this.state.sort} />
 			</div>
 		);
 	}
@@ -43,10 +39,12 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 		this.refreshUploads(this.state.sort);
 	}
 
+	@boundMethod
 	private onHeaderClick(field: Field): void {
 		this.refreshUploads(createSort(field, this.state.sort));
 	}
 
+	@boundMethod
 	private onUpload(): void {
 		this.refreshUploads(this.state.sort);
 		this.props.onUpload();
@@ -79,13 +77,14 @@ class UploadZone extends Component<UploadZoneProps> {
 	render() {
 		return (
 			<div className="uploadzone">
-				<Dropzone onDrop={this.onDrop.bind(this)}>
+				<Dropzone onDrop={this.onDrop}>
 					<div>Drag & drop or click to select files to upload.</div>
 				</Dropzone>
 			</div>
 		);
 	}
 
+	@boundMethod
 	onDrop(accepted: File[], rejected: File[]): void {
 		console.log(accepted); // XXX
 		console.log(rejected); // XXX

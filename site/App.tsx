@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 import Dropzone from 'react-dropzone';
+import { boundMethod } from 'autobind-decorator';
 import * as request from 'superagent';
 
 import ImageLibrary from './ImageLibrary';
@@ -24,12 +25,6 @@ export default class App extends Component<{}, AppState> {
 	readonly state: AppState = {
 		refreshSwitch: false,
 		view: View.Main
-	}
-
-	constructor(props: {}) {
-		super(props);
-		this.onCreateImage = this.onCreateImage.bind(this);
-		this.onUpload = this.onUpload.bind(this);
 	}
 
 	render () {
@@ -58,6 +53,7 @@ export default class App extends Component<{}, AppState> {
 		}
 	}
 
+	@boundMethod
 	private onCreateImage(adfs: string[]): void {
 		this.setState({
 			view: View.CreateMountImage,
@@ -67,6 +63,7 @@ export default class App extends Component<{}, AppState> {
 		})
 	}
 
+	@boundMethod
 	private onUpload(): void {
 		this.setState({
 			refreshSwitch: !this.state.refreshSwitch

@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"outDir": "./site/dist/",
+		"experimentalDecorators": true,
 		"sourceMap": true,
 		"noImplicitAny": true,
 		"module": "commonjs",

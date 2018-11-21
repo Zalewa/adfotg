@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Component } from 'react';
 import * as request from 'superagent';
+import { boundMethod } from 'autobind-decorator';
 
 import FileTable, { FileTableEntry, Field, Sort, createSort }
-	from './FileTable';
+from './FileTable';
 import { dispatchRequestError } from './Notifier';
 
 interface ImageLibraryProps {
@@ -25,11 +26,10 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	}
 
 	render() {
-		const onHeaderClick: (field: Field) => void = this.onHeaderClick.bind(this);
 		return (<div>
 			<button onClick={() => this.props.onCreateImage(this.state.selection)}>Create Mount Image</button>
 			<FileTable listing={this.state.listing}
-				showSize={false} onHeaderClick={onHeaderClick}
+				showSize={false} onHeaderClick={this.onHeaderClick}
 				sort={this.state.sort} fileLinkPrefix="/adf/" />
 		</div>);
 	}
@@ -44,6 +44,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 		}
 	}
 
+	@boundMethod
 	private onHeaderClick(field: Field) {
 		this.refresh(createSort(field, this.state.sort));
 	}

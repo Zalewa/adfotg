@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 import * as request from 'superagent';
+import { boundMethod } from 'autobind-decorator';
 
 import FileTable, { FileTableEntry, Field, Sort, createSort }
 from './FileTable';
@@ -31,14 +32,6 @@ export default class Mount extends Component<{}, MountState> {
 		imageContentsListing: [],
 		imagesListing: [],
 		sortImages: createSort(Field.Name)
-	}
-
-	constructor(props: {}) {
-		super(props)
-		this.mount = this.mount.bind(this);
-		this.unmountDiscard = this.unmountDiscard.bind(this);
-		this.unmountSave = this.unmountSave.bind(this);
-		this.onImagesHeaderClick = this.onImagesHeaderClick.bind(this);
 	}
 
 	render() {
@@ -99,6 +92,7 @@ export default class Mount extends Component<{}, MountState> {
 		})
 	}
 
+	@boundMethod
 	private mount(): void {
 		// TODO we need to pass the selected image to this method somehow
 		request.post("/mount")
@@ -110,10 +104,12 @@ export default class Mount extends Component<{}, MountState> {
 			});
 	}
 
+	@boundMethod
 	private unmountDiscard(): void {
 		this.unmount("discard");
 	}
 
+	@boundMethod
 	private unmountSave(): void {
 		this.unmount("save");
 	}
@@ -128,6 +124,7 @@ export default class Mount extends Component<{}, MountState> {
 			});
 	}
 
+	@boundMethod
 	private onImagesHeaderClick(field: Field) {
 		this.refreshImages(createSort(field, this.state.sortImages));
 	}

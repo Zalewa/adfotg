@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Component, PureComponent } from 'react';
+import { boundMethod } from 'autobind-decorator';
 
 import { LinkText, formatDate, formatSize } from './ui';
 
@@ -60,12 +61,6 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 		selectedAll: false
 	}
 
-	constructor(props: FileTableProps) {
-		super(props);
-		this.onSelect = this.onSelect.bind(this);
-		this.onSelectAll = this.onSelectAll.bind(this);
-	}
-
 	render() {
 		let rows: JSX.Element[] = [];
 		if (this.props.listing) {
@@ -95,6 +90,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 		return this.state.selected.indexOf(name) > -1;
 	}
 
+	@boundMethod
 	private onSelectAll() {
 		const select: boolean = !this.state.selectedAll;
 		const selected: string[] = select ?
@@ -103,6 +99,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 		this.setState({selected: selected, selectedAll: select})
 	}
 
+	@boundMethod
 	private onSelect(e: React.ChangeEvent<HTMLInputElement>): void {
 		this.select(e.target.name);
 	}

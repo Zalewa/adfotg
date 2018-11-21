@@ -14,9 +14,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",
+    "@babel/plugin-proposal-decorators": "^7.1.6",
     "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.1.0",
+    "autobind-decorator": "^2.3.1",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.4",
     "css-loader": "^1.0.1",
