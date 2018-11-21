@@ -92,12 +92,20 @@ class MountImage:
     def exists(self):
         return os.path.isfile(self._imagefile)
 
+    def is_valid(self):
+        try:
+            self.list()
+            return True
+        except AdfotgError:
+            return False
+
     def list(self):
         p = subprocess.Popen(['mdir', '-b', '-i', self._imagefile],
-                             stdout=subprocess.PIPE)
-        stdout, _ = p.communicate()
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = p.communicate()
         if p.wait() != 0:
-            raise AdfotgError("'mdir' ended with non-zero exit code")
+            raise AdfotgError("'mdir' ended with non-zero exit code: {}".format(
+                stderr))
         stdout = stdout.decode('utf-8')
         # Crop the leading '::/' from the output.
         return [entry[len("::/"):]

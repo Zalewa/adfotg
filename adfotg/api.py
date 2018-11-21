@@ -125,7 +125,10 @@ def get_mounted_flash_drive():
 
 @app.route("/mount/<filename>", methods=["POST"])
 def mount_flash_drive(filename):
-    mount = Mount(safe_join(config.mount_images_dir, filename))
+    imagefile = safe_join(config.mount_images_dir, filename)
+    if not MountImage(imagefile).is_valid():
+        return abort(500, "tried to mount an invalid mass storage image")
+    mount = Mount(imagefile)
     mount.mount()
     return ""
 

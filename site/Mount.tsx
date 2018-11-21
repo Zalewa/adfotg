@@ -26,6 +26,7 @@ interface MountState {
 	mountedImageName: string,
 	imageContentsListing: string[],
 	imagesListing: FileTableEntry[],
+	imagesSelection: string[],
 	sortImages: Sort
 }
 
@@ -36,6 +37,7 @@ export default class Mount extends Component<MountProps, MountState> {
 		mountedImageName: "",
 		imageContentsListing: [],
 		imagesListing: [],
+		imagesSelection: [],
 		sortImages: createSort(Field.Name)
 	}
 
@@ -45,14 +47,15 @@ export default class Mount extends Component<MountProps, MountState> {
 			<span className="mount__imageName">{this.state.mountedImageName}</span>
 			<Listing listing={this.state.imageContentsListing} />
 			<MountActions mountStatus={this.state.mountStatus}
+				images={this.state.imagesSelection}
 				onMount={this.mount}
-				onUnmountAndDiscard={this.unmountDiscard}
-				onUnmountAndSave={this.unmountSave}
+				onUnmount={this.unmount}
 				/>
 			<FileTable listing={this.state.imagesListing}
 				onHeaderClick={this.onImagesHeaderClick}
 				sort={this.state.sortImages}
 				fileLinkPrefix="/mount_image/"
+				onSelected={this.onImagesSelected}
 				/>
 		</div>);
 	}
@@ -65,7 +68,6 @@ export default class Mount extends Component<MountProps, MountState> {
 	componentWillReceiveProps(props: MountProps) {
 		if (this.props.refresh !== props.refresh) {
 			this.refresh();
-			this.refreshImages(this.state.sortImages);
 		}
 	}
 
@@ -84,6 +86,7 @@ export default class Mount extends Component<MountProps, MountState> {
 				imageContentsListing: res.body.listing
 			});
 		})
+		this.refreshImages(this.state.sortImages);
 	}
 
 	private refreshImages(sort: Sort): void {
@@ -105,40 +108,33 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	@boundMethod
-	private mount(): void {
-		// TODO we need to pass the selected image to this method somehow
-		request.post("/mount")
-			.end((err, res) => {
-				if (res.error) {
-					dispatchRequestError(res.error);
-				}
-				this.refresh();
-			});
+	private mount(image: string): void {
+		request.post("/mount/" + image).end((err, res) => {
+			if (res.error) {
+				dispatchRequestError(res.error);
+			}
+			this.refresh();
+		});
 	}
 
 	@boundMethod
-	private unmountDiscard(): void {
-		this.unmount("discard");
-	}
-
-	@boundMethod
-	private unmountSave(): void {
-		this.unmount("save");
-	}
-
-	private unmount(how: string): void {
-		request.post("/unmount").send({how: how}).end(
-			(err, res) => {
-				if (res.error) {
-					dispatchRequestError(res.error);
-				}
-				this.refresh();
-			});
+	private unmount(): void {
+		request.post("/unmount").end((err, res) => {
+			if (res.error) {
+				dispatchRequestError(res.error);
+			}
+			this.refresh();
+		});
 	}
 
 	@boundMethod
 	private onImagesHeaderClick(field: Field) {
 		this.refreshImages(createSort(field, this.state.sortImages));
+	}
+
+	@boundMethod
+	private onImagesSelected(images: string[]) {
+		this.setState({imagesSelection: images});
 	}
 }
 
@@ -242,10 +238,10 @@ class MountStatusDisplay extends Component<MountStatusProps> {
 }
 
 interface MountActionsProps {
+	images: string[],
 	mountStatus: MountStatus,
-	onMount: ()=>void,
-	onUnmountAndDiscard: ()=>void,
-	onUnmountAndSave: ()=>void
+	onMount: (image: string)=>void,
+	onUnmount: ()=>void,
 }
 
 class MountActions extends React.Component<MountActionsProps> {
@@ -272,33 +268,26 @@ class MountActions extends React.Component<MountActionsProps> {
 
 	private mountedActions(): JSX.Element[] {
 		return [
-			<button key="unmountsave" onClick={this.props.onUnmountAndSave}>Unmount & Save</button>,
-			<button key="unmountdiscard" onClick={this.props.onUnmountAndDiscard}>Unmount & Discard</button>
+			<button key="unmount" onClick={this.props.onUnmount}>Unmount</button>,
 		];
 	}
 
 	private unmountedActions(): JSX.Element[] {
 		return [
-			<button key="mount" onClick={this.props.onMount}>Mount</button>,
-			<button key="save" onClick={this.props.onUnmountAndSave}>Save & Discard</button>,
-			this.discardButton()
+			<button key="mount"
+				onClick={() => this.props.onMount(this.props.images[0])}
+				disabled={this.props.images.length != 1}>Mount</button>
 		];
 	}
 
 	private noImageActions(): JSX.Element[] {
 		return [
-			<button key="mountAdfs" onClick={this.props.onMount}>Mount selected ADFs</button>
-		];
+			<button key="unmount" onClick={this.props.onUnmount}>Force Unmount</button>
+		]
 	}
 
 	private badImageActions(): JSX.Element[] {
-		return [
-			this.discardButton()
-		];
-	}
-
-	private discardButton(): JSX.Element {
-		return <button key="discard" onClick={this.props.onUnmountAndDiscard}>Discard</button>
+		return [];
 	}
 }
 
