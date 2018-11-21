@@ -7,7 +7,8 @@ import FileTable, { FileTableEntry, Field, Sort, createSort }
 import { dispatchRequestError } from './Notifier';
 
 interface ImageLibraryProps {
-	onCreateImage: (adfs: string[]) => void
+	onCreateImage: (adfs: string[]) => void,
+	refresh: boolean
 }
 
 interface ImageLibraryState {
@@ -35,6 +36,12 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 
 	componentDidMount() {
 		this.refresh(this.state.sort);
+	}
+
+	componentWillReceiveProps(props: ImageLibraryProps) {
+		if (this.props.refresh !== props.refresh) {
+			this.refresh(this.state.sort);
+		}
 	}
 
 	private onHeaderClick(field: Field) {

@@ -15,18 +15,21 @@ enum View {
 }
 
 interface AppState {
+	refreshSwitch: boolean,
 	view: View,
 	viewProps?: CreateMountImageProps
 }
 
 export default class App extends Component<{}, AppState> {
 	readonly state: AppState = {
+		refreshSwitch: false,
 		view: View.Main
 	}
 
 	constructor(props: {}) {
 		super(props);
 		this.onCreateImage = this.onCreateImage.bind(this);
+		this.onUpload = this.onUpload.bind(this);
 	}
 
 	render () {
@@ -35,9 +38,9 @@ export default class App extends Component<{}, AppState> {
 				{this.getOverlayWidget()}
 				<Title />
 				<Notifier />
-				<Uploader />
+				<Uploader onUpload={this.onUpload} />
 				<Mount />
-				<ImageLibrary onCreateImage={this.onCreateImage} />
+				<ImageLibrary refresh={this.state.refreshSwitch} onCreateImage={this.onCreateImage} />
 			</ErrorBoundary>);
 	}
 
@@ -61,6 +64,12 @@ export default class App extends Component<{}, AppState> {
 			viewProps: {
 				adfs: adfs
 			}
+		})
+	}
+
+	private onUpload(): void {
+		this.setState({
+			refreshSwitch: !this.state.refreshSwitch
 		})
 	}
 }

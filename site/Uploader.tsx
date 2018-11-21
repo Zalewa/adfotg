@@ -6,22 +6,32 @@ import * as request from 'superagent';
 import FileTable, { FileTableEntry, Field, Sort, createSort } from './FileTable';
 import { dispatchRequestError } from './Notifier';
 
+
+interface UploaderProps {
+	onUpload: () => void
+}
+
 interface UploaderState {
 	listing: FileTableEntry[]
 	sort: Sort
 }
 
-export default class Uploader extends Component<{}, UploaderState> {
+export default class Uploader extends Component<UploaderProps, UploaderState> {
 	state: Readonly<UploaderState> = {
 		listing: [],
 		sort: createSort(Field.Mtime)
+	}
+
+	constructor(props: UploaderProps) {
+		super(props);
+		this.onUpload = this.onUpload.bind(this);
 	}
 
 	render() {
 		const onHeaderClick: (field: Field) => void = this.onHeaderClick.bind(this);
 		return (
 			<div className="uploader">
-				<UploadZone onUpload={() => this.refreshUploads(this.state.sort)} />
+				<UploadZone onUpload={this.onUpload} />
 				<FileTable listing={this.state.listing}
 					fileLinkPrefix="/upload/"
 					onHeaderClick={onHeaderClick} sort={this.state.sort} />
@@ -33,8 +43,13 @@ export default class Uploader extends Component<{}, UploaderState> {
 		this.refreshUploads(this.state.sort);
 	}
 
-	private onHeaderClick(field: Field) {
+	private onHeaderClick(field: Field): void {
 		this.refreshUploads(createSort(field, this.state.sort));
+	}
+
+	private onUpload(): void {
+		this.refreshUploads(this.state.sort);
+		this.props.onUpload();
 	}
 
 	private refreshUploads(sort: Sort) {

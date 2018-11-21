@@ -1,5 +1,5 @@
 from . import app
-from . import mountimg, storage, version
+from . import adf, mountimg, storage, version
 from .config import config
 from .error import AdfotgError
 from .mountimg import Mount
@@ -7,6 +7,7 @@ from .mountimg import Mount
 from flask import abort, jsonify, request, safe_join, send_from_directory
 
 import os
+import shutil
 import traceback
 
 
@@ -16,16 +17,13 @@ class ApiError(AdfotgError):
 
 @app.route("/upload", methods=['POST'])
 def upload():
-    # TODO
-    # 1. Detect if what we uploaded is ADF or not.
-    # 2. If ADF, put it into ADF directory.
-    # 3. If not ADF, put it into uploads directory.
-    print("what is config?", config)
-    print(request)
-    print(request.files)
     os.makedirs(config.upload_dir, exist_ok=True)
     for filename, file in request.files.items():
-        file.save(safe_join(config.upload_dir, filename))
+        dest_path = safe_join(config.upload_dir, filename)
+        file.save(dest_path)
+        if adf.is_adf_path(dest_path):
+            os.makedirs(config.adf_dir, exist_ok=True)
+            shutil.move(dest_path, safe_join(config.adf_dir, filename))
     return ""
 
 
