@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 
+import { errorToString } from './Notifier';
 
 export const DeleteButton = (props: any) => {
 	let klass: string = "deleteButton"
@@ -12,7 +13,7 @@ export const DeleteButton = (props: any) => {
 
 export const ErrorLabel = (props: {error: Error}) => {
 	return <div className="errorLabel">
-		{props.error.toString()}
+		{errorToString(props.error)}
 	</div>
 }
 

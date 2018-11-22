@@ -22,17 +22,25 @@ let __nextNoteId: number = 1;
  */
 export function dispatchRequestError(err: Error) {
 	if (err) {
-		let res: Response = (err as any).response;
-		let message: string;
-		if (res.body && res.body.error) {
-			message = res.body.error;
-		} else {
-			message = err.toString();
-		}
 		dispatch({
 			type: NoteType.Error,
-			message: res.error.message + " -- " + message
+			message: errorToString(err)
 		});
+	}
+}
+
+export function errorToString(err: Error): string {
+	let res: Response = (err as any).response;
+	let message: string;
+	if (res && res.body && res.body.error) {
+		message = res.body.error;
+	} else {
+		message = err.toString();
+	}
+	if (res) {
+		return res.error.message + " -- " + message;
+	} else {
+		return message;
 	}
 }
 

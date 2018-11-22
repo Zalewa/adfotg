@@ -4,7 +4,7 @@ from .config import config
 from .error import AdfotgError
 from .mountimg import Mount, MountImage
 
-from flask import abort, jsonify, request, safe_join, send_from_directory
+from flask import jsonify, request, safe_join, send_from_directory
 
 import os
 import shutil
@@ -128,9 +128,9 @@ def mount_flash_drive(filename):
     imagefile = safe_join(config.mount_images_dir, filename)
     mountimg = MountImage(imagefile)
     if not mountimg.exists():
-        return abort(404, "image not found")
+        return _apierr(404, "image not found")
     if not mountimg.is_valid():
-        return abort(500, "tried to mount an invalid mass storage image")
+        return _apierr(500, "tried to mount an invalid mass storage image")
     mount = Mount(imagefile)
     mount.mount()
     return ""
@@ -142,7 +142,7 @@ def unmount_flash_drive():
     if mount.state() is mountimg.MountStatus.Mounted:
         mount.unmount()
     else:
-        return abort(400, "cannot unmount as nothing is mounted")
+        return _apierr(400, "cannot unmount as nothing is mounted")
     return 'OK'
 
 
@@ -190,7 +190,7 @@ def del_mount_images():
 def del_mount_image(filename):
     mountimg = MountImage(safe_join(config.mount_images_dir, filename))
     if not mountimg.exists():
-        return abort(404, "image not found")
+        return _apierr(404, "image not found")
     mountimg.delete()
     return ""
 
@@ -205,19 +205,19 @@ def mount_pack_flash_drive_image(filename):
     args = request.get_json()
     adfs = args.get("adfs")
     if not adfs:
-        return abort(400, "no ADFs specified")
+        return _apierr(400, "no ADFs specified")
     adfs_paths = [
         safe_join(config.adf_dir, adf)
         for adf in adfs
     ]
     for adf_, adf_path in zip(adfs, adfs_paths):
         if not os.path.isfile(adf_path):
-            return abort(400, "ADF '{}' not found".format(adf_))
+            return _apierr(400, "ADF '{}' not found".format(adf_))
     os.makedirs(config.mount_images_dir, exist_ok=True)
     imagefile = safe_join(config.mount_images_dir, filename)
     image = MountImage(imagefile)
     if image.exists():
-        return abort(400, "image '{}' already exists".format(filename))
+        return _apierr(400, "image '{}' already exists".format(filename))
     image.pack(adfs_paths)
     return ""
 
@@ -234,3 +234,11 @@ def _sorting():
     sort = request.args.get("sort", "name")
     direction = request.args.get("dir", "asc")
     return sort, direction
+
+
+def _apierr(code, message):
+    return (
+        jsonify({"error": message}),
+        code,
+        {'Content-Type': 'application/json'}
+    )
