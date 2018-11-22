@@ -74,7 +74,10 @@ class Mount:
 class MountImage:
     '''Requires mtools, because 'mount' requires root and mtools don't.'''
     # TODO do we need that? How much do we need that?
-    _BUFFER_SPACE = 4 * 1024 * 1024
+    _BUFFER_SPACE = 1024 * 1024
+    _SECTORS_PER_TRACK = 32
+    _SECTOR_SIZE = 512
+    _SECTOR_ALIGNMENT = _SECTORS_PER_TRACK * _SECTOR_SIZE
 
     def __init__(self, imagefile):
         self._imagefile = imagefile
@@ -116,8 +119,10 @@ class MountImage:
         sum_size = 0
         for file in files:
             sum_size += os.path.getsize(file)
+        sum_size -= sum_size % self._SECTOR_ALIGNMENT
+        sum_size += self._BUFFER_SPACE
         self.delete()
-        self._create(size=sum_size + self._BUFFER_SPACE)
+        self._create(size=sum_size)
         for file in files:
             subprocess.check_call(['mcopy', '-i', self._imagefile,
                                    file, '::'])
