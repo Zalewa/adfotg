@@ -150,6 +150,10 @@ def unmount_flash_drive():
 def list_mount_images():
     # TODO same as list_adfs and list_uploads
     sorting = _sorting()
+    if not os.path.exists(config.mount_images_dir):
+        # App controls this directory so if it doesn't exist
+        # it's not necessarilly an error.
+        return jsonify([])
     return jsonify(storage.listdir(config.mount_images_dir, sort=sorting))
 
 
@@ -209,6 +213,7 @@ def mount_pack_flash_drive_image(filename):
     for adf_, adf_path in zip(adfs, adfs_paths):
         if not os.path.isfile(adf_path):
             return abort(400, "ADF '{}' not found".format(adf_))
+    os.makedirs(config.mount_images_dir, exist_ok=True)
     imagefile = safe_join(config.mount_images_dir, filename)
     image = MountImage(imagefile)
     if image.exists():
