@@ -4,16 +4,19 @@ import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 import FileTable, { FileTableEntry, Field, Sort, createSort }
-from './FileTable';
+	from './FileTable';
+import { CreateMountImage } from './Mount';
 import { dispatchRequestError } from './Notifier';
+import Modal from './Modal';
 import Section from './Section';
 
 interface ImageLibraryProps {
-	onCreateImage: (adfs: string[]) => void,
+	onCreatedImage: ()=>void,
 	refresh: boolean
 }
 
 interface ImageLibraryState {
+	createImage: boolean,
 	listing: FileTableEntry[],
 	selection: string[],
 	sort: Sort
@@ -21,6 +24,7 @@ interface ImageLibraryState {
 
 export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibraryState> {
 	state: Readonly<ImageLibraryState> = {
+		createImage: false,
 		listing: [],
 		selection: [],
 		sort: createSort(Field.Name)
@@ -28,7 +32,8 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 
 	render() {
 		return (<Section title="ADFs" className="imageLibrary">
-			<button onClick={() => this.props.onCreateImage(this.state.selection)}
+			{this.modal()}
+			<button onClick={this.showCreateImage}
 				disabled={this.state.selection.length == 0}>Create Mount Image</button>
 			<FileTable listing={this.state.listing}
 				showSize={false} onHeaderClick={this.onHeaderClick}
@@ -39,12 +44,12 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	}
 
 	componentDidMount() {
-		this.refresh(this.state.sort);
+		this.refresh();
 	}
 
 	componentWillReceiveProps(props: ImageLibraryProps) {
 		if (this.props.refresh !== props.refresh) {
-			this.refresh(this.state.sort);
+			this.refresh();
 		}
 	}
 
@@ -58,7 +63,31 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 		this.setState({selection: entries});
 	}
 
-	private refresh(sort: Sort) {
+	@boundMethod
+	private showCreateImage(): void {
+		this.setState({createImage: true});
+	}
+
+	private modal(): JSX.Element {
+		if (this.state.createImage) {
+			return <Modal onClose={() => this.setState({createImage: false})}>
+				<CreateMountImage adfs={this.state.selection}
+					onDone={this.onModalAccepted} />
+			</Modal>
+		}
+		return null;
+	}
+
+	@boundMethod
+	private onModalAccepted(): void {
+		this.props.onCreatedImage();
+		this.setState({createImage: false});
+	}
+
+	private refresh(sort?: Sort): void {
+		if (!sort) {
+			sort = this.state.sort;
+		}
 		request.get("/adf").query({
 			filter: '',
 			sort: sort.field,

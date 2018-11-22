@@ -5,64 +5,30 @@ import { boundMethod } from 'autobind-decorator';
 import * as request from 'superagent';
 
 import ImageLibrary from './ImageLibrary';
-import Mount, { CreateMountImage, CreateMountImageProps } from './Mount';
+import Mount from './Mount';
 import Notifier from './Notifier';
-import Overlay from './Overlay';
 import Title from './Title';
 import Uploader from './Uploader';
 
-enum View {
-	Main,
-	CreateMountImage,
-}
-
 interface AppState {
 	refreshSwitch: boolean,
-	view: View,
-	viewProps?: CreateMountImageProps
 }
 
 export default class App extends Component<{}, AppState> {
 	readonly state: AppState = {
 		refreshSwitch: false,
-		view: View.Main
 	}
 
 	render () {
 		return (
 			<ErrorBoundary>
-				{this.getOverlayWidget()}
 				<Title />
 				<Notifier />
 				<Uploader onUpload={this.promptRefresh} />
 				<Mount refresh={this.state.refreshSwitch} />
-				<ImageLibrary refresh={this.state.refreshSwitch} onCreateImage={this.onCreateImage} />
+				<ImageLibrary refresh={this.state.refreshSwitch}
+					onCreatedImage={this.promptRefresh} />
 			</ErrorBoundary>);
-	}
-
-	private getOverlayWidget(): JSX.Element {
-		const widget = this.getOverlayInnerWidget();
-		return widget ? <Overlay onClose={() => this.setState({view: View.Main})}>{widget}</Overlay> : null;
-	}
-
-	private getOverlayInnerWidget(): JSX.Element {
-		switch (this.state.view) {
-			case View.CreateMountImage:
-				return <CreateMountImage {...this.state.viewProps}
-					onDone={this.returnToMain} />;
-			default:
-				return null;
-		}
-	}
-
-	@boundMethod
-	private onCreateImage(adfs: string[]): void {
-		this.setState({
-			view: View.CreateMountImage,
-			viewProps: {
-				adfs: adfs
-			}
-		})
 	}
 
 	@boundMethod
@@ -70,15 +36,6 @@ export default class App extends Component<{}, AppState> {
 		this.setState({
 			refreshSwitch: !this.state.refreshSwitch
 		})
-	}
-
-	@boundMethod
-	private returnToMain(): void {
-		this.setState({
-			view: View.Main,
-			viewProps: null
-		});
-		this.promptRefresh();
 	}
 }
 
