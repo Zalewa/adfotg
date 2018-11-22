@@ -62,7 +62,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 				listing = res.body;
 			}
 			this.setState({
-				listing: res.body,
+				listing: listing,
 				sort: sort
 			});
 		});
