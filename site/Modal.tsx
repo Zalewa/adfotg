@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
+import { boundMethod } from 'autobind-decorator';
 
 interface ModalProps {
 	onClose: ()=>void
@@ -7,12 +8,39 @@ interface ModalProps {
 
 export default class Modal extends Component<ModalProps> {
 	render() {
-		return <div className="modal">
-			<div className="modal__display">
+		return <div className="modal" onClick={this.handleOutsideClick}>
+			<div className="modal__display" onClick={this.handleInsideClick}>
 				<button className="modal__close" onClick={this.props.onClose}>X</button>
 				{this.props.children}
 			</div>
 		</div>;
+	}
+
+	componentDidMount() {
+		window.addEventListener("keydown", this.handleKeys);
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener("keydown", this.handleKeys);
+	}
+
+	@boundMethod
+	private handleKeys(e: KeyboardEvent) {
+		if (e.keyCode == 27) {
+			this.props.onClose();
+			e.stopPropagation();
+		}
+	}
+
+	@boundMethod
+	private handleOutsideClick(e: React.MouseEvent) {
+		this.props.onClose();
+		e.stopPropagation();
+	}
+
+	@boundMethod
+	private handleInsideClick(e: React.MouseEvent) {
+		e.stopPropagation();
 	}
 }
 
