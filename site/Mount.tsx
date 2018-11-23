@@ -5,6 +5,7 @@ import { boundMethod } from 'autobind-decorator';
 
 import FileTable, { FileTableEntry, Field, Sort, createSort }
 	from './FileTable';
+import { ConfirmModal } from './Modal';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import { DeleteButton, ErrorLabel } from './ui';
 import Section from './Section';
@@ -29,7 +30,8 @@ interface MountState {
 	imageContentsListing: string[],
 	imagesListing: FileTableEntry[],
 	imagesSelection: string[],
-	sortImages: Sort
+	sortImages: Sort,
+	deleteSelected: boolean
 }
 
 export default class Mount extends Component<MountProps, MountState> {
@@ -40,11 +42,13 @@ export default class Mount extends Component<MountProps, MountState> {
 		imageContentsListing: [],
 		imagesListing: [],
 		imagesSelection: [],
-		sortImages: createSort(Field.Name)
+		sortImages: createSort(Field.Name),
+		deleteSelected: false
 	}
 
 	render() {
 		return (<Section title="Mounting" className="mount">
+			{this.state.deleteSelected && this.renderDeleteSelected()}
 			<MountStatusDisplay {...this.state} />
 			<span className="mount__imageName">{this.state.mountedImageName}</span>
 			<Listing listing={this.state.imageContentsListing} />
@@ -59,7 +63,7 @@ export default class Mount extends Component<MountProps, MountState> {
 				<ActionSet right={true}>
 					<DeleteButton
 						disabled={this.state.imagesSelection.length == 0}
-						onClick={this.deleteSelected}
+						onClick={() => this.setState({deleteSelected: true})}
 					/>
 				</ActionSet>
 			</Actions>
@@ -145,6 +149,15 @@ export default class Mount extends Component<MountProps, MountState> {
 		this.setState({imagesSelection: images});
 	}
 
+	private renderDeleteSelected(): JSX.Element {
+		return (<ConfirmModal text="Delete these mount images?"
+				onAccept={this.deleteSelected}
+				onCancel={() => this.setState({deleteSelected: false})}
+				acceptText="Delete">
+			<Listing listing={this.state.imagesSelection} />
+		</ConfirmModal>)
+	}
+
 	@boundMethod
 	private deleteSelected() {
 		request.delete("/mount_image")
@@ -153,7 +166,7 @@ export default class Mount extends Component<MountProps, MountState> {
 				dispatchRequestError(err);
 				if (res.body)
 					dispatchApiErrors('Delete images', res.body);
-				this.setState({imagesSelection: []})
+				this.setState({imagesSelection: [], deleteSelected: false})
 				this.refresh();
 			});
 	}
