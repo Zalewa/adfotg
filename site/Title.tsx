@@ -14,6 +14,7 @@ export default class Title extends Component<TitleProps> {
 		return (
 			<div className="title">
 				<h1>ADF On-The-Go</h1>
+				<a href="/help">API Help</a>
 				<VersionInfo />
 				<SpaceInfo refresh={this.props.refresh} />
 			</div>
