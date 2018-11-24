@@ -5,10 +5,18 @@ from enum import Enum
 import os
 
 
-class Field(Interpretable, Enum):
+class FileEntryField(Interpretable, Enum):
     NAME = "name"
     SIZE = "size"
     MTIME = "mtime"
+
+    @classmethod
+    def dictify(cls, name, size, mtime):
+        return {
+            cls.NAME.value: name,
+            cls.SIZE.value: size,
+            cls.MTIME.value: mtime
+        }
 
 
 class Direction(Interpretable, Enum):
@@ -21,7 +29,7 @@ class Direction(Interpretable, Enum):
 
 def listdir(dirpath, name_filter=None, sort=None):
     '''
-    sort -- tuple of (Field, Direction) enums or None
+    sort -- tuple of (FileEntryField, Direction) enums or None
     '''
     if name_filter is None:
         name_filter = _true
@@ -33,7 +41,7 @@ def listdir(dirpath, name_filter=None, sort=None):
     ]
     if sort:
         field, direction = sort
-        field = Field.interpret(field)
+        field = FileEntryField.interpret(field)
         direction = Direction.interpret(direction)
         files = list(sorted(files,
                             key=lambda f: _case_insensitive(f[field.value]),
@@ -65,11 +73,7 @@ def fs_stats(path):
 
 def _fileentry_to_dict(entry):
     stat = entry.stat()
-    return {
-        "name": entry.name,
-        "size": stat.st_size,
-        "mtime": int(stat.st_mtime)
-    }
+    return FileEntryField.dictify(entry.name, stat.st_size, int(stat.st_mtime))
 
 
 def _true(*args, **kwargs):

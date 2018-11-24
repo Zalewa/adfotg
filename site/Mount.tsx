@@ -27,9 +27,9 @@ interface MountState {
 	mountStatus: MountStatus,
 	error?: string,
 	mountedImageName: string,
-	imageContentsListing: string[],
 	imagesListing: FileTableEntry[],
 	imagesSelection: string[],
+	inspectedImage: string,
 	sortImages: Sort,
 	deleteSelected: boolean
 }
@@ -39,9 +39,9 @@ export default class Mount extends Component<MountProps, MountState> {
 		mountStatus: null,
 		error: null,
 		mountedImageName: "",
-		imageContentsListing: [],
 		imagesListing: [],
 		imagesSelection: [],
+		inspectedImage: null,
 		sortImages: createSort(Field.Name),
 		deleteSelected: false
 	}
@@ -49,9 +49,7 @@ export default class Mount extends Component<MountProps, MountState> {
 	render() {
 		return (<Section title="Mounting" className="mount">
 			{this.state.deleteSelected && this.renderDeleteSelected()}
-			<MountStatusDisplay {...this.state} />
-			<span className="mount__imageName">{this.state.mountedImageName}</span>
-			<Listing listing={this.state.imageContentsListing} />
+			{this.renderMountStatus()}
 			<Actions>
 				<ActionSet>
 					<MountActions mountStatus={this.state.mountStatus}
@@ -59,6 +57,8 @@ export default class Mount extends Component<MountProps, MountState> {
 						onMount={this.mount}
 						onUnmount={this.unmount}
 					/>
+					<button onClick={() => this.setState({inspectedImage: this.state.imagesSelection[0]}) }
+						disabled={this.state.imagesSelection.length == 0}>Inspect</button>
 				</ActionSet>
 				<ActionSet right={true}>
 					<DeleteButton
@@ -88,6 +88,16 @@ export default class Mount extends Component<MountProps, MountState> {
 		}
 	}
 
+	private renderMountStatus(): JSX.Element[] {
+		let el: JSX.Element[] = [
+			<MountStatusDisplay {...this.state} />
+		];
+		if (this.state.mountedImageName) {
+			el.push(<MountImageDetails name={this.state.mountedImageName} />);
+		}
+		return el;
+	}
+
 	private refresh(): void {
 		this.setState({})
 		request.get("/mount").end((err, res) => {
@@ -99,8 +109,7 @@ export default class Mount extends Component<MountProps, MountState> {
 			this.setState({
 				mountStatus: mountStatus,
 				error: err ? err.toString() : res.body.error,
-				mountedImageName: res.body.file,
-				imageContentsListing: res.body.listing
+				mountedImageName: res.body.file
 			});
 		})
 		this.refreshImages(this.state.sortImages);
@@ -322,5 +331,48 @@ class MountActions extends React.Component<MountActionsProps> {
 
 	private badImageActions(): JSX.Element[] {
 		return [];
+	}
+}
+
+interface MountImageDetailsProps {
+	name: string
+}
+
+interface MountImageDetailsState {
+	listing: FileTableEntry[]
+}
+
+class MountImageDetails extends Component<MountImageDetailsProps, MountImageDetailsState> {
+	readonly state: MountImageDetailsState = {
+		listing: []
+	}
+
+	render() {
+		return (<div className="imageDetails">
+			<span className="imageDetails__name">{this.props.name}</span>
+			<FileTable listing={this.state.listing} />
+		</div>);
+	}
+
+	componentDidMount() {
+		this.refresh()
+	}
+
+	componentWillReceiveProps(props: MountImageDetailsProps) {
+		if (this.props.name !== props.name) {
+			this.refresh();
+		}
+	}
+
+	private refresh(): void {
+		request.get("/mount_image/" + this.props.name + "/contents")
+				.end((err, res) => {
+			dispatchRequestError(err);
+			if (!err) {
+				this.setState({listing: res.body});
+			} else {
+				this.setState({listing: []});
+			}
+		})
 	}
 }

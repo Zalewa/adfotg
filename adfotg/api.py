@@ -192,6 +192,14 @@ def get_mount_image(filename):
     return send_from_directory(config.mount_images_dir, filename)
 
 
+@app.route("/mount_image/<filename>/contents", methods=["GET"])
+def get_mount_image_contents(filename):
+    img = MountImage(safe_join(config.mount_images_dir, filename))
+    if not img.exists():
+        return _apierr(404, "image not found")
+    return jsonify(img.list())
+
+
 @app.route("/mount_image", methods=["DELETE"])
 def del_mount_images():
     '''Bulk delete of mount images.

@@ -10,7 +10,7 @@ export const Actions = (props: any) => {
 interface ActionSetProps {
 	className?: string,
 	right?: boolean,
-	children: JSX.Element
+	children: JSX.Element[] | JSX.Element
 }
 
 export const ActionSet = (props: ActionSetProps) => {

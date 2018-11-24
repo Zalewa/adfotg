@@ -165,7 +165,7 @@ interface HeaderCellProps extends FileTableProps {
 
 const HeaderCell = (props: HeaderCellProps) => {
 	let klass = "fileTable__headerCell";
-	const sortedBy: boolean = props.sort.field == props.field;
+	const sortedBy: boolean = props.sort && props.sort.field == props.field;
 	if (sortedBy) {
 		if (props.sort.ascending)
 			klass += " fileTable__headerCell--sortedByAsc";

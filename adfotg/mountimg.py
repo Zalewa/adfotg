@@ -1,8 +1,10 @@
 from .error import ActionError, AdfotgError
+from .storage import FileEntryField
 
 from enum import Enum
 import os
 import platform
+import time
 import shlex
 import subprocess
 
@@ -103,17 +105,18 @@ class MountImage:
             return False
 
     def list(self):
-        p = subprocess.Popen(['mdir', '-b', '-i', self._imagefile],
+        '''
+        List contents of the image as FileEntry-compatible list
+        of dicts.
+        '''
+        p = subprocess.Popen(['mdir', '-i', self._imagefile],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
         if p.wait() != 0:
             raise AdfotgError("'mdir' ended with non-zero exit code: {}".format(
                 stderr))
         stdout = stdout.decode('utf-8')
-        # Crop the leading '::/' from the output.
-        return [entry[len("::/"):]
-                for entry in stdout.split("\n")
-                if entry.strip()]
+        return _MdirParser().parse(stdout)
 
     def pack(self, files):
         sum_size = 0
@@ -183,6 +186,62 @@ class _FakeMount:
 
     def unmount(self):
         self._state['mounted'] = None
+
+
+class _MdirParser:
+    '''
+    Parses output like this one:
+
+      Volume in drive : has no label
+      Volume Serial Number is 6515-5815
+      Directory for ::/
+
+      BARBAR~1 ADF    901120 2018-11-24  22:44  Barbarian Plus 6.adf
+      EOBAGA~1 ADF    901120 2018-11-24  22:44  Eob AGA z ppa01.adf
+      GENESIA1 ADF    901120 2018-11-24  22:44  Genesia1.adf
+              3 files           2 703 360 bytes
+                                1 024 000 bytes free
+
+    and returns it as storage.FileEntryField compatible list of dicts.
+    '''
+    def parse(self, output):
+        listing = []
+        has_directory = False
+        for line in output.split("\n"):
+            if not line:
+                continue
+            if "::/" in line:
+                # Detect line that says "Directory for ::/"
+                has_directory = True
+                continue
+            if not has_directory:
+                # Skip until directory listing begins.
+                continue
+            try:
+                entry = self.parse_entry(line)
+            except ValueError:
+                # This may be a bad idea.
+                pass
+            else:
+                if entry is not None:
+                    listing.append(entry)
+        return listing
+
+    def parse_entry(self, line):
+        '''
+        Example entry:
+          BARBAR~1 ADF    901120 2018-11-24  22:44  Barbarian Plus 6.adf
+        '''
+        NAME_EXT_LEN = 16
+        line = line[NAME_EXT_LEN:]
+        size = int(line[:line.find(' ')])
+        line = line[line.find(' ') + 1:]
+        # Products of a drunken stupor.
+        date = line[:line.find('  ', line.find('  ') + 2)]
+        # Programmers know how to party hard.
+        name = line[len(date) + 2:]
+        timestamp = time.mktime(time.strptime(date, "%Y-%m-%d  %H:%M"))
+        return FileEntryField.dictify(name, size, int(timestamp))
 
 
 def _mk_mounter():
