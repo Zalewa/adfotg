@@ -286,6 +286,12 @@ def get_version():
     )
 
 
+@app.route("/help")
+def api_help():
+    from .apidoc import spec
+    return spec.to_text(), 200, {"Content-Type": "text/plain"}
+
+
 def _del_files(dirpath, filenames):
     deleted = []
     for filename in filenames:
