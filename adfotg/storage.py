@@ -1,5 +1,6 @@
 from .util import Interpretable
 
+from collections import namedtuple
 from enum import Enum
 import os
 
@@ -42,6 +43,24 @@ def listdir(dirpath, name_filter=None, sort=None):
 
 def unlink(filepath):
     os.unlink(filepath)
+
+
+def mount_point(path):
+    if path:
+        path = os.path.realpath(path)
+        while path and not os.path.ismount(path):
+            path = os.path.dirname(path)
+    return path
+
+
+FsStats = namedtuple('StorageStats', ['name', 'total', 'avail'])
+
+
+def fs_stats(path):
+    stat = os.statvfs(path)
+    return FsStats(path,
+                   stat.f_bsize * stat.f_blocks,
+                   stat.f_bsize * stat.f_bavail)
 
 
 def _fileentry_to_dict(entry):

@@ -22,7 +22,7 @@ export default class App extends Component<{}, AppState> {
 	render () {
 		return (
 			<ErrorBoundary>
-				<Title />
+				<Title refresh={this.state.refreshSwitch} />
 				<Notifier />
 				<Uploader onUpload={this.promptRefresh} />
 				<Mount refresh={this.state.refreshSwitch} />

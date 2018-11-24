@@ -252,6 +252,32 @@ def mount_pack_flash_drive_image(filename):
     return ""
 
 
+@app.route("/filesystem", methods=['GET'])
+def get_free_space():
+    '''Details of file-system roots for all file-systems used by the app.
+
+    Returned is a list of file-systems that are used for storage by
+    the application. Each entry on the list contains:
+
+    - name -- string; mount point of the filesystem
+    - total -- int; total space in bytes
+    - avail -- int; space available for use in bytes
+    '''
+    paths = [
+        config.adf_dir,
+        config.mount_images_dir,
+        config.upload_dir
+    ]
+    mount_points = set([storage.mount_point(p) for p in paths])
+    fs_stats = [storage.fs_stats(mp) for mp in mount_points]
+    fs_stats = sorted(fs_stats, key=lambda ss: ss.name)
+    return jsonify([{
+        'name': fs.name,
+        'total': fs.total,
+        'avail': fs.avail
+    } for fs in fs_stats])
+
+
 @app.route("/version")
 def get_version():
     return jsonify(
