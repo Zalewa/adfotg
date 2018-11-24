@@ -3,13 +3,13 @@ import { Component } from 'react';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
+import { Actions, ActionSet } from './Actions';
 import FileTable, { FileTableEntry, Field, Sort, createSort }
 	from './FileTable';
 import { ConfirmModal } from './Modal';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
-import { DeleteButton, ErrorLabel } from './ui';
 import Section from './Section';
-import { Actions, ActionSet } from './Actions';
+import { DeleteButton, ErrorLabel, Listing } from './ui';
 
 
 const enum MountStatus {
@@ -322,23 +322,5 @@ class MountActions extends React.Component<MountActionsProps> {
 
 	private badImageActions(): JSX.Element[] {
 		return [];
-	}
-}
-
-class Listing extends Component<{listing: string[]}> {
-	render() {
-		let lines: JSX.Element[] = []
-		if (this.props.listing) {
-			this.props.listing.forEach(entry => {
-				lines.push(<li key={entry}>{entry}</li>);
-			})
-		}
-		if (lines.length > 0) {
-			return (<ul className="mount__listing">
-				{lines}
-			</ul>);
-		} else {
-			return null;
-		}
 	}
 }

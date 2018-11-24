@@ -35,6 +35,21 @@ def list_uploads():
     return jsonify(storage.listdir(config.upload_dir, sort=sorting))
 
 
+@app.route("/upload", methods=["DELETE"])
+def del_uploads():
+    '''Bulk delete of uploads.
+
+    Body args:
+    - names -- list of strings denoting upload names to delete.
+
+    Returns: list of tuples which can be either: (200, filename, '')
+    or (error_code, filename, error). There are as many elements
+    in the returned list as there are names in the request.
+    '''
+    filenames = request.get_json().get('names', [])
+    return jsonify(_del_files(config.upload_dir, filenames))
+
+
 @app.route("/upload/<name>", methods=["GET"])
 def get_upload(name):
     return send_from_directory(config.upload_dir, name)
@@ -84,6 +99,21 @@ def list_adfs():
     full_list = storage.listdir(config.adf_dir, name_filter=name_filter,
                                 sort=sorting)
     return jsonify(full_list)
+
+
+@app.route("/adf", methods=["DELETE"])
+def del_adfs():
+    '''Bulk delete of ADFs.
+
+    Body args:
+    - names -- list of strings denoting upload names to delete.
+
+    Returns: list of tuples which can be either: (200, filename, '')
+    or (error_code, filename, error). There are as many elements
+    in the returned list as there are names in the request.
+    '''
+    filenames = request.get_json().get('names', [])
+    return jsonify(_del_files(config.adf_dir, filenames))
 
 
 @app.route("/adf/<path:filepath>", methods=["GET"])
@@ -228,6 +258,18 @@ def get_version():
         version=version.VERSION,
         yearspan=version.YEARSPAN
     )
+
+
+def _del_files(dirpath, filenames):
+    deleted = []
+    for filename in filenames:
+        try:
+            storage.unlink(safe_join(dirpath, filename))
+        except FileNotFoundError:
+            deleted.append((404, filename, "file not found"))
+        except Exception as e:
+            deleted.append((500, filename, str(e)))
+    return deleted
 
 
 def _sorting():

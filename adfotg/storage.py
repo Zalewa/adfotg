@@ -40,6 +40,10 @@ def listdir(dirpath, name_filter=None, sort=None):
     return files
 
 
+def unlink(filepath):
+    os.unlink(filepath)
+
+
 def _fileentry_to_dict(entry):
     stat = entry.stat()
     return {

@@ -27,11 +27,29 @@ export const Labelled = (props: LabelledProps) => {
 			<span className="labelled__label">{props.label}</span>
 			<span className="labelled__content">{props.contents}</span>
 	</div>
-};
+}
 
 export const LinkText = (props: any) => {
 	return <span className="linkText" onClick={props.onClick}>{props.children}</span>
 }
+
+
+export const Listing = (props: {listing: string[]}) => {
+	let lines: JSX.Element[] = [];
+	if (props.listing) {
+		props.listing.forEach((entry: string) => {
+			lines.push(<li key={entry}>{entry}</li>);
+		})
+	}
+	if (lines.length > 0) {
+		return (<ul className="listing">
+			{lines}
+		</ul>);
+	} else {
+		return null;
+	}
+}
+
 
 /**
  * Similar to ISO-8601 but without the T & Z artifacts.
