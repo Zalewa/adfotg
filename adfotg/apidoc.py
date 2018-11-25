@@ -51,7 +51,6 @@ class _Route:
                         if m not in ['OPTIONS', 'HEAD']]
         self.url = urllib.parse.unquote(url_for(
             rule.endpoint, **self._format_args(self.args)))
-        print(self.endpoint, self.url)
         try:
             self.api_func = getattr(api, self.endpoint)
         except AttributeError:
