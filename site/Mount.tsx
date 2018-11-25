@@ -350,7 +350,8 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 	render() {
 		return (<div className="imageDetails">
 			<span className="imageDetails__name">{this.props.name}</span>
-			<FileTable listing={this.state.listing} />
+			<FileTable listing={this.state.listing}
+				fileLinkPrefix={this.contentsApi() + "/"} />
 		</div>);
 	}
 
@@ -364,9 +365,12 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 		}
 	}
 
+	private contentsApi(): string {
+		return "/mount_image/" + this.props.name + "/contents";
+	}
+
 	private refresh(): void {
-		request.get("/mount_image/" + this.props.name + "/contents")
-				.end((err, res) => {
+		request.get(this.contentsApi()).end((err, res) => {
 			dispatchRequestError(err);
 			if (!err) {
 				this.setState({listing: res.body});

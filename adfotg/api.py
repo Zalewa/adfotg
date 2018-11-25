@@ -4,11 +4,13 @@ from .config import config
 from .error import AdfotgError
 from .mountimg import Mount, MountImage
 
-from flask import jsonify, request, safe_join, send_from_directory
+from flask import jsonify, request, safe_join, send_file, send_from_directory
 
 import os
 import shutil
+import tempfile
 import traceback
+import weakref
 
 
 class ApiError(AdfotgError):
@@ -198,6 +200,32 @@ def get_mount_image_contents(filename):
     if not img.exists():
         return _apierr(404, "image not found")
     return jsonify(img.list())
+
+
+@app.route("/mount_image/<imgname>/contents/<filename>", methods=["GET"])
+def get_file_from_mount_image(imgname, filename):
+    '''
+    Retrieve a file from inside of the mount image and
+    send it back to the client.
+
+    The file is sent as a HTTP attachment.
+    '''
+    img = MountImage(safe_join(config.mount_images_dir, imgname))
+    if not img.exists():
+        return _apierr(404, "image not found")
+
+    def cleanup():
+        tmpf.close()
+    tmpf = tempfile.NamedTemporaryFile()
+    weakref.finalize(tmpf, cleanup)
+    img.unpack_file(filename, tmpf.name)
+    os.fsync(tmpf)
+    tmpf.seek(0)
+    size = os.path.getsize(tmpf.name)
+    response = send_file(tmpf, as_attachment=True,
+                         attachment_filename=filename)
+    response.headers['Content-Length'] = size
+    return response
 
 
 @app.route("/mount_image", methods=["DELETE"])

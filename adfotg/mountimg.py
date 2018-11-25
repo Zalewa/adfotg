@@ -133,8 +133,17 @@ class MountImage:
     def unpack(self, destdir):
         files = self.list()
         for file in files:
-            subprocess.check_call(['mcopy', '-i', self._imagefile, '-n',
-                                   '::/{}'.format(file), destdir])
+            self._mcopy(file, destdir)
+
+    def unpack_file(self, file, destfile):
+        if os.path.isdir(destfile):
+            raise AdfotgError("target path '{}' is a directory".format(
+                destfile))
+        self._mcopy(file, destfile)
+
+    def _mcopy(self, file, dest):
+        subprocess.check_call(['mcopy', '-i', self._imagefile, '-n',
+                               '::/{}'.format(file), dest])
 
     def _create(self, size=64 * 1024 * 1024):
         with open(self._imagefile, 'wb') as f:
