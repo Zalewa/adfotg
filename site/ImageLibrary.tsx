@@ -9,6 +9,7 @@ from './FileTable';
 import Modal, { ConfirmModal } from './Modal';
 import { CreateMountImage } from './Mount';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
+import Search from './Search';
 import Section from './Section';
 import { DeleteButton, Listing } from './ui';
 
@@ -22,7 +23,8 @@ interface ImageLibraryState {
 	listing: FileTableEntry[],
 	sort: Sort,
 	selection: string[],
-	deleteSelected: boolean
+	deleteSelected: boolean,
+	search: string
 }
 
 export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibraryState> {
@@ -31,13 +33,16 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 		listing: [],
 		sort: createSort(Field.Name),
 		selection: [],
-		deleteSelected: false
+		deleteSelected: false,
+		search: ''
 	}
 
 	render() {
 		return (<Section title="ADFs" className="imageLibrary">
 			{this.renderModal()}
 			{this.renderActions()}
+			<Search text={this.state.search} onEdit={this.onSearchEdited}
+				onSubmit={this.onSearchSubmitted} />
 			<FileTable listing={this.state.listing}
 				showSize={false} onHeaderClick={this.onHeaderClick}
 				selected={this.state.selection}
@@ -109,6 +114,16 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	}
 
 	@boundMethod
+	private onSearchEdited(search: string): void {
+		this.setState({search});
+	}
+
+	@boundMethod
+	private onSearchSubmitted(): void {
+		this.refresh();
+	}
+
+	@boundMethod
 	private deleteSelected() {
 		request.delete("/adf")
 			.send({names: this.state.selection})
@@ -126,7 +141,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 			sort = this.state.sort;
 		}
 		request.get("/adf").query({
-			filter: '',
+			filter: this.state.search,
 			sort: sort.field,
 			dir: sort.ascending ? 'asc' : 'desc'
 		}).end((err, res) => {
