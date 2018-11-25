@@ -1,4 +1,4 @@
-from . import app, api
+from . import app, api, version
 
 from flask import url_for
 
@@ -17,7 +17,10 @@ class _Spec:
                 if route.doc:
                     lines.append(route.doc)
             lines.append("")
-        return '\n'.join(lines)
+        doc = '\n\n'.join([_preamble(), api.__doc__])
+        doc += '\n\n'
+        doc += '\n'.join(lines)
+        return doc
 
     def _get_routes(self):
         return [_Route(rule) for rule in app.url_map.iter_rules()]
@@ -60,6 +63,10 @@ class _Route:
 
     def _format_args(self, args):
         return {arg: "{" + arg + "}" for arg in args}
+
+
+def _preamble():
+    return "{} version {} ({})".format(version.FULLNAME, version.VERSION, version.YEARSPAN)
 
 
 spec = _Spec()

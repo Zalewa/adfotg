@@ -1,3 +1,18 @@
+'''This application implements a functionality of a programmable USB
+drive with the intention of the primary use in a Gotek floppy drive
+emulator in an Amiga computer.
+
+Entire functionality is exposed over a RESTful API that can be accessed
+through HTTP requests. Hereby are shortlisted all API endpoints with
+their HTTP methods, params, possible responses and descriptions.
+
+The format of this documentation doesn't adhere to any standard.
+
+Please note that the API is still a WORK IN PROGRESS which means
+it's **unstable**, may change at whim and the documentation may
+be incomplete.
+
+'''
 from . import app
 from . import adf, mountimg, storage, version
 from .config import config
