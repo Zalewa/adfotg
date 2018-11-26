@@ -16,7 +16,7 @@ be incomplete.
 from . import app
 from . import adf, mountimg, storage, version
 from .config import config
-from .error import AdfotgError
+from .error import AdfotgError, ActionError
 from .mountimg import Mount, MountImage
 
 from flask import jsonify, request, safe_join, send_file, send_from_directory
@@ -26,10 +26,6 @@ import shutil
 import tempfile
 import traceback
 import weakref
-
-
-class ApiError(AdfotgError):
-    pass
 
 
 @app.route("/upload", methods=['POST'])
@@ -46,8 +42,6 @@ def upload():
 
 @app.route("/upload", methods=['GET'])
 def list_uploads():
-    # TODO
-    # 3. Pagination and filtering.
     sorting = _sorting()
     return jsonify(storage.listdir(config.upload_dir, sort=sorting))
 
@@ -100,14 +94,27 @@ def list_adfs():
       defaults to nothing which disables the filter
     - sort -- sort field, valid values: name, size, mtime; defaults to name
     - dir -- sort direction, valid values: asc, desc; defaults to asc
+    - start -- denotes index at which to start returning the values.
+      Must be 0 or greater, but can go beyond the total amount.
+    - limit -- maximum amount of elements to return; must be greater
+      than 0 if specified.
+
+    Returns: An object: {
+        "listing": [{...}, {...}, ...],
+        "total": integer
+    }
+    `listing` is a list of FileEntryField objects containing name,
+    size and mtime. `total` is a total number of entries without
+    the limitation which is useful in a query with a `limit` to
+    calculate pages.
     '''
     # TODO - recurse into subdirectories or support more ADF dirs than one.
     # Users could potentially store hundreds of those and pagination is required.
-    # Also do same features as in list_uploads()
     filter_pattern = request.args.get("filter")
     sorting = _sorting()
 
     name_filter = None
+    start, limit = _pagination()
     if filter_pattern:
         filter_pattern = filter_pattern.strip().lower()
         if filter_pattern:
@@ -115,7 +122,9 @@ def list_adfs():
                 return filter_pattern in name.lower()
     full_list = storage.listdir(config.adf_dir, name_filter=name_filter,
                                 sort=sorting)
-    return jsonify(full_list)
+    return jsonify(
+        listing=_limit(full_list, start, limit),
+        total=len(full_list))
 
 
 @app.route("/adf", methods=["DELETE"])
@@ -356,6 +365,44 @@ def _sorting():
     sort = request.args.get("sort", "name")
     direction = request.args.get("dir", "asc")
     return sort, direction
+
+
+def _pagination():
+    start = request.args.get("start")
+    limit = request.args.get("limit")
+    return _validate_start(start), _validate_limit(limit)
+
+
+def _limit(list_, start, limit):
+    start = _validate_start(start)
+    limit = _validate_limit(limit)
+    if start is not None:
+        list_ = list_[start:]
+    if limit is not None:
+        list_ = list_[:limit]
+    return list_
+
+
+def _validate_start(start):
+    if start is not None:
+        try:
+            start = int(start)
+        except ValueError:
+            raise ActionError("starting index must be a number")
+        if start < 0:
+            raise ActionError("starting index must be 0 or greater")
+    return start
+
+
+def _validate_limit(limit):
+    if limit is not None:
+        try:
+            limit = int(limit)
+        except ValueError:
+            raise ActionError("limit must be a number")
+        if limit <= 0:
+            raise ActionError("limit must be greater than 0")
+    return limit
 
 
 def _apierr(code, message):

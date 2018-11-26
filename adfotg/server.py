@@ -1,4 +1,5 @@
 from . import app
+from .error import ActionError
 
 from flask import abort, jsonify, send_from_directory
 from werkzeug.exceptions import NotFound
@@ -28,8 +29,11 @@ def serve_file(path):
 
 @app.errorhandler(500)
 def error_500(exception):
+    code = 500
+    if isinstance(exception, ActionError):
+        code = 400
     return (
         jsonify({"error": str(exception)}),
-        500,
+        code,
         {'Content-Type': 'application/json'}
     )

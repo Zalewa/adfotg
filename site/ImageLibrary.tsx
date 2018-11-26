@@ -9,6 +9,7 @@ from './FileTable';
 import Modal, { ConfirmModal } from './Modal';
 import { CreateMountImage } from './Mount';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
+import Pager, { Page } from './Pager';
 import Search from './Search';
 import Section from './Section';
 import { DeleteButton, Listing } from './ui';
@@ -19,22 +20,26 @@ interface ImageLibraryProps {
 }
 
 interface ImageLibraryState {
-	createImage: boolean,
-	listing: FileTableEntry[],
-	sort: Sort,
-	selection: string[],
-	deleteSelected: boolean,
+	createImage: boolean
+	listing: FileTableEntry[]
+	listingTotal: number
+	sort: Sort
+	selection: string[]
+	deleteSelected: boolean
 	search: string
+	page: Page
 }
 
 export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibraryState> {
 	state: Readonly<ImageLibraryState> = {
 		createImage: false,
 		listing: [],
+		listingTotal: 0,
 		sort: createSort(Field.Name),
 		selection: [],
 		deleteSelected: false,
-		search: ''
+		search: '',
+		page: new Page(0, 50),
 	}
 
 	render() {
@@ -48,6 +53,8 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 				selected={this.state.selection}
 				onSelected={this.onImagesSelected}
 				sort={this.state.sort} fileLinkPrefix="/adf/" />
+			<Pager page={this.state.page} total={this.state.listingTotal}
+				onPageChanged={page => this.refresh({page})} />
 		</Section>);
 	}
 
@@ -94,7 +101,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 
 	@boundMethod
 	private onHeaderClick(field: Field) {
-		this.refresh(createSort(field, this.state.sort));
+		this.refresh({sort: createSort(field, this.state.sort)});
 	}
 
 	@boundMethod
@@ -132,28 +139,32 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 				if (res.body)
 					dispatchApiErrors('Delete ADFs', res.body);
 				this.setState({selection: [], deleteSelected: false})
-				this.refresh(this.state.sort);
+				this.refresh();
 			});
 	}
 
-	private refresh(sort?: Sort): void {
-		if (!sort) {
-			sort = this.state.sort;
-		}
+	private refresh(args?: {sort?: Sort, page?: Page, search?: string}): void {
+		args = args || {};
+		const sort = args.sort || this.state.sort;
+		const page = args.page || this.state.page;
+		const search = args.search || this.state.search
 		request.get("/adf").query({
-			filter: this.state.search,
+			filter: search,
 			sort: sort.field,
-			dir: sort.ascending ? 'asc' : 'desc'
+			dir: sort.ascending ? 'asc' : 'desc',
+			start: page.start,
+			limit: page.limit
 		}).end((err, res) => {
 			dispatchRequestError(err);
 			let listing: FileTableEntry[] = [];
+			let listingTotal: number = 0;
 			if (!err) {
-				listing = res.body;
+				listing = res.body.listing;
+				listingTotal = res.body.total;
 			}
-			this.setState({
-				listing: listing,
-				sort: sort
-			});
+			this.setState({listing, listingTotal, sort, search, page});
+			if (page.start != 0 && page.start > listingTotal)
+				this.refresh({page: new Page(0, page.limit)});
 		})
 	}
 }
