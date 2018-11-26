@@ -50,6 +50,7 @@ export default class Mount extends Component<MountProps, MountState> {
 		return (<Section title="Mounting" className="mount">
 			{this.state.deleteSelected && this.renderDeleteSelected()}
 			{this.renderMountStatus()}
+			{this.renderImageInspection()}
 			<Actions>
 				<ActionSet>
 					<MountActions mountStatus={this.state.mountStatus}
@@ -88,14 +89,26 @@ export default class Mount extends Component<MountProps, MountState> {
 		}
 	}
 
-	private renderMountStatus(): JSX.Element[] {
-		let el: JSX.Element[] = [
+	private renderMountStatus(): JSX.Element {
+		return (<Section title="Mounted Image" className="mountedImage">
 			<MountStatusDisplay {...this.state} />
-		];
-		if (this.state.mountedImageName) {
-			el.push(<MountImageDetails name={this.state.mountedImageName} />);
+			{this.state.mountedImageName && <MountImageDetails name={this.state.mountedImageName} />}
+		</Section>);
+	}
+
+	private renderImageInspection(): JSX.Element {
+		if (this.state.inspectedImage) {
+			return (<Section title="Inspect Image" className="inspectedImage">
+				<Actions>
+					<ActionSet>
+						<button onClick={() => this.setState({inspectedImage: null})}>Close</button>
+					</ActionSet>
+				</Actions>
+				<MountImageDetails name={this.state.inspectedImage} />
+			</Section>);
+		} else {
+			return null;
 		}
-		return el;
 	}
 
 	private refresh(): void {
@@ -208,8 +221,8 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 						this.create();
 					}
 				}} />
-			<input type="button" value="Create" onClick={this.create}
-				disabled={this.state.imageName.length == 0} />
+			<button onClick={this.create}
+				disabled={this.state.imageName.length == 0}>Create</button>
 			{this.errorWidget()}
 		</div>);
 	}

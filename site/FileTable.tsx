@@ -73,13 +73,14 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 					entry={e} key={e.name} showSize={this.props.showSize}
 					url={url}
 					selected={this.isSelected(e.name)}
-					onSelected={this.onSelect}
+					onSelected={this.props.onSelected && this.onSelect || null}
 				/>);
 			});
 		}
 		return (
 			<table className="fileTable">
-				<Header {...this.props} selectedAll={this.state.selectedAll} onSelected={this.onSelectAll} />
+				<Header {...this.props} selectedAll={this.state.selectedAll}
+					onSelected={this.props.onSelected && this.onSelectAll || null} />
 				<tbody>
 					{rows}
 				</tbody>
@@ -143,9 +144,9 @@ class Header extends Component<HeaderProps> {
 		return (<thead>
 			<tr>
 				<th>
-					<input name="selectAll" type="checkbox"
+					{this.props.onSelected && <input name="selectAll" type="checkbox"
 						checked={this.props.selectedAll}
-						onChange={this.props.onSelected} />
+						onChange={this.props.onSelected} />}
 				</th>
 				<HeaderCell {...headerProps} field={Field.Name} label="Name" />
 				{sizeTd}
@@ -189,7 +190,7 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 	render() {
 		const props = this.props;
 		let nameTd: JSX.Element
-		if (this.props.url != null) {
+		if (props.url != null) {
 			nameTd = (<td><a className="fileTable__fileLink"
 				href={props.url}>{props.entry.name}</a></td>);
 		} else {
@@ -201,9 +202,9 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 		const date = new Date(props.entry.mtime * 1000);
 		return (<tr>
 			<td>
-				<input name={props.entry.name} type="checkbox"
-				checked={props.selected}
-				onChange={props.onSelected} />
+				{props.onSelected && <input name={props.entry.name} type="checkbox"
+					checked={props.selected}
+					onChange={props.onSelected} />}
 			</td>
 			{nameTd}
 			{sizeTd}
