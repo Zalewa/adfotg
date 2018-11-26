@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 import Dropzone from 'react-dropzone';
+import { Link } from 'react-router-dom';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
@@ -9,6 +10,7 @@ import FileTable, { FileTableEntry, Field, Sort, createSort } from './FileTable'
 import { ConfirmModal } from './Modal';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import Section from './Section';
+import { ADFWIZARD_LINK } from './routes';
 import { DeleteButton, Listing } from './ui';
 
 
@@ -49,6 +51,9 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 
 	renderActions(): JSX.Element {
 		return (<Actions>
+			<ActionSet>
+				<Link to={ADFWIZARD_LINK}>Create ADFs</Link>
+			</ActionSet>
 			<ActionSet right={true}>
 				<DeleteButton
 					disabled={this.state.selection.length == 0}

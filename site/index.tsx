@@ -1,9 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-// main app
-import App from './App';
+import routes from './routes';
+
 require('./index.html');
 require('./style.less');
 
-ReactDOM.render(<App />, document.getElementById('app'))
+ReactDOM.render(
+	routes,
+	document.getElementById('app'))

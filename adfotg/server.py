@@ -27,6 +27,11 @@ def serve_file(path):
             raise
 
 
+@app.route('/adfwizard')
+def adfwizard():
+    return serve_file('index.html')
+
+
 @app.errorhandler(500)
 def error_500(exception):
     code = 500
