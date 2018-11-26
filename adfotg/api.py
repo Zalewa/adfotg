@@ -6,6 +6,14 @@ Entire functionality is exposed over a RESTful API that can be accessed
 through HTTP requests. Hereby are shortlisted all API endpoints with
 their HTTP methods, params, possible responses and descriptions.
 
+Generic errors are returned as Content-Type 'application/json' with
+"error" field set to the error message. The error code can be 4xx or
+500, depending on if the client made an incorrect request (error 4xx) or
+the server encountered an invalid state that the client could not
+predict or mitigate (error 500). Refer to the specific documentation
+of each method for details about possible error codes, but expect that
+error code 500 can be produced by any method.
+
 The format of this documentation doesn't adhere to any standard.
 
 Please note that the API is still a WORK IN PROGRESS which means
