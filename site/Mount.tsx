@@ -15,8 +15,9 @@ import { DeleteButton, ErrorLabel, Listing } from './ui';
 const enum MountStatus {
 	Mounted = "mounted",
 	Unmounted = "unmounted",
-	NoImage = "noimage",
-	BadImage = "badimage"
+	NoImage = "no_image",
+	BadImage = "bad_image",
+	OtherImageMounted = "other_image_mounted"
 }
 
 interface MountProps {
@@ -286,7 +287,11 @@ class MountStatusDisplay extends Component<MountStatusProps> {
 			case MountStatus.NoImage:
 				return {text: "No image", klass: "noimage"};
 			case MountStatus.BadImage:
-				return {text: "Image error: " + this.props.error, klass: "badstatus"};
+				return {text: "Image error: " + this.props.error,
+						klass: "badstatus"};
+			case MountStatus.OtherImageMounted:
+				return {text: "An image outside the app is mounted.",
+						klass: "badstatus"}
 			default:
 				return {text: "Unknown State", klass: "unknown"};
 		}
@@ -314,11 +319,10 @@ class MountActions extends React.Component<MountActionsProps> {
 			case MountStatus.Unmounted:
 				return this.unmountedActions();
 			case MountStatus.NoImage:
-				return this.noImageActions();
 			case MountStatus.BadImage:
-				return this.badImageActions();
+			case MountStatus.OtherImageMounted:
 			default:
-				return [];
+				return this.rescueActions();
 		}
 	}
 
@@ -336,14 +340,10 @@ class MountActions extends React.Component<MountActionsProps> {
 		];
 	}
 
-	private noImageActions(): JSX.Element[] {
+	private rescueActions(): JSX.Element[] {
 		return [
 			<button key="unmount" onClick={this.props.onUnmount}>Force Unmount</button>
 		]
-	}
-
-	private badImageActions(): JSX.Element[] {
-		return [];
 	}
 }
 

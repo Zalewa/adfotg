@@ -145,9 +145,6 @@ def del_adf(filepath):
 
 @app.route("/mount", methods=["GET"])
 def get_mounted_flash_drive():
-    # TODO
-    # 1. Get this to work.
-    # 2. When list of ADFs is passed, mount them all as one drive.
     mount = Mount.current()
     if not mount:
         return jsonify(status=mountimg.MountStatus.Unmounted.value)
@@ -155,7 +152,7 @@ def get_mounted_flash_drive():
     try:
         imagefile = mount.imagefile
         if not imagefile.startswith(config.mount_images_dir):
-            return jsonify(status=mountimg.MountStatus.OtherImageMounted,
+            return jsonify(status=mountimg.MountStatus.OtherImageMounted.value,
                            error="mounted image is unknown to the app")
         imagefile = imagefile[len(config.mount_images_dir):].lstrip("/")
         listing = mount.list()
