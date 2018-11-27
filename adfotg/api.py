@@ -22,7 +22,7 @@ be incomplete.
 
 '''
 from . import app
-from . import adf, mountimg, storage, version
+from . import adf, mountimg, selfcheck, storage, version
 from .config import config
 from .error import AdfotgError, ActionError
 from .mountimg import Mount, MountImage
@@ -341,6 +341,26 @@ def get_free_space():
         'total': fs.total,
         'avail': fs.avail
     } for fs in fs_stats])
+
+
+@app.route("/check")
+def self_check():
+    '''Returns PASS/FAIL status for various features.
+
+    Some features may be dependant on external tools and this API checks
+    if those tools are available. The return value is an object with
+    keys refering to a feature and values are either an empty string
+    denoting that everything is okay or an error message.
+
+    Returns: {
+        rpi, g_mass_storage, xdftool, mtools
+    }
+    - rpi -- are we running on a Raspberry Pi device
+    - g_mass_storage -- is this kernel module available
+    - xdftool -- is xdftool available
+    - mtools -- are mtools installed
+    '''
+    return jsonify(**selfcheck.self_check())
 
 
 @app.route("/version")
