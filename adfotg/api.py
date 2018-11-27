@@ -150,14 +150,56 @@ def del_adfs():
     return jsonify(_del_files(config.adf_dir, filenames))
 
 
-@app.route("/adf/<path:filepath>", methods=["GET"])
-def get_adf(filepath):
-    return send_from_directory(config.adf_dir, filepath)
+@app.route("/adf/<name>", methods=["GET"])
+def get_adf(name):
+    return send_from_directory(config.adf_dir, name)
 
 
-@app.route("/adf/<path:filepath>", methods=["DELETE"])
-def del_adf(filepath):
-    os.unlink(safe_join(config.adf_dir, filepath))
+@app.route("/adf/<name>", methods=["DELETE"])
+def del_adf(name):
+    os.unlink(safe_join(config.adf_dir, name))
+
+
+@app.route("/adf/<name>", methods=["POST"])
+def create_adf(name):
+    '''Create ADF with contents from the upload zone.
+
+    This API requires xdftool.
+
+    URL args:
+    - name -- name of the ADF file to create. Must not exist.
+
+    Body args:
+    - label -- disk label assigned to the ADF
+    - contents -- list of elements pointing to the files
+      in the upload zone.
+
+    The `contents` list can hold values of different types.
+
+    - A simple string type denotes a filename of a file from the upload
+      zone. When specified, this file is copied whole on to the ADF.
+
+    - A {name: string, start: int, length: int, rename: string} object
+      denotes a split operation. The file pointed out by `name` will be
+      cut into a slice as determined by the [`start`; `length`] range.
+      It will then be renamed in accordance to `rename` string. This
+      is useful to slice files larger than one ADF into multiple ADFs.
+      `start` and `length` can be unspecified if you only wish to rename.
+
+    - An empty list will result in empty but formatted ADF.
+
+    '''
+    target_path = safe_join(config.adf_dir, name)
+    if os.path.exists(target_path):
+        raise ActionError("ADF '{}' already exists".format(name))
+    label = request.args.get("label")
+    if not label:
+        raise ActionError("must specify label")
+    contents = request.args.get("contents", [])
+    file_ops = [adf.FileUploadOp.interpret_api(config.upload_dir, piece)
+                for piece in contents]
+    adf.create_adf(target_path, label, file_ops)
+    return ''
 
 
 @app.route("/mount", methods=["GET"])

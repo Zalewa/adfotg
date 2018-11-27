@@ -4,5 +4,9 @@ class AdfotgError(Exception):
 
 
 class ActionError(AdfotgError):
-    '''This error denotes an invalid operation caused by the user.'''
+    '''This error denotes an invalid operation caused by the user.
+
+    The API server translates it to code 400.
+
+    '''
     pass
