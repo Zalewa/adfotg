@@ -5,15 +5,25 @@ import Notifier from './Notifier';
 import Routes from './routes';
 import Title from './Title';
 
-export default class App extends Component {
-	render () {
-		// TODO Title refresh={true} is a placeholder
-		// and the refresh functionality is disabled.
+interface AppState {
+	refreshSwitch: boolean
+}
+
+export default class App extends Component<{}, AppState> {
+	readonly state: AppState = {
+		refreshSwitch: false
+	}
+
+	render() {
 		return (
 			<ErrorBoundary>
-				<Title refresh={true} />
+				<Title refresh={this.state.refreshSwitch} />
 				<Notifier />
-				<Routes />
+				<Routes onRouteChanged={
+					(route: string) => this.setState({
+						refreshSwitch: !this.state.refreshSwitch
+					})}
+					/>
 			</ErrorBoundary>);
 	}
 }
