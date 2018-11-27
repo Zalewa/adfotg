@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { Component } from 'react';
+import { NavLink, NavLinkProps } from 'react-router-dom';
 import * as request from 'superagent';
 
+import { ADFWIZARD_LINK, HOME_LINK } from './routes';
 import { dispatchRequestError } from './Notifier';
 import { Labelled, formatSize } from './ui';
 
@@ -13,7 +15,8 @@ export default class Title extends Component<TitleProps> {
 	render() {
 		return (
 			<div className="title">
-				<h1>ADF On-The-Go</h1>
+				<AppLink exact to={HOME_LINK}><h1>ADF On-The-Go</h1></AppLink>
+				<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
 				<a href="/help">API Help</a>
 				<VersionInfo />
 				<SpaceInfo refresh={this.props.refresh} />
@@ -112,4 +115,12 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 			}
 		});
 	}
+}
+
+const AppLink = (props: NavLinkProps & {children: string | JSX.Element[] | JSX.Element}) => {
+	return <NavLink exact={props.exact} className="title__appLink"
+		activeClassName="title__appLink--selected"
+		to={props.to}>
+		{props.children}
+	</NavLink>
 }

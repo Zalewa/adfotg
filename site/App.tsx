@@ -17,13 +17,14 @@ export default class App extends Component<{}, AppState> {
 	render() {
 		return (
 			<ErrorBoundary>
-				<Title refresh={this.state.refreshSwitch} />
-				<Notifier />
 				<Routes onRouteChanged={
 					(route: string) => this.setState({
 						refreshSwitch: !this.state.refreshSwitch
 					})}
-					/>
+					>
+					<Title refresh={this.state.refreshSwitch} />
+					<Notifier />
+				</Routes>
 			</ErrorBoundary>);
 	}
 }

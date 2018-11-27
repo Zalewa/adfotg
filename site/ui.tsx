@@ -34,15 +34,20 @@ export const LinkText = (props: any) => {
 }
 
 
-export const Listing = (props: {listing: string[]}) => {
+interface ListingProps {
+	listing: string[]
+	className?: string
+}
+
+export const Listing = (props: ListingProps) => {
 	let lines: JSX.Element[] = [];
 	if (props.listing) {
 		props.listing.forEach((entry: string) => {
 			lines.push(<li key={entry}>{entry}</li>);
-		})
+		});
 	}
 	if (lines.length > 0) {
-		return (<ul className="listing">
+		return (<ul className={"listing " + props.className}>
 			{lines}
 		</ul>);
 	} else {

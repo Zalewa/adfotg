@@ -9,12 +9,16 @@ import Home from './Home';
 export const HOME_LINK = '/';
 export const ADFWIZARD_LINK = '/adfwizard';
 
-interface RouteProps {
+interface AppRouteProps {
 	onRouteChanged: (route: string)=>void
 }
 
+interface RouteProps extends AppRouteProps {
+	children: JSX.Element[]
+}
+
 const AppRoute = withRouter(
-class AppRoute extends Component<RouteProps & RouteComponentProps<{}>> {
+class AppRoute extends Component<AppRouteProps & RouteComponentProps<{}>> {
 	private unlisten: ()=>void;
 
 	render() {
@@ -37,6 +41,7 @@ class AppRoute extends Component<RouteProps & RouteComponentProps<{}>> {
 export default ((props: RouteProps) =>
 	<Router>
 		<AppRoute {...props}>
+			{props.children}
 			<Route exact path={HOME_LINK} component={Home} />
 			<Route path={ADFWIZARD_LINK} component={AdfWizard} />
 		</AppRoute>
