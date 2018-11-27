@@ -1,41 +1,20 @@
 import * as React from 'react';
 import { Component } from 'react';
-import Dropzone from 'react-dropzone';
-import { boundMethod } from 'autobind-decorator';
-import * as request from 'superagent';
 
-import ImageLibrary from './ImageLibrary';
-import Mount from './Mount';
 import Notifier from './Notifier';
+import Routes from './routes';
 import Title from './Title';
-import Uploader from './Uploader';
 
-interface AppState {
-	refreshSwitch: boolean,
-}
-
-export default class App extends Component<{}, AppState> {
-	readonly state: AppState = {
-		refreshSwitch: false,
-	}
-
+export default class App extends Component {
 	render () {
+		// TODO Title refresh={true} is a placeholder
+		// and the refresh functionality is disabled.
 		return (
 			<ErrorBoundary>
-				<Title refresh={this.state.refreshSwitch} />
+				<Title refresh={true} />
 				<Notifier />
-				<Uploader onUpload={this.promptRefresh} />
-				<Mount refresh={this.state.refreshSwitch} />
-				<ImageLibrary refresh={this.state.refreshSwitch}
-					onCreatedImage={this.promptRefresh} />
+				<Routes />
 			</ErrorBoundary>);
-	}
-
-	@boundMethod
-	private promptRefresh(): void {
-		this.setState({
-			refreshSwitch: !this.state.refreshSwitch
-		})
 	}
 }
 
