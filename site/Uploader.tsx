@@ -14,12 +14,14 @@ import { DeleteButton, Listing } from './ui';
 
 interface UploaderProps {
 	onUpload?: () => void
+	onSelected?: (entries: FileTableEntry[]) => void
+	actions?: JSX.Element[]
 }
 
 interface UploaderState {
 	listing: FileTableEntry[]
+	selection: FileTableEntry[]
 	sort: Sort
-	selection: string[]
 	deleteSelected: boolean
 }
 
@@ -49,6 +51,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 
 	renderActions(): JSX.Element {
 		return (<Actions>
+			{this.renderLeftActions()}
 			<ActionSet right={true}>
 				<DeleteButton
 					disabled={this.state.selection.length == 0}
@@ -57,12 +60,21 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 		</Actions>);
 	}
 
+	private renderLeftActions(): JSX.Element {
+		if (this.props.actions) {
+			return (<ActionSet>
+				{this.props.actions}
+			</ActionSet>);
+		}
+		return null;
+	}
+
 	private renderDeleteSelected(): JSX.Element {
 		return (<ConfirmModal text="Delete these uploads?"
 				onAccept={this.deleteSelected}
 				onCancel={() => this.setState({deleteSelected: false})}
 				acceptText="Delete">
-			<Listing listing={this.state.selection} />
+			<Listing listing={this.state.selection.map(e => e.name)} />
 		</ConfirmModal>)
 	}
 
@@ -76,8 +88,10 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 	}
 
 	@boundMethod
-	private onSelected(entries: string[]): void {
+	private onSelected(entries: FileTableEntry[]): void {
 		this.setState({selection: entries});
+		if (this.props.onSelected)
+			this.props.onSelected(entries);
 	}
 
 	@boundMethod

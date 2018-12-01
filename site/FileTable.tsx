@@ -42,8 +42,8 @@ interface FileTableProps {
 	listing: FileTableEntry[]
 	showSize: boolean,
 	onHeaderClick?: (field: Field) => void,
-	onSelected?: (entries: string[]) => void,
-	selected: string[],
+	onSelected?: (entries: FileTableEntry[]) => void,
+	selected: FileTableEntry[],
 	sort: Sort,
 	fileLinkPrefix?: string
 }
@@ -89,14 +89,15 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 	}
 
 	private isSelected(name: string): boolean {
-		return this.props.selected && this.props.selected.indexOf(name) > -1;
+		return this.props.selected &&
+			this.props.selected.findIndex(e => e.name == name) > -1;
 	}
 
 	@boundMethod
 	private onSelectAll() {
-		const select: boolean = !this.state.selectedAll;
-		const selected: string[] = select ?
-			this.props.listing.map(e => e.name) :
+		const select = !this.state.selectedAll;
+		const selected = select ?
+			this.props.listing.slice() :
 			[];
 		this.setState({selectedAll: select})
 		this.callbackSelected(selected);
@@ -108,19 +109,19 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 	}
 
 	private select(name: string): void {
-		const selected = this.props.selected;
-		const idx: number = selected.indexOf(name);
+		const { listing, selected } = this.props;
+		const idx: number = selected.findIndex(e => e.name == name);
 		if (idx == -1) {
-			selected.push(name);
+			selected.push(listing.find(e => e.name == name));
 		} else {
 			selected.splice(idx, 1);
 		}
 		this.callbackSelected(selected);
 	}
 
-	private callbackSelected(entries: string[]) {
+	private callbackSelected(entries: FileTableEntry[]) {
 		if (this.props.onSelected)
-			this.props.onSelected(entries)
+			this.props.onSelected(entries);
 	}
 }
 

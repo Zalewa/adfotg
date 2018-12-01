@@ -24,7 +24,7 @@ interface ImageLibraryState {
 	listing: FileTableEntry[]
 	listingTotal: number
 	sort: Sort
-	selection: string[]
+	selection: FileTableEntry[]
 	deleteSelected: boolean
 	search: string
 	page: Page
@@ -85,7 +85,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	private renderModal(): JSX.Element {
 		if (this.state.createImage) {
 			return <Modal onClose={() => this.setState({createImage: false})}>
-				<CreateMountImage adfs={this.state.selection}
+				<CreateMountImage adfs={this.state.selection.map(e => e.name)}
 					onDone={this.onModalAccepted} />
 			</Modal>
 		} else if (this.state.deleteSelected) {
@@ -93,7 +93,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 					onAccept={this.deleteSelected}
 					onCancel={() => this.setState({deleteSelected: false})}
 					acceptText="Delete">
-				<Listing listing={this.state.selection} />
+				<Listing listing={this.state.selection.map(e => e.name)} />
 			</ConfirmModal>)
 		}
 		return null;
@@ -105,7 +105,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	}
 
 	@boundMethod
-	private onImagesSelected(entries: string[]) {
+	private onImagesSelected(entries: FileTableEntry[]) {
 		this.setState({selection: entries});
 	}
 
@@ -133,7 +133,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	@boundMethod
 	private deleteSelected() {
 		request.delete("/adf")
-			.send({names: this.state.selection})
+			.send({names: this.state.selection.map(e => e.name)})
 			.end((err, res) => {
 				dispatchRequestError(err);
 				if (res.body)

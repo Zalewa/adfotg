@@ -29,7 +29,7 @@ interface MountState {
 	error?: string,
 	mountedImageName: string,
 	imagesListing: FileTableEntry[],
-	imagesSelection: string[],
+	imagesSelection: FileTableEntry[],
 	inspectedImage: string,
 	sortImages: Sort,
 	deleteSelected: boolean
@@ -55,12 +55,12 @@ export default class Mount extends Component<MountProps, MountState> {
 			<Actions>
 				<ActionSet>
 					<MountActions mountStatus={this.state.mountStatus}
-						images={this.state.imagesSelection}
+						images={this.state.imagesSelection.map(e => e.name)}
 						onMount={this.mount}
 						onUnmount={this.unmount}
 					/>
-					<button onClick={() => this.setState({inspectedImage: this.state.imagesSelection[0]}) }
-						disabled={this.state.imagesSelection.length == 0}>Inspect</button>
+					<button onClick={() => this.setState({inspectedImage: this.state.imagesSelection[0].name}) }
+						disabled={this.state.imagesSelection.length != 1}>Inspect</button>
 				</ActionSet>
 				<ActionSet right={true}>
 					<DeleteButton
@@ -168,7 +168,7 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	@boundMethod
-	private onImagesSelected(images: string[]) {
+	private onImagesSelected(images: FileTableEntry[]) {
 		this.setState({imagesSelection: images});
 	}
 
@@ -177,14 +177,14 @@ export default class Mount extends Component<MountProps, MountState> {
 				onAccept={this.deleteSelected}
 				onCancel={() => this.setState({deleteSelected: false})}
 				acceptText="Delete">
-			<Listing listing={this.state.imagesSelection} />
+			<Listing listing={this.state.imagesSelection.map(e => e.name)} />
 		</ConfirmModal>)
 	}
 
 	@boundMethod
 	private deleteSelected() {
 		request.delete("/mount_image")
-			.send({names: this.state.imagesSelection})
+			.send({names: this.state.imagesSelection.map(e => e.name)})
 			.end((err, res) => {
 				dispatchRequestError(err);
 				if (res.body)

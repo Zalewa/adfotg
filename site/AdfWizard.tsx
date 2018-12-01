@@ -3,7 +3,9 @@ import { Component } from 'react';
 import { boundMethod } from 'autobind-decorator';
 
 import { Actions, ActionSet } from './Actions';
+import { FileTableEntry } from './FileTable';
 import Uploader from './Uploader';
+import * as Strings from './strings';
 import { Listing } from './ui';
 
 
@@ -11,21 +13,24 @@ interface AdfWizardState {
 	disks: DiskDescriptor[]
 	key: number
 	basename: string
+	selection: FileTableEntry[]
 }
 
 export default class AdfWizard extends Component {
 	readonly state: AdfWizardState = {
 		disks: [],
 		key: 1,
-		basename: "adfotg"
+		basename: "adfotg",
+		selection: []
 	}
 
 	render() {
 		return (<div>
-			<Uploader />
+			<Uploader actions={this.actions()}
+				onSelected={selection => this.setState({selection})} />
 			<Actions>
 				<ActionSet>
-					<button onClick={this.addAdf}>
+					<button onClick={this.addNewDisk}>
 						Add ADF
 					</button>
 					<label>Base name:</label>
@@ -36,6 +41,19 @@ export default class AdfWizard extends Component {
 			</Actions>
 			{this.renderDisks()}
 		</div>);
+	}
+
+	private actions(): JSX.Element[] {
+		let actions: JSX.Element[] = [];
+		actions.push(<button key="distribute"
+			disabled={this.state.selection.length == 0}
+			onClick={this.distributeDisks}>Distribute ADFs</button>);
+		actions.push(<span key="basename">
+			<label>Base name:</label>
+			<input value={this.state.basename}
+				onChange={e => this.setState({basename: e.target.value})} />
+		</span>);
+		return actions;
 	}
 
 	private renderDisks(): JSX.Element[] {
@@ -55,7 +73,7 @@ export default class AdfWizard extends Component {
 	}
 
 	@boundMethod
-	private addAdf(): void {
+	private addNewDisk(): void {
 		const { disks, key, basename } = this.state;
 		const descriptor = new DiskDescriptor();
 		descriptor.name = basename + key
@@ -66,6 +84,20 @@ export default class AdfWizard extends Component {
 		this.setState({disks, key: key + 1});
 	}
 
+	private addDisk(name: string, label: string, contents: FileOp[]): void {
+		let { disks } = this.state;
+		let descriptor = new DiskDescriptor();
+		descriptor.name = name;
+		descriptor.label = label;
+		descriptor.contents = contents.slice();
+		disks.push(descriptor);
+		this.setState({disks});
+	}
+
+	private clearDisks() {
+		this.setState({disks: []});
+	}
+
 	@boundMethod
 	private discardDisk(disk: DiskDescriptor): void {
 		const { disks } = this.state;
@@ -74,6 +106,19 @@ export default class AdfWizard extends Component {
 			disks.splice(idx, 1);
 		}
 		this.setState({disks});
+	}
+
+	@boundMethod
+	private distributeDisks(): void {
+		const files = this.state.selection;
+		const { basename } = this.state;
+		let distributor = new Distributor(files);
+		const disks: FileOp[][] = distributor.distribute();
+		for (let diskNum = 0; diskNum < disks.length; ++diskNum) {
+			const name = basename + (diskNum + 1);
+			const label = basename + " " + (diskNum + 1);
+			this.addDisk(name, label, disks[diskNum]);
+		}
 	}
 }
 
@@ -139,5 +184,75 @@ class DiskForm extends Component<DiskFormProps> {
 
 	private items(): string[] {
 		return this.props.disk.contents.map(getFileOpDisplayName);//(file: FileOp) => file.getDisplayName());
+	}
+}
+
+class Distributor {
+	private static readonly ADF_SIZE = 880 * 1024
+	private static readonly BUFFER_SPACE = 10 * 1024;
+	private static readonly MAX_SIZE = Distributor.ADF_SIZE - Distributor.BUFFER_SPACE;
+	private files: FileTableEntry[];
+
+	constructor(files: FileTableEntry[]) {
+		this.files = files.slice();
+	}
+
+	/**
+	 * Return value is a two-dimensional array of FileOp. The first
+	 * dimension are disks, the second dimension are files that fit
+	 * on each of the disks.
+	 */
+	public distribute(): FileOp[][] {
+		let distribution: FileOp[][] = [];
+
+		// 1. Sort files by size descending
+		let sorted = this.files.sort((a, b) => b.size - a.size);
+
+		// 2. Split files that won't fit on a disk
+		const toobig = sorted.filter(e => e.size > Distributor.MAX_SIZE);
+		let splits: FileOp[] = [];
+		toobig.forEach(bigfile => {
+			const partsize = Distributor.MAX_SIZE;
+			const parts_count = Math.ceil(bigfile.size / partsize);
+			for (let i = 0; i < parts_count; ++i) {
+				const start = i * partsize;
+				const end = start + partsize;
+				const length = (end > bigfile.size) ?
+					(bigfile.size - start) : Distributor.MAX_SIZE;
+				splits.push({
+					name: bigfile.name, start, length,
+					rename: bigfile.name + "." + Strings.leftpad("" + i, "0", 3)
+				});
+			}
+		});
+
+		// 3. Place the split files to fill the disks
+		splits.forEach(op => distribution.push([op]));
+
+		// 4. Files that fit onto disks should be distributed
+		//    to try to fill up the whole disk
+		let fitting = sorted.filter(e => e.size <= Distributor.MAX_SIZE);
+		while (fitting.length > 0) {
+			let disk: FileTableEntry[] = [];
+			const takenspace = () => disk.reduce((prev, cur) => prev + cur.size, 0);
+			const freespace = () => Distributor.MAX_SIZE - takenspace();
+			// 4.1. Start with largest file and put it on to the disk
+			disk.push(fitting.shift());
+			while (fitting.length > 0) {
+				// 4.2. Find next largest file that still fits
+				//      and put it on the disk
+				const idx = fitting.findIndex(e => e.size <= freespace());
+				if (idx >= 0) {
+					const file = fitting[idx];
+					fitting.splice(idx, 1);
+					disk.push(file);
+				} else {
+					break;
+				}
+			}
+			distribution.push(disk.map(f => {return {name: f.name}}));
+		}
+
+		return distribution;
 	}
 }
