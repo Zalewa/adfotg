@@ -72,7 +72,7 @@ The adfotg package is not in PyPI, yet.
 Development
 ===========
 
-Please see CONTRIBUTING.md
+Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 
 Background
