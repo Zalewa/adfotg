@@ -121,7 +121,7 @@ interface NotificationProps {
 class Notification extends Component<NotificationProps> {
 	render() {
 		const note = this.props.note;
-		return (<div className="notifier__notification--{note.type}">
+		return (<div className="notification--{note.type}">
 			<button onClick={() => this.props.onClose(note.key)}>X</button>
 			<span>{note.message}</span>
 		</div>);

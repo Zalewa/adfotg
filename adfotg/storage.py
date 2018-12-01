@@ -49,8 +49,12 @@ def listdir(dirpath, name_filter=None, sort=None):
     return files
 
 
-def unlink(filepath):
-    os.unlink(filepath)
+def unlink(filepath, optional=False):
+    try:
+        os.unlink(filepath)
+    except FileNotFoundError:
+        if not optional:
+            raise
 
 
 def mount_point(path):

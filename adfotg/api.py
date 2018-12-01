@@ -184,18 +184,22 @@ def create_adf(name):
       cut into a slice as determined by the [`start`; `length`] range.
       It will then be renamed in accordance to `rename` string. This
       is useful to slice files larger than one ADF into multiple ADFs.
-      `start` and `length` can be unspecified if you only wish to rename.
+      `start` and `length` can be unspecified if you only wish to rename,
+      and `rename` also can be unspecified in which case the behavior
+      will be the same as if a simple string was sent.
 
     - An empty list will result in empty but formatted ADF.
 
     '''
+    #return _apierr(400, 'dysk dupa') # XXX
+    #return '' # XXX
     target_path = safe_join(config.adf_dir, name)
     if os.path.exists(target_path):
         raise ActionError("ADF '{}' already exists".format(name))
-    label = request.args.get("label")
+    label = request.get_json().get("label")
     if not label:
         raise ActionError("must specify label")
-    contents = request.args.get("contents", [])
+    contents = request.get_json().get("contents", [])
     file_ops = [adf.FileUploadOp.interpret_api(config.upload_dir, piece)
                 for piece in contents]
     adf.create_adf(target_path, label, file_ops)

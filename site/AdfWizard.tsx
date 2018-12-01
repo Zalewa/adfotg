@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { boundMethod } from 'autobind-decorator';
+import * as request from 'superagent';
 
 import { Actions, ActionSet } from './Actions';
 import { FileTableEntry } from './FileTable';
+import { errorToString } from './Notifier';
 import Uploader from './Uploader';
 import * as Strings from './strings';
 import { Listing } from './ui';
@@ -13,29 +15,35 @@ interface AdfWizardState {
 	disks: DiskDescriptor[]
 	basename: string
 	selection: FileTableEntry[]
+	submitting: boolean
+	submitted: boolean
 }
 
 export default class AdfWizard extends Component {
 	readonly state: AdfWizardState = {
 		disks: [],
 		basename: "adfotg",
-		selection: []
+		selection: [],
+		submitting: false,
+		submitted: false
 	}
 
+	private disks: DiskDescriptor[];
 	private diskKey: number = 1;
 
 	render() {
 		return (<div>
 			<Uploader actions={this.actions()}
 				onSelected={selection => this.setState({selection})} />
-			{this.renderComposition()}
+			{this.state.submitted && this.renderSubmitted()}
+			{this.state.disks.length > 0 && this.renderComposition()}
 		</div>);
 	}
 
 	private actions(): JSX.Element[] {
 		return [
 			<button key="distribute"
-				disabled={this.state.selection.length == 0}
+				disabled={this.state.selection.length == 0 || this.state.submitting}
 				onClick={this.distributeDisks}>Distribute ADFs</button>,
 			<span key="basename">
 				<label>Base name:</label>
@@ -46,40 +54,47 @@ export default class AdfWizard extends Component {
 	}
 
 	private renderComposition(): JSX.Element {
-		if (this.state.disks.length == 0)
-			return null;
-		return <DiskComposition parent={this} disks={this.state.disks} />
+		return <DiskComposition parent={this} disks={this.state.disks}
+			allowSubmit={!this.state.submitting} />
+	}
+
+	private renderSubmitted(): JSX.Element {
+		if (this.state.disks.length == 0) {
+			return (<div className="notification--success">Disks created!</div>);
+		} else {
+			return (<div className="notification--error">Some disks were not created.</div>);
+		}
 	}
 
 	private addDisk(name: string, label: string, contents: FileOp[]): void {
-		let { disks } = this.state;
 		let descriptor = new DiskDescriptor();
 		descriptor.name = name;
 		descriptor.label = label;
 		descriptor.contents = contents.slice();
 		descriptor.key = this.diskKey++;
-		disks.push(descriptor);
-		this.setState({disks});
+		this.disks.push(descriptor);
+		this.setState({disks: this.disks});
 	}
 
 	@boundMethod
 	public clearDisks() {
+		this.disks = []
 		this.diskKey = 1;
-		this.setState({disks: []});
+		this.setState({disks: this.disks});
 	}
 
 	@boundMethod
 	public discardDisk(disk: DiskDescriptor): void {
-		const { disks } = this.state;
-		const idx = disks.findIndex(e => e.key == disk.key);
+		const idx = this.disks.findIndex(e => e.key == disk.key);
 		if (idx != -1) {
-			disks.splice(idx, 1);
+			this.disks.splice(idx, 1);
 		}
-		this.setState({disks});
+		this.setState({disks: this.disks});
 	}
 
 	@boundMethod
 	private distributeDisks(): void {
+		this.clearDisks();
 		const files = this.state.selection;
 		const { basename } = this.state;
 		let distributor = new Distributor(files);
@@ -89,11 +104,35 @@ export default class AdfWizard extends Component {
 			const label = basename + " " + (diskNum + 1);
 			this.addDisk(name, label, disks[diskNum]);
 		}
+		this.setState({submitted: false});
 	}
 
 	@boundMethod
 	public submit(): void {
-		console.log("submit");
+		this.setState({submitting: true, submitted: false});
+		this.submitAsync().then(() => {
+			if (this.disks.every(d => d.done)) {
+				this.disks = [];
+			}
+			this.setState({submitting: false, submitted: true, disks: this.disks});
+		});
+	}
+
+	private async submitAsync(): Promise<void> {
+		const disks = this.disks.slice();
+		let requests = disks.map(disk => {
+			return request.post("/adf/" + disk.name + ".adf")
+				.send({label: disk.label, contents: disk.contents});
+		});
+		for (let i = 0; i < requests.length; ++i) {
+			try {
+				let res  = await requests[i];
+				disks[i].done = true;
+			} catch (e) {
+				disks[i].error = errorToString(e);
+			}
+			this.setState({disks: this.disks});
+		}
 	}
 }
 
@@ -101,6 +140,9 @@ class DiskDescriptor {
 	public name: string
 	public label: string
 	public contents: FileOp[]
+
+	public error: string
+	public done: boolean = false;
 	public key: number
 
 	public setName(v: string): void {
@@ -127,13 +169,15 @@ function getFileOpDisplayName(op: FileOp) {
 interface DiskCompositionProps {
 	parent: AdfWizard
 	disks: DiskDescriptor[]
+	allowSubmit: boolean
 }
 
 class DiskComposition extends Component<DiskCompositionProps> {
 	render() {
 		const { parent } = this.props;
 		return (<div className="diskComposition">
-			<button className="buttonSubmit" onClick={parent.submit}>
+			<button className="buttonSubmit" onClick={parent.submit}
+				disabled={!this.props.allowSubmit}>
 				Submit</button>
 			<button className="buttonBig" onClick={parent.clearDisks}>
 				Discard All</button>
@@ -142,46 +186,77 @@ class DiskComposition extends Component<DiskCompositionProps> {
 	}
 
 	private renderDisks(): JSX.Element[] {
-		const { parent, disks } = this.props;
+		const { disks } = this.props;
 		return disks.map((disk: DiskDescriptor) =>
-			<DiskForm key={disk.key} disk={disk}
-				onDiscard={() => parent.discardDisk(disk)}
-				onNameEdited={s => {
-					disk.setName(s);
-					parent.setState({disks});
-				}}
-				onLabelEdited={s => {
-					disk.setLabel(s);
-					parent.setState({disks});
-				}}
-			/>);
+			!disk.done ?
+				this.renderForm(disk) :
+				this.renderDone()
+		);
+	}
+
+	private renderForm(disk: DiskDescriptor) {
+		const { parent, disks } = this.props;
+		return <DiskForm key={disk.key} name={disk.name}
+			label={disk.label} contents={disk.contents}
+			error={disk.error}
+			onDiscard={() => parent.discardDisk(disk)}
+			onNameEdited={s => {
+				disk.setName(s);
+				parent.setState({disks});
+			}}
+			onLabelEdited={s => {
+				disk.setLabel(s);
+				parent.setState({disks});
+			}}
+		/>
+	}
+
+	private renderDone() {
+		return (<div className="notification--success">Disk done</div>);
 	}
 }
 
 
 interface DiskFormProps {
-	disk: DiskDescriptor
+	name: string
+	label: string
+	contents: FileOp[]
+	error: string
 	onDiscard: ()=>void
 	onNameEdited: (value: string)=>void
 	onLabelEdited: (value: string)=>void
 }
 
-class DiskForm extends Component<DiskFormProps> {
+interface DiskFormState {
+	nameError: string
+}
+
+class DiskForm extends Component<DiskFormProps, DiskFormState> {
+	readonly state: DiskFormState = {
+		nameError: ""
+	}
+
 	render() {
 		const props = this.props;
-		const { disk } = this.props;
-		return (<div className="diskForm">
+		const { name, label, contents, error } = this.props;
+		return (<div className="form diskForm">
 			<button className="diskForm__close" onClick={props.onDiscard}>X</button>
+			{error && error.length > 0 && (<p className=".form__error">{error}</p>)}
 			<form>
 				<p>
 					<label>Name:</label>
-					<input value={disk.name}
+					<input value={name}
 					onChange={e => props.onNameEdited(e.target.value)} />
 					<label>.adf</label>
+					{this.state.nameError &&
+						(<p className=".form__error">
+							{this.state.nameError}
+						</p>)}
+
 				</p>
 				<p>
 					<label>Label:</label>
-					<input value={disk.label}
+					<input value={label}
 						onChange={e => props.onLabelEdited(e.target.value)} />
 				</p>
 				<div>
@@ -192,14 +267,39 @@ class DiskForm extends Component<DiskFormProps> {
 		</div>)
 	}
 
+	componentDidMount() {
+		this.validateDiskName(this.props.name);
+	}
+
+	componentWillReceiveProps(props: DiskFormProps) {
+		if (props.name !== this.props.name) {
+			this.validateDiskName(props.name);
+		}
+	}
+
+	private validateDiskName(name: string): void {
+		request.head("/adf/" + name + ".adf").end((err, res) => {
+			if (res.status == 404) {
+				// This is good! Stop processing.
+				this.setState({nameError: ""});
+			} else if (res.status == 200) {
+				this.setState({nameError: "File already exists"});
+			} else {
+				const message: string = err ? errorToString(err) : "unknown error";
+				this.setState({nameError: message})
+			}
+		})
+	}
+
 	private items(): string[] {
-		return this.props.disk.contents.map(getFileOpDisplayName);//(file: FileOp) => file.getDisplayName());
+		return this.props.contents.map(getFileOpDisplayName);
 	}
 }
 
 class Distributor {
 	private static readonly ADF_SIZE = 880 * 1024
-	private static readonly BUFFER_SPACE = 10 * 1024;
+	private static readonly BUFFER_SPACE = 15 * 1024;
+	private static readonly META_SPACE_PER_FILE = 2 * 1024;
 	private static readonly MAX_SIZE = Distributor.ADF_SIZE - Distributor.BUFFER_SPACE;
 	private files: FileTableEntry[];
 
@@ -231,7 +331,7 @@ class Distributor {
 					(bigfile.size - start) : Distributor.MAX_SIZE;
 				splits.push({
 					name: bigfile.name, start, length,
-					rename: bigfile.name + "." + Strings.leftpad("" + i, "0", 3)
+					rename: bigfile.name + "." + Strings.leftpad("" + (i + 1), "0", 3)
 				});
 			}
 		});
@@ -244,7 +344,10 @@ class Distributor {
 		let fitting = sorted.filter(e => e.size <= Distributor.MAX_SIZE);
 		while (fitting.length > 0) {
 			let disk: FileTableEntry[] = [];
-			const takenspace = () => disk.reduce((prev, cur) => prev + cur.size, 0);
+			const takenspace = () => {
+				return Distributor.META_SPACE_PER_FILE * (disk.length + 1)
+					+ disk.reduce((prev, cur) => prev + cur.size, 0);
+			};
 			const freespace = () => Distributor.MAX_SIZE - takenspace();
 			// 4.1. Start with largest file and put it on to the disk
 			disk.push(fitting.shift());
