@@ -191,8 +191,6 @@ def create_adf(name):
     - An empty list will result in empty but formatted ADF.
 
     '''
-    #return _apierr(400, 'dysk dupa') # XXX
-    #return '' # XXX
     target_path = safe_join(config.adf_dir, name)
     if os.path.exists(target_path):
         raise ActionError("ADF '{}' already exists".format(name))
