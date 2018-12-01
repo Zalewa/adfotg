@@ -1,4 +1,4 @@
-FULLNAME = "ADF On-the-Go"
+FULLNAME = "ADF On-The-Go"
 SHORTNAME = "adfotg"
 VERSION = "0.1.0"
 YEARSPAN = "2018"

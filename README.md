@@ -52,6 +52,29 @@ Hardware:
 * An Amiga
 
 
+Install
+=======
+
+This program is designed to be run on a *Raspberry Pi Zero* with the Raspbian
+Operating System. Installing the release package on anything else is not
+recommended, although will succeed and should be harmless (no warranty).
+
+Provided you have the Raspberry Pi Zero, do the following:
+
+1. Download or build the release package.
+2. `pip3 install <package>`
+3. `xdftool` is essential but needs to be installed separately.
+   This can be installed from `pip2 install amitools`
+
+The adfotg package is not in PyPI, yet.
+
+
+Development
+===========
+
+Please see CONTRIBUTING.md
+
+
 Background
 ==========
 
@@ -80,3 +103,11 @@ line tools and which we can program to serve the content we want.
 
 Guide for setting up OTG mode on Raspberry Pi can be found here:
 https://gist.github.com/gbaman/50b6cca61dd1c3f88f41
+
+
+REST API
+========
+
+REST API documentation is currently a Work-In-Progress.
+adfotg is capable of providing the documentation for itself
+in a plain-text format through the `/help` endpoint.
