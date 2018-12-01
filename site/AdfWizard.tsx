@@ -28,17 +28,6 @@ export default class AdfWizard extends Component {
 		return (<div>
 			<Uploader actions={this.actions()}
 				onSelected={selection => this.setState({selection})} />
-			<Actions>
-				<ActionSet>
-					<button onClick={this.addNewDisk}>
-						Add ADF
-					</button>
-					<label>Base name:</label>
-					<input value={this.state.basename} onChange={
-						e => this.setState({basename: e.target.value})
-					} />
-				</ActionSet>
-			</Actions>
 			{this.renderDisks()}
 		</div>);
 	}
@@ -72,26 +61,16 @@ export default class AdfWizard extends Component {
 			/>);
 	}
 
-	@boundMethod
-	private addNewDisk(): void {
-		const { disks, key, basename } = this.state;
-		const descriptor = new DiskDescriptor();
-		descriptor.name = basename + key
-		descriptor.label = basename + key;
-		descriptor.contents = [];
-		descriptor.key = key;
-		disks.push(descriptor);
-		this.setState({disks, key: key + 1});
-	}
-
 	private addDisk(name: string, label: string, contents: FileOp[]): void {
+		const { key } = this.state;
 		let { disks } = this.state;
 		let descriptor = new DiskDescriptor();
 		descriptor.name = name;
 		descriptor.label = label;
 		descriptor.contents = contents.slice();
+		descriptor.key = key;
 		disks.push(descriptor);
-		this.setState({disks});
+		this.setState({disks, key: key + 1});
 	}
 
 	private clearDisks() {
