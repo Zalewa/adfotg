@@ -9,6 +9,15 @@
 @pageBackground: #441144;
 @pageForeground: #eeaa88;
 
+.title--mixin {
+	font-size: 32px;
+}
+
+.title-text--mixin {
+	text-shadow: 2px 2px rgba(0, 0, 0, 64);
+}
+
+
 .actions {
 }
 
@@ -19,11 +28,13 @@
 }
 
 
-.appLink {
+.app-link {
+	.link();
+	font-size: 1.5em;
 	text-decoration: none;
 }
 
-.appLink--selected {
+.app-link--selected {
 	text-decoration: underline !important;
 }
 
@@ -54,27 +65,6 @@
 }
 
 .form__error {
-}
-
-
-.fileTable {
-	width: 100%;
-}
-
-.fileTable__fileLink {
-}
-
-.fileTable__headerCell {
-}
-
-.fileTable__headerCell--fixed {
-	width: 9em;
-}
-
-.fileTable__headerCell--sortedByAsc {
-}
-
-.fileTable__headerCell--sortedByDesc {
 }
 
 
@@ -114,6 +104,10 @@
 	color: cyan;
 	cursor: pointer;
 	text-decoration: none;
+
+	&:focus {
+		outline: none;
+	}
 
 	&:hover {
 		color: gold !important;
@@ -212,7 +206,7 @@
 	background-color: @pageBackground;
 	color: @pageForeground;
 	font-family: Amiga Topaz,Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;
-	font-size: 16px;
+	font-size: 1em;
 	max-width: 800px;
 }
 
@@ -242,9 +236,17 @@
 
 
 .section {
+	margin-top: 2px;
+	margin-bottom: 16px;
+}
+
+.section--uploader {
 }
 
 .section__title {
+	.title--mixin();
+	.title-text--mixin();
+	margin: 0px;
 }
 
 
@@ -270,6 +272,7 @@
 	border: 3px solid gray;
 	border-spacing: 0px;
 	padding: 0px;
+	margin-bottom: 4px;
 }
 
 .table__header {
@@ -280,10 +283,21 @@
 	border-bottom: @tableHeaderBorder;
 	border-right: @tableHeaderBorder;
 	padding: 0px 10px;
+	padding-top: 2px;
+}
+
+.table__header-cell--fixed {
+	width: 9em;
 }
 
 .table__header-cell--select {
 	.cell--select--mixin();
+}
+
+table__header-cell--sorted-asc {
+}
+
+table__header-cell--sorted-desc {
 }
 
 .table__header-cell--left {
@@ -313,9 +327,16 @@
 	.cell--select--mixin();
 }
 
+.table--full-page {
+	width: 100%
+}
+
 
 .title {
+	border-bottom: 1px solid @pageForeground;
 	display: block;
+	margin-bottom: 16px;
+	padding-bottom: 1px;
 }
 
 .title__row {
@@ -331,22 +352,18 @@
 }
 
 .title__main {
+	.title--mixin();
+	.title-text--mixin();
+	.link();
+	display: block;
+	font-size: 4em;
 	font-style: italic;
 	margin: 0;
 	margin-bottom: 10px;
 	padding: 0;
-	text-shadow: 2px 2px rgba(0, 0, 0, 64);
 	width: 100%;
 }
 
-
-.titleLink {
-	font-weight: bold;
-}
-
-
-.uploader {
-}
 
 .uploadzone {
 }

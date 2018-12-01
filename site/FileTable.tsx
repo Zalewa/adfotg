@@ -78,7 +78,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 			});
 		}
 		return (
-			<table className="table fileTable">
+			<table className="table table--full-page">
 				<Header {...this.props} selectedAll={this.state.selectedAll}
 					onSelected={this.props.onSelected && this.onSelectAll || null} />
 				<tbody>
@@ -168,17 +168,17 @@ interface HeaderCellProps extends FileTableProps {
 }
 
 const HeaderCell = (props: HeaderCellProps) => {
-	let klass = "table__header-cell fileTable__headerCell";
+	let klass = "table__header-cell";
 	if (props.rightmost)
 		klass += " table__header-cell--right";
 	if (props.fixed)
-		klass += " fileTable__headerCell--fixed";
+		klass += " table__header-cell--fixed";
 	const sortedBy: boolean = props.sort && props.sort.field == props.field;
 	if (sortedBy) {
 		if (props.sort.ascending)
-			klass += " fileTable__headerCell--sortedByAsc";
+			klass += " table__header-cell--sorted-asc";
 		else
-			klass += " fileTable__headerCell--sortedByDesc";
+			klass += " table__header-cell--sorted-desc";
 	}
 	return <th className={klass}>
 		<LinkText className="link--table" onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>
@@ -198,7 +198,7 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 		const props = this.props;
 		let nameTd: JSX.Element
 		if (props.url != null) {
-			nameTd = (<td className="table__data-cell"><a className="link link--table fileTable__fileLink"
+			nameTd = (<td className="table__data-cell"><a className="link link--table"
 				href={props.url}>{props.entry.name}</a></td>);
 		} else {
 			nameTd = <td className="table__data-cell">{props.entry.name}</td>;

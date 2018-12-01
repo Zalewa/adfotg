@@ -17,7 +17,7 @@ export default class Title extends Component<TitleProps> {
 			<div className="title">
 				<div className="title__row">
 				<div className="title__section">
-					<AppLink exact to={HOME_LINK}><h1 className="title__main">ADF On-The-Go</h1></AppLink>
+					<AppLink className="title__main" exact to={HOME_LINK}>ADF On-The-Go</AppLink>
 					<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
 				</div>
 				<div className="title__section title__section--right">
@@ -125,9 +125,10 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	}
 }
 
-const AppLink = (props: NavLinkProps & {children: string | JSX.Element[] | JSX.Element}) => {
-	return <NavLink exact={props.exact} className="link appLink titleLink"
-		activeClassName="appLink--selected"
+const AppLink = (props: NavLinkProps & {children: string | JSX.Element[] | JSX.Element, className?: string}) => {
+	return <NavLink exact={props.exact}
+		className={props.className ? props.className : "app-link"}
+		activeClassName="app-link--selected"
 		to={props.to}>
 		{props.children}
 	</NavLink>

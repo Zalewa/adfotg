@@ -8,7 +8,7 @@ interface SectionProps {
 
 export default class Section extends Component<SectionProps> {
 	render() {
-		return (<div className={"section " + this.props.className}>
+		return (<div className={"section section--" + this.props.className}>
 			<h1 className="section__title">{this.props.title}</h1>
 			{this.props.children}
 		</div>);
