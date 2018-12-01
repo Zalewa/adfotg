@@ -11,7 +11,6 @@ import { Listing } from './ui';
 
 interface AdfWizardState {
 	disks: DiskDescriptor[]
-	key: number
 	basename: string
 	selection: FileTableEntry[]
 }
@@ -19,16 +18,17 @@ interface AdfWizardState {
 export default class AdfWizard extends Component {
 	readonly state: AdfWizardState = {
 		disks: [],
-		key: 1,
 		basename: "adfotg",
 		selection: []
 	}
+
+	private diskKey: number = 1;
 
 	render() {
 		return (<div>
 			<Uploader actions={this.actions()}
 				onSelected={selection => this.setState({selection})} />
-			{this.renderDisks()}
+			{this.renderComposition()}
 		</div>);
 	}
 
@@ -45,40 +45,31 @@ export default class AdfWizard extends Component {
 		return actions;
 	}
 
-	private renderDisks(): JSX.Element[] {
-		const { disks } = this.state;
-		return disks.map((disk: DiskDescriptor) =>
-			<DiskForm key={disk.key} disk={disk}
-				onDiscard={() => this.discardDisk(disk)}
-				onNameEdited={s => {
-					disk.setName(s);
-					this.setState({disks});
-				}}
-				onLabelEdited={s => {
-					disk.setLabel(s);
-					this.setState({disks});
-				}}
-			/>);
+	private renderComposition(): JSX.Element {
+		if (this.state.disks.length == 0)
+			return null;
+		return <DiskComposition parent={this} disks={this.state.disks} />
 	}
 
 	private addDisk(name: string, label: string, contents: FileOp[]): void {
-		const { key } = this.state;
 		let { disks } = this.state;
 		let descriptor = new DiskDescriptor();
 		descriptor.name = name;
 		descriptor.label = label;
 		descriptor.contents = contents.slice();
-		descriptor.key = key;
+		descriptor.key = this.diskKey++;
 		disks.push(descriptor);
-		this.setState({disks, key: key + 1});
+		this.setState({disks});
 	}
 
-	private clearDisks() {
+	@boundMethod
+	public clearDisks() {
+		this.diskKey = 1;
 		this.setState({disks: []});
 	}
 
 	@boundMethod
-	private discardDisk(disk: DiskDescriptor): void {
+	public discardDisk(disk: DiskDescriptor): void {
 		const { disks } = this.state;
 		const idx = disks.findIndex(e => e.key == disk.key);
 		if (idx != -1) {
@@ -98,6 +89,11 @@ export default class AdfWizard extends Component {
 			const label = basename + " " + (diskNum + 1);
 			this.addDisk(name, label, disks[diskNum]);
 		}
+	}
+
+	@boundMethod
+	public submit(): void {
+		console.log("submit");
 	}
 }
 
@@ -128,6 +124,41 @@ function getFileOpDisplayName(op: FileOp) {
 }
 
 
+interface DiskCompositionProps {
+	parent: AdfWizard
+	disks: DiskDescriptor[]
+}
+
+class DiskComposition extends Component<DiskCompositionProps> {
+	render() {
+		const { parent } = this.props;
+		return (<div className="diskComposition">
+			<button className="buttonSubmit" onClick={parent.submit}>
+				Submit</button>
+			<button className="buttonBig" onClick={parent.clearDisks}>
+				Discard All</button>
+			{this.renderDisks()}
+		</div>);
+	}
+
+	private renderDisks(): JSX.Element[] {
+		const { parent, disks } = this.props;
+		return disks.map((disk: DiskDescriptor) =>
+			<DiskForm key={disk.key} disk={disk}
+				onDiscard={() => parent.discardDisk(disk)}
+				onNameEdited={s => {
+					disk.setName(s);
+					parent.setState({disks});
+				}}
+				onLabelEdited={s => {
+					disk.setLabel(s);
+					parent.setState({disks});
+				}}
+			/>);
+	}
+}
+
+
 interface DiskFormProps {
 	disk: DiskDescriptor
 	onDiscard: ()=>void
@@ -153,10 +184,10 @@ class DiskForm extends Component<DiskFormProps> {
 					<input value={disk.label}
 						onChange={e => props.onLabelEdited(e.target.value)} />
 				</p>
-				<p>
+				<div>
 					<label>Contents:</label>
 					<Listing listing={this.items()}></Listing>
-				</p>
+				</div>
 			</form>
 		</div>)
 	}
