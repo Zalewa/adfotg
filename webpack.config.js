@@ -23,7 +23,7 @@ module.exports = {
 				loader: "source-map-loader"
 			},
 			{
-				test: /\.less$/,
+				test: /(\.css|\.less)$/,
 				loaders: ["style-loader", "css-loader", "less-loader"]
 			}
 		]

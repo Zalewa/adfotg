@@ -12,6 +12,7 @@ require('./amiga-topaz/license.html');
 require('./amiga-topaz/readme.txt');
 require('./amiga-topaz/smartfonts.com.txt');
 require('./index.html');
+require('./reset.css');
 require('./style.less');
 
 ReactDOM.render(
