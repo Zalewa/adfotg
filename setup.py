@@ -1,6 +1,43 @@
 #!/usr/bin/env python
 # coding: utf-8
 from setuptools import setup
+import subprocess
+import os
+
+
+def pipen(cmd):
+    # It's a popen, but with pipes.
+    return subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
+def out_to_str(out):
+    return out.decode('utf-8', 'replace').strip()
+
+
+def get_git_tag():
+    git = pipen(['git', 'describe', '--abbrev=0'])
+    stdout, stderr = git.communicate()
+    exitcode = git.wait()
+    if exitcode == 128:
+        return None
+    elif exitcode != 0:
+        raise Exception('fail: {}'.format(out_to_str(stderr)))
+    else:
+        return out_to_str(stdout)
+
+
+def get_git_describe(tag):
+    '''Returns the describe part without the tag.'''
+    git = pipen(['git', 'describe', '--always', '--long', '--dirty'])
+    stdout, stderr = git.communicate()
+    exitcode = git.wait()
+    if exitcode != 0:
+        raise Exception('fail: {}'.format(out_to_str(stderr)))
+    if tag is not None:
+        return out_to_str(stdout)[len(tag):]
+    else:
+        return "-g" + out_to_str(stdout)
+
 
 with open('LICENSE') as f:
     license = f.read()
@@ -12,9 +49,15 @@ version = {}
 with open('adfotg/version.py', 'r') as f:
     exec(f.read(), version)
 
+
+version_string = version['VERSION']
+if os.path.exists(".git"):
+    version_string += get_git_describe(get_git_tag())
+
+
 setup(
     name=version['SHORTNAME'],
-    version=version['VERSION'],
+    version=version_string,
     description='ADF On-The-Go - convert your RPi Zero to Gotek-ready USB disk',
     long_description=readme,
     author='Robikz',
