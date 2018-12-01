@@ -3,14 +3,15 @@ var path = require('path');
 
 
 module.exports = {
+	context: path.resolve(__dirname, 'site'),
 	entry: [
-		path.join(__dirname, 'site/index.tsx')
+		path.resolve(__dirname, 'site/index.tsx')
 	],
 	module: {
 		rules: [
 			{
-				test: /\.html$/,
-				loader: 'file-loader?name=[name].[ext]',
+				test: /(\.html|\.ttf|\.txt)$/,
+				loader: 'file-loader?name=[path][name].[ext]',
 			},
 			{
 				test: /\.tsx?$/,
@@ -32,11 +33,11 @@ module.exports = {
 		extensions: [".ts", ".tsx", ".js", ".json"]
 	},
 	output: {
-		path: __dirname + '/site/dist',
+		path: path.resolve(__dirname, 'site/dist'),
 		filename: 'bundle.js'
 	},
 	devServer: {
-		contentBase: __dirname + '/site/dist',
+		contentBase: path.resolve(__dirname, 'site/dist'),
 		historyApiFallback: true
 	},
 	node: {
