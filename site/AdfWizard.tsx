@@ -33,16 +33,16 @@ export default class AdfWizard extends Component {
 	}
 
 	private actions(): JSX.Element[] {
-		let actions: JSX.Element[] = [];
-		actions.push(<button key="distribute"
-			disabled={this.state.selection.length == 0}
-			onClick={this.distributeDisks}>Distribute ADFs</button>);
-		actions.push(<span key="basename">
-			<label>Base name:</label>
-			<input value={this.state.basename}
-				onChange={e => this.setState({basename: e.target.value})} />
-		</span>);
-		return actions;
+		return [
+			<button key="distribute"
+				disabled={this.state.selection.length == 0}
+				onClick={this.distributeDisks}>Distribute ADFs</button>,
+			<span key="basename">
+				<label>Base name:</label>
+				<input value={this.state.basename}
+					onChange={e => this.setState({basename: e.target.value})} />
+			</span>
+		]
 	}
 
 	private renderComposition(): JSX.Element {
