@@ -2,6 +2,9 @@
    http://getbem.com/
 */
 
+@pageBackground: #441144;
+@pageForeground: #eeaa88;
+
 .actions {
 }
 
@@ -9,6 +12,15 @@
 }
 
 .actions__set--right {
+}
+
+
+.appLink {
+	text-decoration: none;
+}
+
+.appLink--selected {
+	text-decoration: underline !important;
 }
 
 
@@ -42,12 +54,17 @@
 
 
 .fileTable {
+	width: 100%;
 }
 
 .fileTable__fileLink {
 }
 
 .fileTable__headerCell {
+}
+
+.fileTable__headerCell--fixed {
+	width: 9em;
 }
 
 .fileTable__headerCell--sortedByAsc {
@@ -80,20 +97,35 @@
 }
 
 .labelled__label {
+	color: lighten(@pageForeground, 2%);
+	font-weight: bold;
+	padding-right: 5px;
 }
 
 .labelled__content {
 }
 
 
-.linkText {
+.link {
+	color: cyan;
 	cursor: pointer;
-	text-decoration: underline;
-	color: blue
+	text-decoration: none;
+
+	&:hover {
+		color: gold !important;
+	}
+
+	&:visited {
+		color: cyan;
+	}
 }
 
-.linkText:hover {
-	color: dodgerblue;
+.link--table {
+	color: blue;
+
+	&:hover {
+		color: dodgerblue !important;
+	}
 }
 
 
@@ -172,6 +204,14 @@
 }
 
 
+.page {
+	background-color: @pageBackground;
+	color: @pageForeground;
+	font-family: Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;
+	max-width: 800px;
+}
+
+
 .pager {
 }
 
@@ -206,14 +246,96 @@
 .spaceInfo {
 }
 
+.spaceInfo__table {
+}
+
+
+@tableHeaderBorder: 1px solid black;
+
+.cell--select--mixin {
+	padding: 2px;
+	text-align: center;
+	width: 21px;
+	border-right: 0px;
+}
+
+.table {
+	color: @pageBackground;
+	background: white;
+	border: 3px solid gray;
+	border-spacing: 0px;
+	padding: 0px;
+}
+
+.table__header {
+	background: fade(@pageBackground, 25%);
+}
+
+.table__header-cell {
+	border-bottom: @tableHeaderBorder;
+	border-right: @tableHeaderBorder;
+	padding: 0px 10px;
+}
+
+.table__header-cell--select {
+	.cell--select--mixin();
+}
+
+.table__header-cell--left {
+}
+
+.table__header-cell--right {
+	border-right: none;
+}
+
+.table__record {
+	&:nth-child(even) {
+		background: fade(@pageBackground, 10%);
+	}
+}
+
+.table__label-cell {
+	font-weight: normal;
+	text-align: center;
+	padding: 4px 10px;
+}
+
+.table__data-cell {
+	padding: 4px 2px;
+}
+
+.table__data-cell--select {
+	.cell--select--mixin();
+}
+
 
 .title {
+	display: block;
 }
 
-.title__appLink {
+.title__row {
+	display: flex;
 }
 
-.title__appLink--selected {
+.title__section {
+	display: block;
+}
+
+.title__section--right {
+	margin-left: auto;
+}
+
+.title__main {
+	font-style: italic;
+	margin: 0;
+	padding: 0;
+	text-shadow: 2px 2px rgba(0, 0, 0, 64);
+	width: 100%;
+}
+
+
+.titleLink {
+	font-weight: bold;
 }
 
 
@@ -225,4 +347,6 @@
 
 
 .versionInfo {
+	margin-left: auto;
+	text-align: right;
 }

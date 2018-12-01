@@ -15,11 +15,19 @@ export default class Title extends Component<TitleProps> {
 	render() {
 		return (
 			<div className="title">
-				<AppLink exact to={HOME_LINK}><h1>ADF On-The-Go</h1></AppLink>
-				<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
-				<a href="/help">API Help</a>
-				<VersionInfo />
-				<SpaceInfo refresh={this.props.refresh} />
+				<div className="title__row">
+				<div className="title__section">
+					<AppLink exact to={HOME_LINK}><h1 className="title__main">ADF On-The-Go</h1></AppLink>
+					<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
+				</div>
+				<div className="title__section title__section--right">
+					<SpaceInfo refresh={this.props.refresh} />
+					<div className="title__row">
+						<a className="link" href="/help">API Help</a>
+						<VersionInfo />
+					</div>
+				</div>
+				</div>
 			</div>
 		);
 	}
@@ -70,12 +78,12 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 
 	render() {
 		return (<div className="spaceInfo">
-			<table>
+			<table className="table spaceInfo__table">
 				<thead>
-					<tr>
-						<th>Mount Point</th>
-						<th>Available</th>
-						<th>Total Space</th>
+					<tr className="table__header">
+						<th className="table__header-cell table__header-cell--left">Mount Point</th>
+						<th className="table__header-cell">Available</th>
+						<th className="table__header-cell table__header-cell--right">Total Space</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -98,10 +106,10 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	private renderStats(): JSX.Element[] {
 		let el: JSX.Element[] = [];
 		this.state.fsStats.forEach((stat: FsStats) => {
-			el.push(<tr key={stat.name}>
-				<th>{stat.name}</th>
-				<td>{formatSize(stat.avail)}</td>
-				<td>{formatSize(stat.total)}</td>
+			el.push(<tr className="table__record" key={stat.name}>
+				<th className="table__label-cell">{stat.name}</th>
+				<td className="table__data-cell">{formatSize(stat.avail)}</td>
+				<td className="table__data-cell">{formatSize(stat.total)}</td>
 			</tr>)
 		});
 		return el;
@@ -118,8 +126,8 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 }
 
 const AppLink = (props: NavLinkProps & {children: string | JSX.Element[] | JSX.Element}) => {
-	return <NavLink exact={props.exact} className="title__appLink"
-		activeClassName="title__appLink--selected"
+	return <NavLink exact={props.exact} className="link appLink titleLink"
+		activeClassName="appLink--selected"
 		to={props.to}>
 		{props.children}
 	</NavLink>

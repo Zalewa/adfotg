@@ -78,7 +78,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 			});
 		}
 		return (
-			<table className="fileTable">
+			<table className="table fileTable">
 				<Header {...this.props} selectedAll={this.state.selectedAll}
 					onSelected={this.props.onSelected && this.onSelectAll || null} />
 				<tbody>
@@ -141,17 +141,17 @@ class Header extends Component<HeaderProps> {
 		}
 		let sizeTd = null;
 		if (this.props.showSize)
-			sizeTd = (<HeaderCell {...headerProps} field={Field.Size} label="Size" />);
+			sizeTd = (<HeaderCell {...headerProps} field={Field.Size} label="Size" fixed />);
 		return (<thead>
-			<tr>
-				<th>
+			<tr className="table__header">
+				<th className="table__header-cell table__header-cell--select">
 					{this.props.onSelected && <input name="selectAll" type="checkbox"
 						checked={this.props.selectedAll}
 						onChange={this.props.onSelected} />}
 				</th>
 				<HeaderCell {...headerProps} field={Field.Name} label="Name" />
 				{sizeTd}
-				<HeaderCell {...headerProps} field={Field.Mtime} label="Modified Date" />
+				<HeaderCell {...headerProps} field={Field.Mtime} label="Modified Date" rightmost fixed />
 			</tr>
 		</thead>);
 	}
@@ -163,10 +163,16 @@ interface HeaderCellProps extends FileTableProps {
 	field: Field,
 	label: string,
 	onHeaderClick: (field: Field) => void
+	rightmost?: boolean
+	fixed?: boolean
 }
 
 const HeaderCell = (props: HeaderCellProps) => {
-	let klass = "fileTable__headerCell";
+	let klass = "table__header-cell fileTable__headerCell";
+	if (props.rightmost)
+		klass += " table__header-cell--right";
+	if (props.fixed)
+		klass += " fileTable__headerCell--fixed";
 	const sortedBy: boolean = props.sort && props.sort.field == props.field;
 	if (sortedBy) {
 		if (props.sort.ascending)
@@ -175,7 +181,7 @@ const HeaderCell = (props: HeaderCellProps) => {
 			klass += " fileTable__headerCell--sortedByDesc";
 	}
 	return <th className={klass}>
-		<LinkText onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>
+		<LinkText className="link--table" onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>
 	</th>
 }
 
@@ -192,24 +198,24 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 		const props = this.props;
 		let nameTd: JSX.Element
 		if (props.url != null) {
-			nameTd = (<td><a className="fileTable__fileLink"
+			nameTd = (<td className="table__data-cell"><a className="link link--table fileTable__fileLink"
 				href={props.url}>{props.entry.name}</a></td>);
 		} else {
-			nameTd = <td>{props.entry.name}</td>;
+			nameTd = <td className="table__data-cell">{props.entry.name}</td>;
 		}
 		let sizeTd = null;
 		if (props.showSize)
-			sizeTd = (<td>{formatSize(props.entry.size)}</td>);
+			sizeTd = (<td className="table__data-cell">{formatSize(props.entry.size)}</td>);
 		const date = new Date(props.entry.mtime * 1000);
-		return (<tr>
-			<td>
+		return (<tr className="table__record">
+			<td className="table__data-cell table__data-cell--select">
 				{props.onSelected && <input name={props.entry.name} type="checkbox"
 					checked={props.selected}
 					onChange={props.onSelected} />}
 			</td>
 			{nameTd}
 			{sizeTd}
-			<td>{formatDate(date)}</td>
+			<td className="table__data-cell">{formatDate(date)}</td>
 		</tr>);
 	}
 };
