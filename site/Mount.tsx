@@ -214,7 +214,8 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 		return (<div className="createMountImage">
 			<span>Create Mount Image with following ADFs:</span>
 			<Listing listing={this.sortedAdfs()} />
-			<input autoFocus type="text" value={this.state.imageName}
+			<input autoFocus className="text-input" type="text"
+				value={this.state.imageName}
 				onChange={e => this.onNameChange(e.target.value)}
 				onKeyPress={e => {
 					if (e.key === "Enter") {
