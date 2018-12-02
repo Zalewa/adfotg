@@ -6,8 +6,11 @@
 	src: url(/amiga-topaz/Amiga%20Topaz.ttf) format('truetype');
 }
 
-/* Color definitions. */
+/* Generic color definitions */
 @dangerColor: #f33;
+@successColor: #3f3;
+
+/* Amiga styling */
 @kickstartBackground: #414;
 @kickstartTextColor: #ea8;
 @workbenchBackground: #aaa;
@@ -15,7 +18,6 @@
 @workbenchTitleColor: #68b;
 @workbenchBorderLight: 2px solid #fff;
 @workbenchBorderDark: 2px solid #000;
-
 
 /* Globals */
 @mainFont: Amiga Topaz;
@@ -99,6 +101,10 @@
 	}
 
 	&--modal-close {
+	}
+
+	&--notification-close {
+		margin-right: 5px;
 	}
 
 	&--section-close {
@@ -321,10 +327,18 @@
 }
 
 .notification {
+	border: 1px dashed;
+	padding: 0.25em;
+	margin: 0.25em;
+
 	&--error {
+		border-color: @dangerColor;
+		background: fade(@dangerColor, 20%);
 	}
 
 	&--success {
+		border-color: @successColor;
+		background: fade(@successColor, 40%);
 	}
 }
 

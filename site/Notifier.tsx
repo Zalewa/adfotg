@@ -3,8 +3,9 @@ import { Component } from 'react';
 import { Response } from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-enum NoteType {
-	Error = "error"
+export enum NoteType {
+	Error = "error",
+	Success = "success"
 }
 
 interface Note {
@@ -113,16 +114,18 @@ export default class Notifier extends Component<{}, NotifierState> {
 }
 
 interface NotificationProps {
-	onClose: (key: number) => void,
-	note: Note,
-	key: number
+	onClose?: (key: number) => void
+	note: Note
 }
 
-class Notification extends Component<NotificationProps> {
+export class Notification extends Component<NotificationProps> {
 	render() {
 		const note = this.props.note;
-		return (<div className="notification--{note.type}">
-			<button onClick={() => this.props.onClose(note.key)}>X</button>
+		return (<div className={"notification notification--" + note.type}>
+			{this.props.onClose &&
+			<button className="button button--notification-close"
+				onClick={() => this.props.onClose(note.key)}>X</button>
+			}
 			<span>{note.message}</span>
 		</div>);
 	}

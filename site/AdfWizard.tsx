@@ -5,7 +5,7 @@ import * as request from 'superagent';
 
 import { Actions, ActionSet } from './Actions';
 import { FileTableEntry } from './FileTable';
-import { errorToString } from './Notifier';
+import { Notification, NoteType, errorToString } from './Notifier';
 import Uploader from './Uploader';
 import * as Strings from './strings';
 import { Listing } from './ui';
@@ -60,9 +60,13 @@ export default class AdfWizard extends Component {
 
 	private renderSubmitted(): JSX.Element {
 		if (this.state.disks.length == 0) {
-			return (<div className="notification--success">Disks created!</div>);
+			return <Notification note={{
+				type: NoteType.Success,
+				message: "Disks created!"}} />
 		} else {
-			return (<div className="notification--error">Some disks were not created.</div>);
+			return <Notification note={{
+				type: NoteType.Error,
+				message: "Some disks were not created." }} />
 		}
 	}
 
@@ -80,7 +84,7 @@ export default class AdfWizard extends Component {
 	public clearDisks() {
 		this.disks = []
 		this.diskKey = 1;
-		this.setState({disks: this.disks});
+		this.setState({disks: this.disks, submitted: false, submitting: false});
 	}
 
 	@boundMethod
@@ -111,10 +115,12 @@ export default class AdfWizard extends Component {
 	public submit(): void {
 		this.setState({submitting: true, submitted: false});
 		this.submitAsync().then(() => {
-			if (this.disks.every(d => d.done)) {
-				this.disks = [];
+			if (this.state.submitting) {
+				if (this.disks.every(d => d.done)) {
+					this.disks = [];
+				}
+				this.setState({submitting: false, submitted: true, disks: this.disks});
 			}
-			this.setState({submitting: false, submitted: true, disks: this.disks});
 		});
 	}
 
@@ -190,7 +196,7 @@ class DiskComposition extends Component<DiskCompositionProps> {
 		return disks.map((disk: DiskDescriptor) =>
 			!disk.done ?
 				this.renderForm(disk) :
-				this.renderDone()
+				this.renderDone(disk)
 		);
 	}
 
@@ -211,8 +217,10 @@ class DiskComposition extends Component<DiskCompositionProps> {
 		/>
 	}
 
-	private renderDone() {
-		return (<div className="notification--success">Disk done</div>);
+	private renderDone(disk: DiskDescriptor) {
+		return <Notification note={{
+			type: NoteType.Success,
+			message: "Disk '" + disk.name + "' done!"}} />
 	}
 }
 
@@ -241,7 +249,8 @@ class DiskForm extends Component<DiskFormProps, DiskFormState> {
 		const { name, label, contents, error } = this.props;
 		return (<div className="form diskForm">
 			<button className="button button--form-close" onClick={props.onDiscard}>X</button>
-			{error && error.length > 0 && (<p className=".form__error">{error}</p>)}
+			{error && error.length > 0 && (
+				<Notification note={{type: NoteType.Error, message: error}} />)}
 			<form>
 				<p>
 					<label>Name:</label>
