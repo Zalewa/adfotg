@@ -11,6 +11,7 @@
 @kickstartTextColor: #ea8;
 @workbenchBackground: #aaa;
 @workbenchTextColor: #000;
+@workbenchTitleColor: #68b;
 
 /* Globals */
 @mainFont: Amiga Topaz;
@@ -66,35 +67,42 @@
 	display: inline-block;
 	font-size: 1em;
 	font-family: @mainFont;
-}
 
-.button:disabled {
-	background-color: lighten(@workbenchBackground, 20%);
-	color: lighten(@workbenchTextColor, 50%);
-}
+	&:active {
+		background-color: @workbenchTitleColor;
+		border-left: @borderDark;
+		border-top: @borderDark;
+		border-right: @borderLight;
+		border-bottom: @borderLight;
+	}
 
-.button--big {
-}
+	&:disabled {
+		background-color: lighten(@workbenchBackground, 20%);
+		color: lighten(@workbenchTextColor, 50%);
+	}
 
-.button--delete {
-	background-color: #f33;
-}
+	&--big {
+	}
 
-.button--form-close {
-}
+	&--delete {
+		background-color: #f33;
+	}
 
-.button--modal-close {
-}
+	&--form-close {
+	}
 
-.button--section-close {
-	position: absolute;
-	right: 0;
-	top: 0;
-}
+	&--modal-close {
+	}
 
-.button--submit {
-}
+	&--section-close {
+		position: absolute;
+		right: 0;
+		top: 0;
+	}
 
+	&--submit {
+	}
+}
 
 .diskComposition {
 }
