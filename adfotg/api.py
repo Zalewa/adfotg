@@ -1,6 +1,6 @@
-'''This application implements a functionality of a programmable USB
-drive with the intention of the primary use in a Gotek floppy drive
-emulator in an Amiga computer.
+'''This application implements a functionality of converting a Raspberry
+Pi Zero into a programmable USB drive with the intention of the primary
+use in a Gotek floppy drive emulator in an Amiga computer.
 
 Entire functionality is exposed over a RESTful API that can be accessed
 through HTTP requests. Hereby are shortlisted all API endpoints with
