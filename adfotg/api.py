@@ -79,21 +79,6 @@ def del_upload(name):
     os.unlink(safe_join(config.upload_dir, name))
 
 
-@app.route("/upload/pack", methods=["POST"])
-def upload_to_adf():
-    '''
-    Request as JSON:
-    files -- list of uploads to pack
-    adf -- name of the adf to create (what to do when there's collision?)
-    allow_split -- bool; if True then if contents are larger than floppy
-    then split them into more ADFs (what do when there's a big file? split it?
-    what to do when there are many files, including big ones?)
-    '''
-    # TODO is this request good?
-    args = request.get_json()
-    # TODO rest of the method
-
-
 @app.route("/adf", methods=["GET"])
 def list_adfs():
     '''
