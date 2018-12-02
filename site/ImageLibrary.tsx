@@ -30,6 +30,8 @@ interface ImageLibraryState {
 	page: Page
 }
 
+const PAGE_SIZE = 50;
+
 export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibraryState> {
 	state: Readonly<ImageLibraryState> = {
 		createImage: false,
@@ -39,7 +41,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 		selection: [],
 		deleteSelected: false,
 		search: '',
-		page: new Page(0, 50),
+		page: new Page(0, PAGE_SIZE),
 	}
 
 	render() {

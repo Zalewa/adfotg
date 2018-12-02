@@ -27,24 +27,34 @@ export default class Pager extends Component<PagerProps> {
 		if (!this.hasPages())
 			return null;
 		return (<div className="pager">
-			{this.hasLeft() && this.renderLeft()}
+			{this.renderLeft()}
 			{this.renderNumbers()}
-			{this.hasRight() && this.renderRight()}
+			{this.renderRight()}
 		</div>);
 	}
 
 	private renderLeft(): JSX.Element {
-		return (<div className="pager__left">
-			<LinkText onClick={() => this.change(0)}>&lt;&lt;</LinkText>
-			<LinkText onClick={() => this.change(this.page() - 1)}>&lt;</LinkText>
-		</div>);
+		const klass = "pager__left";
+		if (this.hasLeft()) {
+			return (<div className={klass}>
+				<LinkText className="pager__page" onClick={() => this.change(0)}>&lt;&lt;</LinkText>
+				<LinkText className="pager__page" onClick={() => this.change(this.page() - 1)}>&lt;</LinkText>
+			</div>);
+		} else {
+			return <div className={klass} />
+		}
 	}
 
 	private renderRight(): JSX.Element {
-		return (<div className="pager__right">
-			<LinkText onClick={() => this.change(this.page() + 1)}>&gt;</LinkText>
-			<LinkText onClick={() => this.change(this.lastPage())}>&gt;&gt;</LinkText>
-		</div>);
+		const klass = "pager__right";
+		if (this.hasRight()) {
+			return (<div className={klass}>
+				<LinkText className="pager__page" onClick={() => this.change(this.page() + 1)}>&gt;</LinkText>
+				<LinkText className="pager__page" onClick={() => this.change(this.lastPage())}>&gt;&gt;</LinkText>
+			</div>);
+		} else {
+			return <div className={klass} />
+		}
 	}
 
 	private renderNumbers(): JSX.Element[] {
@@ -52,10 +62,10 @@ export default class Pager extends Component<PagerProps> {
 		for (let page = 0; page < this.numPages(); ++page) {
 			let klass = "pager__page";
 			if (page == this.page())
-				klass += "--selected";
+				klass += " pager__page--selected";
 			links.push(<LinkText key={page} className={klass}
 					onClick={() => this.change(page)}>
-				<span className={klass}>{page + 1}</span>
+				{page + 1}
 			</LinkText>);
 		}
 		return links;
@@ -115,4 +125,3 @@ export default class Pager extends Component<PagerProps> {
 		return this.props.total;
 	}
 }
-

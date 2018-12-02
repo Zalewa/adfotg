@@ -353,17 +353,27 @@
 
 
 .pager {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+
 	&__left {
+		min-width: 64px;
 	}
 
 	&__right {
+		min-width: 64px;
+		text-align: right;
 	}
 
-	&__numbers {
-	}
+	&__page {
+		margin: 0 0.125em;
+		font-size: 1.5em;
 
-	&__page--selected {
-		font-weight: bold;
+		&--selected {
+			font-weight: bold;
+			text-decoration: underline;
+		}
 	}
 }
 
