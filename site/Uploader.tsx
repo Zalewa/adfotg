@@ -105,7 +105,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 	@boundMethod
 	private deleteSelected() {
 		request.delete("/upload")
-			.send({names: this.state.selection})
+			.send({names: this.state.selection.map(e => e.name)})
 			.end((err, res) => {
 				dispatchRequestError(err);
 				if (res.body)
