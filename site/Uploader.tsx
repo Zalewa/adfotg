@@ -6,10 +6,11 @@ import { boundMethod } from 'autobind-decorator';
 
 import { Actions, ActionSet } from './Actions';
 import FileTable, { FileTableEntry, Field, Sort, createSort } from './FileTable';
+import Listing from './Listing';
 import { ConfirmModal } from './Modal';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import Section from './Section';
-import { DeleteButton, Listing } from './ui';
+import { DeleteButton } from './ui';
 
 
 interface UploaderProps {

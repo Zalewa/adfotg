@@ -6,9 +6,12 @@
 	src: url(/amiga-topaz/Amiga%20Topaz.ttf) format('truetype');
 }
 
-/* Generic color definitions */
+/* Generic definitions */
 @dangerColor: #f33;
 @successColor: #3f3;
+@paneBackground: rgba(255, 255, 255, 0.1);
+@paneBorder: 1px dashed rgba(255, 255, 255, 0.2);
+@labelColor: #fff;
 
 /* Amiga styling */
 @kickstartBackground: #414;
@@ -23,6 +26,19 @@
 @mainFont: Amiga Topaz;
 @pageBackground: @kickstartBackground;
 @pageForeground: @kickstartTextColor;
+
+.label--mixin {
+	color: @labelColor;
+	padding-right: 5px;
+}
+
+.pane--mixin {
+	background-color: @paneBackground;
+	border: @paneBorder;
+	margin: 1em;
+	padding: 4px;
+	position: relative;
+}
 
 .title--mixin {
 	font-size: 2em;
@@ -98,6 +114,9 @@
 	}
 
 	&--form-close {
+		position: absolute;
+		right: 0;
+		top: 0;
 	}
 
 	&--modal-close {
@@ -117,22 +136,49 @@
 	}
 }
 
-.diskComposition {
+.disk-composition {
 }
 
 
-.diskForm {
+.disk-form {
+	.pane--mixin();
+	margin: 1em;
+
 	&__close {
+		position: absolute;
+		right: 0;
+		top: 0;
+	}
+
+	/* Double & is not a mistake. It forces this style to be
+	   more important than the default. */
+	& &__listing {
+		outline: unset;
+		max-height: 800px;
 	}
 }
 
 
-.error {
-}
-
-
 .form {
-	&__error {
+	border-collapse: separate;
+	border-spacing: 0.25em;
+
+	&__row {
+	}
+
+	&__item {
+		&-note {
+			/* Don't ask me why this works.
+			   I'll just wait till it breaks.*/
+			display: table-cell;
+		}
+	}
+
+	&__cell {
+		&--label {
+			.label--mixin();
+			text-align: right;
+		}
 	}
 }
 
@@ -157,8 +203,7 @@
 
 .labelled {
 	&__label {
-		color: #fff;
-		padding-right: 5px;
+		.label--mixin();
 	}
 
 	&__content {
@@ -405,11 +450,7 @@
 }
 
 .subsection {
-	background-color: rgba(255, 255, 255, 0.1);
-	border: 1px dashed rgba(255, 255, 255, 0.2);
-	margin: 1em;
-	padding: 4px;
-	position: relative;
+	.pane--mixin();
 
 	&__title {
 		.title-shadow--mixin();

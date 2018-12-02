@@ -35,30 +35,6 @@ export const LinkText = (props: any) => {
 }
 
 
-interface ListingProps {
-	listing: string[]
-	className?: string
-}
-
-export const Listing = (props: ListingProps) => {
-	let lines: JSX.Element[] = [];
-	if (props.listing) {
-		const customEntryClass = (props.className ? props.className + "__entry" : "");
-		props.listing.forEach((entry: string) => {
-			lines.push(<li className={"listing__entry " + customEntryClass}
-				key={entry}>{entry}</li>);
-		});
-	}
-	if (lines.length > 0) {
-		return (<ul className={"listing " + (props.className ? props.className : "")}>
-			{lines}
-		</ul>);
-	} else {
-		return null;
-	}
-}
-
-
 /**
  * Similar to ISO-8601 but without the T & Z artifacts.
  * YYYY-MM-DD HH:MM:SS

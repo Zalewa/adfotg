@@ -8,7 +8,7 @@ export enum NoteType {
 	Success = "success"
 }
 
-interface Note {
+export interface Note {
 	type: NoteType,
 	message: string,
 	key?: number

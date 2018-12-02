@@ -5,10 +5,11 @@ import * as request from 'superagent';
 
 import { Actions, ActionSet } from './Actions';
 import { FileTableEntry } from './FileTable';
+import Form, { FormItem } from './Form';
+import Listing from './Listing';
 import { Notification, NoteType, errorToString } from './Notifier';
 import Uploader from './Uploader';
 import * as Strings from './strings';
-import { Listing } from './ui';
 
 
 interface AdfWizardState {
@@ -181,7 +182,7 @@ interface DiskCompositionProps {
 class DiskComposition extends Component<DiskCompositionProps> {
 	render() {
 		const { parent } = this.props;
-		return (<div className="diskComposition">
+		return (<div className="disk-composition">
 			<button className="button button--submit" onClick={parent.submit}
 				disabled={!this.props.allowSubmit}>
 				Submit</button>
@@ -247,32 +248,26 @@ class DiskForm extends Component<DiskFormProps, DiskFormState> {
 	render() {
 		const props = this.props;
 		const { name, label, contents, error } = this.props;
-		return (<div className="form diskForm">
+		return (<div className="disk-form">
 			<button className="button button--form-close" onClick={props.onDiscard}>X</button>
 			{error && error.length > 0 && (
 				<Notification note={{type: NoteType.Error, message: error}} />)}
-			<form>
-				<p>
-					<label>Name:</label>
-					<input value={name}
-					onChange={e => props.onNameEdited(e.target.value)} />
-					<label>.adf</label>
-					{this.state.nameError &&
-						(<p className=".form__error">
-							{this.state.nameError}
-						</p>)}
-
-				</p>
-				<p>
-					<label>Label:</label>
-					<input value={label}
+			<Form>
+				<FormItem label="Name" hint=".adf"
+					note={this.state.nameError && {
+						type: NoteType.Error,
+						message: this.state.nameError}}>
+					<input value={name} type="text" className="text-input"
+						onChange={e => props.onNameEdited(e.target.value)} />
+				</FormItem>
+				<FormItem label="Label">
+					<input value={label} type="text" className="text-input"
 						onChange={e => props.onLabelEdited(e.target.value)} />
-				</p>
-				<div>
-					<label>Contents:</label>
-					<Listing listing={this.items()}></Listing>
-				</div>
-			</form>
+				</FormItem>
+				<FormItem label="Contents">
+					<Listing className="disk-form__listing" listing={this.items()}></Listing>
+				</FormItem>
+			</Form>
 		</div>)
 	}
 
