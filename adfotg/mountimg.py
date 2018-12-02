@@ -211,6 +211,8 @@ class _MdirParser:
       Volume Serial Number is 6515-5815
       Directory for ::/
 
+      5years1  adf    901120 2018-12-02  20:30
+      adfotg1  adf    901120 2018-12-02  20:30
       BARBAR~1 ADF    901120 2018-11-24  22:44  Barbarian Plus 6.adf
       EOBAGA~1 ADF    901120 2018-11-24  22:44  Eob AGA z ppa01.adf
       GENESIA1 ADF    901120 2018-11-24  22:44  Genesia1.adf
@@ -246,7 +248,19 @@ class _MdirParser:
         '''
         Example entry:
           BARBAR~1 ADF    901120 2018-11-24  22:44  Barbarian Plus 6.adf
+
+        Another example entry:
+          5years1  adf    901120 2018-12-02  20:30
+
+        The entry without the long name gets listed when the filename
+        fits in the 8.3 DOS limitation and doesn't have a whitespace
+        character.
         '''
+        DOS_NAME_LEN = 8
+        DOS_EXT_LEN = 3
+        DOS_LEN = DOS_NAME_LEN + 1 + DOS_EXT_LEN  # NAME DOT EXT
+        dos_name = line[:DOS_LEN]
+
         NAME_EXT_LEN = 16
         line = line[NAME_EXT_LEN:]
         size = int(line[:line.find(' ')])
@@ -255,6 +269,10 @@ class _MdirParser:
         date = line[:line.find('  ', line.find('  ') + 2)]
         # Programmers know how to party hard.
         name = line[len(date) + 2:]
+        if not name:
+            # We have the case where the name fit in the DOS limitations
+            # and we need to parse dos_name.
+            name = dos_name[:DOS_NAME_LEN].strip() + "." + dos_name[DOS_NAME_LEN + 1:]
         timestamp = time.mktime(time.strptime(date, "%Y-%m-%d  %H:%M"))
         return FileEntryField.dictify(name, size, int(timestamp))
 
