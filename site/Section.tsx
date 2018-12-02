@@ -4,12 +4,14 @@ import { Component } from 'react';
 interface SectionProps {
 	title: string,
 	className: string
+	subsection?: boolean
 }
 
 export default class Section extends Component<SectionProps> {
 	render() {
-		return (<div className={"section section--" + this.props.className}>
-			<h1 className="section__title">{this.props.title}</h1>
+		let className = !this.props.subsection ? "section" : "subsection";
+		return (<div className={className + " " + className + "--" + this.props.className}>
+			<h1 className={className + "__title"}>{this.props.title}</h1>
 			{this.props.children}
 		</div>);
 	}

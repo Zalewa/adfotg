@@ -10,10 +10,10 @@
 @pageForeground: #eeaa88;
 
 .title--mixin {
-	font-size: 32px;
+	font-size: 2em;
 }
 
-.title-text--mixin {
+.title-shadow--mixin {
 	text-shadow: 2px 2px rgba(0, 0, 0, 64);
 }
 
@@ -91,8 +91,7 @@
 }
 
 .labelled__label {
-	color: lighten(@pageForeground, 2%);
-	font-weight: bold;
+	color: #fff;
 	padding-right: 5px;
 }
 
@@ -123,6 +122,10 @@
 
 	&:hover {
 		color: dodgerblue !important;
+	}
+
+	&:visited {
+		color: blue;
 	}
 }
 
@@ -172,19 +175,24 @@
 .mount__status {
 }
 
-.mount__status--badimage {
+.mount__status-label--badimage {
+	color: red;
 }
 
-.mount__status--mounted {
+.mount__status-label--mounted {
+	color: lime;
 }
 
-.mount__status--noimage {
+.mount__status-label--noimage {
+	color: gray;
 }
 
-.mount__status--unmounted {
+.mount__status-label--unmounted {
+	color: gray;
 }
 
-.mount__status--unknown {
+.mount__status-label--unknown {
+	color: red;
 }
 
 
@@ -245,8 +253,21 @@
 
 .section__title {
 	.title--mixin();
-	.title-text--mixin();
+	.title-shadow--mixin();
 	margin: 0px;
+	margin-bottom: 0.25em;
+}
+
+.subsection {
+	background-color: rgba(255, 255, 255, 0.1);
+	border: 1px dashed rgba(255, 255, 255, 0.2);
+	margin: 1em;
+	padding: 4px;
+}
+
+.subsection__title {
+	.title-shadow--mixin();
+	font-size: 1.5em;
 }
 
 
@@ -353,7 +374,7 @@ table__header-cell--sorted-desc {
 
 .title__main {
 	.title--mixin();
-	.title-text--mixin();
+	.title-shadow--mixin();
 	.link();
 	display: block;
 	font-size: 4em;

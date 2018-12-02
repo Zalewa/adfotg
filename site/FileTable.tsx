@@ -144,11 +144,12 @@ class Header extends Component<HeaderProps> {
 			sizeTd = (<HeaderCell {...headerProps} field={Field.Size} label="Size" fixed />);
 		return (<thead>
 			<tr className="table__header">
+				{this.props.onSelected &&
 				<th className="table__header-cell table__header-cell--select">
-					{this.props.onSelected && <input name="selectAll" type="checkbox"
+					<input name="selectAll" type="checkbox"
 						checked={this.props.selectedAll}
-						onChange={this.props.onSelected} />}
-				</th>
+						onChange={this.props.onSelected} />
+				</th>}
 				<HeaderCell {...headerProps} field={Field.Name} label="Name" />
 				{sizeTd}
 				<HeaderCell {...headerProps} field={Field.Mtime} label="Modified Date" rightmost fixed />
@@ -208,11 +209,12 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 			sizeTd = (<td className="table__data-cell">{formatSize(props.entry.size)}</td>);
 		const date = new Date(props.entry.mtime * 1000);
 		return (<tr className="table__record">
+			{props.onSelected &&
 			<td className="table__data-cell table__data-cell--select">
-				{props.onSelected && <input name={props.entry.name} type="checkbox"
+				<input name={props.entry.name} type="checkbox"
 					checked={props.selected}
-					onChange={props.onSelected} />}
-			</td>
+					onChange={props.onSelected} />
+			</td>}
 			{nameTd}
 			{sizeTd}
 			<td className="table__data-cell">{formatDate(date)}</td>

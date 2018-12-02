@@ -9,7 +9,7 @@ import FileTable, { FileTableEntry, Field, Sort, createSort }
 import { ConfirmModal } from './Modal';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import Section from './Section';
-import { DeleteButton, ErrorLabel, Listing } from './ui';
+import { DeleteButton, ErrorLabel, Labelled, Listing } from './ui';
 
 
 const enum MountStatus {
@@ -91,15 +91,15 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	private renderMountStatus(): JSX.Element {
-		return (<Section title="Mounted Image" className="mountedImage">
+		return (<Section subsection title="Mounted Image" className="mountedImage">
 			<MountStatusDisplay {...this.state} />
-			{this.state.mountedImageName && <MountImageDetails name={this.state.mountedImageName} />}
+			{this.state.mountedImageName && <MountImageDetails showName={false} name={this.state.mountedImageName} />}
 		</Section>);
 	}
 
 	private renderImageInspection(): JSX.Element {
 		if (this.state.inspectedImage) {
-			return (<Section title="Inspect Image" className="inspectedImage">
+			return (<Section subsection title="Inspect Image" className="inspectedImage">
 				<Actions>
 					<ActionSet>
 						<button onClick={() => this.setState({inspectedImage: null})}>Close</button>
@@ -273,15 +273,17 @@ type Display = {
 class MountStatusDisplay extends Component<MountStatusProps> {
 	render() {
 		const display: Display = this.statusDisplay()
-		return <div className={"mount__status--" + display.klass}>
-			<span>{display.text}</span>
+		return <div className={"mount__status mount__status--" + display.klass}>
+			<span className={"mount__status-label mount__status-label--" + display.klass}>{display.text}</span>
+			{this.props.mountedImageName &&
+				<span className="mount__image-name">{this.props.mountedImageName}</span>}
 		</div>
 	}
 
 	private statusDisplay(): Display {
 		switch (this.props.mountStatus) {
 			case MountStatus.Mounted:
-				return {text: "Mounted", klass: "mounted"};
+				return {text: "Mounted: ", klass: "mounted"};
 			case MountStatus.Unmounted:
 				return {text: "Not mounted", klass: "unmounted"};
 			case MountStatus.NoImage:
@@ -349,6 +351,7 @@ class MountActions extends React.Component<MountActionsProps> {
 
 interface MountImageDetailsProps {
 	name: string
+	showName?: boolean
 }
 
 interface MountImageDetailsState {
@@ -361,8 +364,12 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 	}
 
 	render() {
+		let { showName } = this.props;
+		if (showName === undefined)
+			showName = true;
 		return (<div className="imageDetails">
-			<span className="imageDetails__name">{this.props.name}</span>
+			{showName &&
+				<Labelled label="Image:" contents={this.props.name} />}
 			<FileTable listing={this.state.listing}
 				fileLinkPrefix={this.contentsApi() + "/"} />
 		</div>);
