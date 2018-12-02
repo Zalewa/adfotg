@@ -14,6 +14,8 @@
 @labelColor: #fff;
 
 /* Amiga styling */
+@guruMeditationBackground: #000;
+@guruMeditationColor: #f20;
 @kickstartBackground: #414;
 @kickstartTextColor: #ea8;
 @workbenchBackground: #aaa;
@@ -26,6 +28,17 @@
 @mainFont: Amiga Topaz;
 @pageBackground: @kickstartBackground;
 @pageForeground: @kickstartTextColor;
+
+/** Covers the whole browser viewport. */
+.fullpage--mixin {
+	position: fixed; /* Sit on top of the page content */
+	width: 100%; /* Full width (cover the whole page) */
+	height: 100%; /* Full height (cover the whole page) */
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
 
 .label--mixin {
 	color: @labelColor;
@@ -182,8 +195,37 @@
 	}
 }
 
+@keyframes blink {
+	50% { border-color: @guruMeditationColor; }
+}
 
-.guruMeditation {
+
+
+.guru-meditation {
+	.fullpage--mixin();
+	background-color: @guruMeditationBackground;
+	color: @guruMeditationColor;
+
+	&__frame {
+		border: 8px solid transparent;
+		margin: 30px;
+		padding: 16px 50px;
+		animation-name: blink;
+		animation-duration: 1.0s;
+		animation-timing-function: step-end;
+		animation-iteration-count: infinite;
+		animation-direction: alternate;
+	}
+
+	&__section {
+		&--error {
+			margin-left: 32px;
+		}
+	}
+
+	&__section:not(:last-child) {
+		margin-bottom: 16px;
+	}
 }
 
 
@@ -256,13 +298,7 @@
 
 
 .modal {
-	position: fixed; /* Sit on top of the page content */
-	width: 100%; /* Full width (cover the whole page) */
-	height: 100%; /* Full height (cover the whole page) */
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
+	.fullpage--mixin();
 	background-color: rgba(0,0,0,0.5); /* Black background with opacity */
 	z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
 

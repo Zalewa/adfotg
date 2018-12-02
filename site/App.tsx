@@ -49,9 +49,18 @@ class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
 
 	render() {
 		if (this.state.error != null) {
-			return (<div className="guruMeditation">
-				<h1>GURU MEDITATION</h1>
-				<p>{this.state.error.toString()}</p>
+			return (<div className="guru-meditation">
+				<div className="guru-meditation__frame">
+					<h1 className="guru-meditation__section">GURU MEDITATION</h1>
+					<p className="guru-meditation__section">ADF OTG has failed.</p>
+					<p className="guru-meditation__section guru-meditation__section--error">{this.state.error.toString()}</p>
+					<p className="guru-meditation__section">
+						If you think this was caused by a bug, please
+						write down steps to reproduce it and report it
+						at<br/><a className="link" href="https://github.com/Zalewa/adfotg">https://github.com/Zalewa/adfotg</a>
+					</p>
+					<p className="guru-meditation__section">Browser's console may contain more detailed information.</p>
+				</div>
 			</div>);
 		}
 
