@@ -7,6 +7,7 @@
 }
 
 /* Color definitions. */
+@dangerColor: #f33;
 @kickstartBackground: #414;
 @kickstartTextColor: #ea8;
 @workbenchBackground: #aaa;
@@ -32,13 +33,19 @@
 
 .actions {
 	display: flex;
+	align-items: baseline;
 
 	&__set {
 		display: flex;
+		align-items: stretch;
 
 		&--right {
 			margin-left: auto;
 		}
+	}
+
+	&__element--center {
+		align-self: center;
 	}
 }
 
@@ -85,7 +92,7 @@
 	}
 
 	&--delete {
-		background-color: #f33;
+		background-color: @dangerColor;
 	}
 
 	&--form-close {
@@ -505,6 +512,31 @@
 }
 
 .uploadzone {
+	display: table;
+	margin: 0 1em 1em 4em;
+
+	&__uploadarea {
+		cursor: pointer;
+		display: table-cell;
+		padding: 1em 4em;
+		border: 0.25em dashed @pageForeground;
+		border-radius: 0.5em;
+		margin: auto;
+		text-align: center;
+		vertical-align: middle;
+
+		&--accept {
+			background-color: @workbenchTitleColor;
+		}
+
+		&--reject {
+			background-color: @dangerColor;
+		}
+
+		&:hover {
+			background-color: @workbenchTitleColor;
+		}
+	}
 }
 
 

@@ -45,11 +45,11 @@ export default class AdfWizard extends Component {
 			<button key="distribute" className="button"
 				disabled={this.state.selection.length == 0 || this.state.submitting}
 				onClick={this.distributeDisks}>Distribute ADFs</button>,
-			<span key="basename">
-				<label>Base name:</label>
-				<input value={this.state.basename}
-					onChange={e => this.setState({basename: e.target.value})} />
-			</span>
+			<label key="basenamelabel"
+				className="actions__element--center">Base name:</label>,
+			<input key="basenamevalue" value={this.state.basename}
+				className="text-input" type="text"
+				onChange={e => this.setState({basename: e.target.value})} />
 		]
 	}
 

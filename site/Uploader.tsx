@@ -141,7 +141,10 @@ class UploadZone extends Component<UploadZoneProps> {
 	render() {
 		return (
 			<div className="uploadzone">
-				<Dropzone onDrop={this.onDrop}>
+				<Dropzone onDrop={this.onDrop}
+						className="uploadzone__uploadarea"
+						acceptClassName="uploadzone__uploadarea--accept"
+						rejectClassName="uplaodzone__uplaodarea--reject">
 					<div>Drag & drop or click to select files to upload.</div>
 				</Dropzone>
 			</div>
