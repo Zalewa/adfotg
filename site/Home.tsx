@@ -18,7 +18,6 @@ export default class Home extends Component<{}, HomeState> {
 	render () {
 		return (
 			<div>
-				<Uploader onUpload={this.promptRefresh} />
 				<Mount refresh={this.state.refreshSwitch} />
 				<ImageLibrary refresh={this.state.refreshSwitch}
 					onCreatedImage={this.promptRefresh} />
