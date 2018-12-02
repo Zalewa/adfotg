@@ -31,7 +31,7 @@ export const Labelled = (props: LabelledProps) => {
 
 export const LinkText = (props: any) => {
 	return (<span className={"link " + (props.className ? props.className : "")}
-		onClick={props.onClick}>{props.children}</span>)
+		onClick={() => {props.onClick(); return false;}}>{props.children}</span>)
 }
 
 
