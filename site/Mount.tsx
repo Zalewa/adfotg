@@ -384,16 +384,14 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 
 	componentWillReceiveProps(props: MountImageDetailsProps) {
 		if (this.props.name !== props.name) {
-			this.refresh();
+			this.refresh(props.name);
 		}
 	}
 
-	private contentsApi(): string {
-		return "/mount_image/" + this.props.name + "/contents";
-	}
-
-	private refresh(): void {
-		request.get(this.contentsApi()).end((err, res) => {
+	private refresh(name?: string): void {
+		name = name ||this.props.name;
+		this.setState({listing: []});
+		request.get(this.contentsApi(name)).end((err, res) => {
 			dispatchRequestError(err);
 			if (!err) {
 				this.setState({listing: res.body});
@@ -401,5 +399,10 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 				this.setState({listing: []});
 			}
 		})
+	}
+
+	private contentsApi(name?: string): string {
+		name = name || this.props.name;
+		return "/mount_image/" + name + "/contents";
 	}
 }
