@@ -4,7 +4,7 @@ import { Component } from 'react';
 import { errorToString } from './Notifier';
 
 export const DeleteButton = (props: any) => {
-	let klass: string = "deleteButton"
+	let klass: string = "button button--delete"
 	if (props.className) {
 		klass += " " + props.className;
 	}

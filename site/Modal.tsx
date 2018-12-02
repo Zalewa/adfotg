@@ -10,7 +10,7 @@ export default class Modal extends Component<ModalProps> {
 	render() {
 		return <div className="modal" onClick={this.handleOutsideClick}>
 			<div className="modal__display" onClick={this.handleInsideClick}>
-				<button className="modal__close" onClick={this.props.onClose}>X</button>
+				<button className="button button--modal-close" onClick={this.props.onClose}>X</button>
 				{this.props.children}
 			</div>
 		</div>;
@@ -46,11 +46,12 @@ export default class Modal extends Component<ModalProps> {
 
 
 interface ConfirmModalProps {
-	text: string,
-	onAccept?: ()=>void,
-	onCancel?: ()=>void,
-	acceptText?: string,
+	text: string
+	onAccept?: ()=>void
+	onCancel?: ()=>void
+	acceptText?: string
 	cancelText?: string
+	acceptClass?: string
 }
 
 export class ConfirmModal extends Component<ConfirmModalProps> {
@@ -58,7 +59,8 @@ export class ConfirmModal extends Component<ConfirmModalProps> {
 		onAccept: ()=>{},
 		onCancel: ()=>{},
 		acceptText: "OK",
-		cancelText: "Cancel"
+		cancelText: "Cancel",
+		acceptClass: "button--submit"
 	}
 
 	render() {
@@ -66,8 +68,10 @@ export class ConfirmModal extends Component<ConfirmModalProps> {
 			<span className="modal__text">{this.props.text}</span>
 			{this.props.children}
 			<div className="modal__buttons">
-				<button className="modal__button" onClick={this.props.onAccept}>{this.props.acceptText}</button>
-				<button className="modal__button" onClick={this.props.onCancel}>{this.props.cancelText}</button>
+				<button className={"button " + this.props.acceptClass}
+					onClick={this.props.onAccept}>
+					{this.props.acceptText}</button>
+				<button className="button" onClick={this.props.onCancel}>{this.props.cancelText}</button>
 			</div>
 		</Modal>);
 	}

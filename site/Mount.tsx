@@ -59,7 +59,8 @@ export default class Mount extends Component<MountProps, MountState> {
 						onMount={this.mount}
 						onUnmount={this.unmount}
 					/>
-					<button onClick={() => this.setState({inspectedImage: this.state.imagesSelection[0].name}) }
+					<button className="button"
+						onClick={() => this.setState({inspectedImage: this.state.imagesSelection[0].name}) }
 						disabled={this.state.imagesSelection.length != 1}>Inspect</button>
 				</ActionSet>
 				<ActionSet right={true}>
@@ -100,11 +101,8 @@ export default class Mount extends Component<MountProps, MountState> {
 	private renderImageInspection(): JSX.Element {
 		if (this.state.inspectedImage) {
 			return (<Section subsection title="Inspect Image" className="inspectedImage">
-				<Actions>
-					<ActionSet>
-						<button onClick={() => this.setState({inspectedImage: null})}>Close</button>
-					</ActionSet>
-				</Actions>
+				<button className="button button--section-close"
+					onClick={() => this.setState({inspectedImage: null})}>Close</button>
 				<MountImageDetails name={this.state.inspectedImage} />
 			</Section>);
 		} else {
@@ -176,7 +174,8 @@ export default class Mount extends Component<MountProps, MountState> {
 		return (<ConfirmModal text="Delete these mount images?"
 				onAccept={this.deleteSelected}
 				onCancel={() => this.setState({deleteSelected: false})}
-				acceptText="Delete">
+				acceptText="Delete"
+				acceptClass="button--delete">
 			<Listing listing={this.state.imagesSelection.map(e => e.name)} />
 		</ConfirmModal>)
 	}
@@ -222,7 +221,7 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 						this.create();
 					}
 				}} />
-			<button onClick={this.create}
+			<button className="button button--submit" onClick={this.create}
 				disabled={this.state.imageName.length == 0}>Create</button>
 			{this.errorWidget()}
 		</div>);
@@ -330,13 +329,14 @@ class MountActions extends React.Component<MountActionsProps> {
 
 	private mountedActions(): JSX.Element[] {
 		return [
-			<button key="unmount" onClick={this.props.onUnmount}>Unmount</button>,
+			<button className="button" key="unmount"
+				onClick={this.props.onUnmount}>Unmount</button>,
 		];
 	}
 
 	private unmountedActions(): JSX.Element[] {
 		return [
-			<button key="mount"
+			<button className="button" key="mount"
 				onClick={() => this.props.onMount(this.props.images[0])}
 				disabled={this.props.images.length != 1}>Mount</button>
 		];
@@ -344,7 +344,8 @@ class MountActions extends React.Component<MountActionsProps> {
 
 	private rescueActions(): JSX.Element[] {
 		return [
-			<button key="unmount" onClick={this.props.onUnmount}>Force Unmount</button>
+			<button className="button" key="unmount"
+				onClick={this.props.onUnmount}>Force Unmount</button>
 		]
 	}
 }

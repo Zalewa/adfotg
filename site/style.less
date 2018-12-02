@@ -6,8 +6,16 @@
 	src: url(/amiga-topaz/Amiga%20Topaz.ttf) format('truetype');
 }
 
-@pageBackground: #441144;
-@pageForeground: #eeaa88;
+/* Color definitions. */
+@kickstartBackground: #414;
+@kickstartTextColor: #ea8;
+@workbenchBackground: #aaa;
+@workbenchTextColor: #000;
+
+/* Globals */
+@mainFont: Amiga Topaz;
+@pageBackground: @kickstartBackground;
+@pageForeground: @kickstartTextColor;
 
 .title--mixin {
 	font-size: 2em;
@@ -19,12 +27,15 @@
 
 
 .actions {
+	display: flex;
 }
 
 .actions__set {
+	display: flex;
 }
 
 .actions__set--right {
+	margin-left: auto;
 }
 
 
@@ -39,10 +50,49 @@
 }
 
 
-.buttonBig {
+.button {
+	@borderLight: 2px solid #fff;
+	@borderDark: 2px solid #000;
+
+	background-color: @workbenchBackground;
+	border-left: @borderLight;
+	border-top: @borderLight;
+	border-right: @borderDark;
+	border-bottom: @borderDark;
+	color: @workbenchTextColor;
+	padding: 4px 8px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 1em;
+	font-family: @mainFont;
 }
 
-.buttonSubmit {
+.button:disabled {
+	background-color: lighten(@workbenchBackground, 20%);
+	color: lighten(@workbenchTextColor, 50%);
+}
+
+.button--big {
+}
+
+.button--delete {
+	background-color: #f33;
+}
+
+.button--form-close {
+}
+
+.button--modal-close {
+}
+
+.button--section-close {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.button--submit {
 }
 
 
@@ -149,12 +199,6 @@
 .modal__buttons {
 }
 
-.modal__button {
-}
-
-.modal__close {
-}
-
 .modal__display {
 	background-color: white;
 }
@@ -213,7 +257,7 @@
 .page {
 	background-color: @pageBackground;
 	color: @pageForeground;
-	font-family: Amiga Topaz,Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;
+	font-family: @mainFont,Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;
 	font-size: 1em;
 	max-width: 800px;
 }
@@ -236,16 +280,20 @@
 }
 
 
-.search {
+.search-bar {
+	display: flex;
+	width: 100%;
 }
 
-.search__submit {
+.search-bar__input {
+	width: 100%;
 }
 
 
 .section {
 	margin-top: 2px;
 	margin-bottom: 16px;
+	position: relative;
 }
 
 .section--uploader {
@@ -263,6 +311,7 @@
 	border: 1px dashed rgba(255, 255, 255, 0.2);
 	margin: 1em;
 	padding: 4px;
+	position: relative;
 }
 
 .subsection__title {
@@ -350,6 +399,11 @@ table__header-cell--sorted-desc {
 
 .table--full-page {
 	width: 100%
+}
+
+
+.text-input {
+	border-radius: 0;
 }
 
 

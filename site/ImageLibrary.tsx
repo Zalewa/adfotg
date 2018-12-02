@@ -71,7 +71,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	private renderActions(): JSX.Element {
 		return (<Actions>
 			<ActionSet>
-				<button onClick={this.showCreateImage}
+				<button onClick={this.showCreateImage} className="button"
 					disabled={this.state.selection.length == 0}>Create Mount Image</button>
 			</ActionSet>
 			<ActionSet right={true}>
@@ -89,10 +89,11 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 					onDone={this.onModalAccepted} />
 			</Modal>
 		} else if (this.state.deleteSelected) {
-			return (<ConfirmModal text="Delete these uploads?"
+			return (<ConfirmModal text="Delete these ADFs?"
 					onAccept={this.deleteSelected}
 					onCancel={() => this.setState({deleteSelected: false})}
-					acceptText="Delete">
+					acceptText="Delete"
+					acceptClass="button--delete">
 				<Listing listing={this.state.selection.map(e => e.name)} />
 			</ConfirmModal>)
 		}

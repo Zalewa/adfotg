@@ -73,7 +73,8 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 		return (<ConfirmModal text="Delete these uploads?"
 				onAccept={this.deleteSelected}
 				onCancel={() => this.setState({deleteSelected: false})}
-				acceptText="Delete">
+				acceptText="Delete"
+				acceptClass="button--delete">
 			<Listing listing={this.state.selection.map(e => e.name)} />
 		</ConfirmModal>)
 	}

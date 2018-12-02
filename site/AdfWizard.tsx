@@ -42,7 +42,7 @@ export default class AdfWizard extends Component {
 
 	private actions(): JSX.Element[] {
 		return [
-			<button key="distribute"
+			<button key="distribute" className="button"
 				disabled={this.state.selection.length == 0 || this.state.submitting}
 				onClick={this.distributeDisks}>Distribute ADFs</button>,
 			<span key="basename">
@@ -176,10 +176,10 @@ class DiskComposition extends Component<DiskCompositionProps> {
 	render() {
 		const { parent } = this.props;
 		return (<div className="diskComposition">
-			<button className="buttonSubmit" onClick={parent.submit}
+			<button className="button button--submit" onClick={parent.submit}
 				disabled={!this.props.allowSubmit}>
 				Submit</button>
-			<button className="buttonBig" onClick={parent.clearDisks}>
+			<button className="button button--big" onClick={parent.clearDisks}>
 				Discard All</button>
 			{this.renderDisks()}
 		</div>);
@@ -240,7 +240,7 @@ class DiskForm extends Component<DiskFormProps, DiskFormState> {
 		const props = this.props;
 		const { name, label, contents, error } = this.props;
 		return (<div className="form diskForm">
-			<button className="diskForm__close" onClick={props.onDiscard}>X</button>
+			<button className="button button--form-close" onClick={props.onDiscard}>X</button>
 			{error && error.length > 0 && (<p className=".form__error">{error}</p>)}
 			<form>
 				<p>
