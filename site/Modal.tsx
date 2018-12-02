@@ -10,8 +10,17 @@ export default class Modal extends Component<ModalProps> {
 	render() {
 		return <div className="modal" onClick={this.handleOutsideClick}>
 			<div className="modal__display" onClick={this.handleInsideClick}>
-				<button className="button button--modal-close" onClick={this.props.onClose}>X</button>
-				{this.props.children}
+				<div className="modal__titlebar">
+					<button className="button button--modal-close" onClick={this.props.onClose}>X</button>
+				</div>
+				<div className="modal__middle">
+					<div className="modal__frame modal__frame--left" />
+					<div className="modal__contents">
+						{this.props.children}
+					</div>
+					<div className="modal__frame modal__frame--right" />
+				</div>
+				<div className="modal__frame modal__frame--bottom" />
 			</div>
 		</div>;
 	}

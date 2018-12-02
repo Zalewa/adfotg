@@ -12,6 +12,9 @@
 @workbenchBackground: #aaa;
 @workbenchTextColor: #000;
 @workbenchTitleColor: #68b;
+@workbenchBorderLight: 2px solid #fff;
+@workbenchBorderDark: 2px solid #000;
+
 
 /* Globals */
 @mainFont: Amiga Topaz;
@@ -52,14 +55,11 @@
 
 
 .button {
-	@borderLight: 2px solid #fff;
-	@borderDark: 2px solid #000;
-
 	background-color: @workbenchBackground;
-	border-left: @borderLight;
-	border-top: @borderLight;
-	border-right: @borderDark;
-	border-bottom: @borderDark;
+	border-left: @workbenchBorderLight;
+	border-top: @workbenchBorderLight;
+	border-right: @workbenchBorderDark;
+	border-bottom: @workbenchBorderDark;
 	color: @workbenchTextColor;
 	padding: 4px 8px;
 	text-align: center;
@@ -70,10 +70,10 @@
 
 	&:active {
 		background-color: @workbenchTitleColor;
-		border-left: @borderDark;
-		border-top: @borderDark;
-		border-right: @borderLight;
-		border-bottom: @borderLight;
+		border-left: @workbenchBorderDark;
+		border-top: @workbenchBorderDark;
+		border-right: @workbenchBorderLight;
+		border-bottom: @workbenchBorderLight;
 	}
 
 	&:disabled {
@@ -199,14 +199,67 @@
 	background-color: rgba(0,0,0,0.5); /* Black background with opacity */
 	z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
 
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
 	&__buttons {
+		display: flex;
+		align-items: center;
+		justify-content: space-evenly;
+		margin-top: 5px;
+	}
+
+	&__contents {
+		display: table-cell;
+		padding: 5px;
+		border-top: @workbenchBorderDark;
+		border-left: @workbenchBorderDark;
+		border-bottom: @workbenchBorderLight;
+		border-right: @workbenchBorderLight;
 	}
 
 	&__display {
-		background-color: white;
+		color: @workbenchTextColor;
+		background-color: @workbenchBackground;
+		border-top: @workbenchBorderLight;
+		border-left: @workbenchBorderLight;
+		border-bottom: @workbenchBorderDark;
+		border-right: @workbenchBorderDark;
+	}
+
+	&__frame {
+		@breadth: 2px;
+		background-color: @workbenchTitleColor;
+
+		.vertical--mixin {
+			width: @breadth;
+			height: 100%;
+			display: table-cell;
+		}
+
+		&--left {
+			.vertical--mixin();
+		}
+		&--right {
+			.vertical--mixin();
+		}
+		&--bottom {
+			width: 100%;
+			height: @breadth;
+		}
+	}
+
+	&__middle {
+		display: table;
 	}
 
 	&__text {
+	}
+
+	&__titlebar {
+		background-color: @workbenchTitleColor;
+		min-height: 28px;
 	}
 }
 
