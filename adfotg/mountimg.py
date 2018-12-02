@@ -22,10 +22,7 @@ class Mount:
     def current(cls):
         mounter = _mk_mounter()
         imagefile = mounter.mounted()
-        if imagefile:
-            return cls(imagefile)
-        else:
-            return None
+        return cls(imagefile)
 
     def __init__(self, mountfile):
         self._mounter = _mk_mounter()
@@ -35,10 +32,16 @@ class Mount:
     def imagefile(self):
         return self._mountimage.imagefile
 
+    def has_image(self):
+        return self._mountimage.has_image()
+
     def state(self):
         mounted = self._mounter.mounted()
-        if mounted == self._mountimage.imagefile:
-            return MountStatus.Mounted
+        if mounted == self.imagefile:
+            if mounted is None:
+                return MountStatus.Unmounted
+            else:
+                return MountStatus.Mounted
         elif not self._mountimage.exists():
             return MountStatus.NoImage
         elif mounted:
@@ -96,6 +99,9 @@ class MountImage:
 
     def exists(self):
         return os.path.isfile(self._imagefile)
+
+    def has_image(self):
+        return self._imagefile is not None
 
     def is_valid(self):
         try:

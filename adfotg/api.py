@@ -192,16 +192,16 @@ def create_adf(name):
 @app.route("/mount", methods=["GET"])
 def get_mounted_flash_drive():
     mount = Mount.current()
-    if not mount:
-        return jsonify(status=mountimg.MountStatus.Unmounted.value)
     imagefile = None
+    listing = []
     try:
-        imagefile = mount.imagefile
-        if not imagefile.startswith(config.mount_images_dir):
-            return jsonify(status=mountimg.MountStatus.OtherImageMounted.value,
-                           error="mounted image is unknown to the app")
-        imagefile = imagefile[len(config.mount_images_dir):].lstrip("/")
-        listing = mount.list()
+        if mount.has_image():
+            imagefile = mount.imagefile
+            if not imagefile.startswith(config.mount_images_dir):
+                return jsonify(status=mountimg.MountStatus.OtherImageMounted.value,
+                               error="mounted image is unknown to the app")
+            imagefile = imagefile[len(config.mount_images_dir):].lstrip("/")
+            listing = mount.list()
     except AdfotgError as e:
         traceback.print_exc()
         return jsonify(status=mountimg.MountStatus.BadImage.value,

@@ -288,7 +288,7 @@ class MountStatusDisplay extends Component<MountStatusProps> {
 			case MountStatus.Unmounted:
 				return {text: "Not mounted", klass: "unmounted"};
 			case MountStatus.NoImage:
-				return {text: "No image", klass: "noimage"};
+				return {text: "Image is missing", klass: "badstatus"};
 			case MountStatus.BadImage:
 				return {text: "Image error: " + this.props.error,
 						klass: "badstatus"};
