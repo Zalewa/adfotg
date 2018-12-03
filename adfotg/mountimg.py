@@ -211,6 +211,7 @@ class _MdirParser:
       Volume Serial Number is 6515-5815
       Directory for ::/
 
+      5years1         901120 2018-12-02  20:30
       5years1  adf    901120 2018-12-02  20:30
       adfotg1  adf    901120 2018-12-02  20:30
       BARBAR~1 ADF    901120 2018-11-24  22:44  Barbarian Plus 6.adf
@@ -252,6 +253,10 @@ class _MdirParser:
         Another example entry:
           5years1  adf    901120 2018-12-02  20:30
 
+        Yet another example entry without an extension:
+          5years1         901120 2018-12-02  20:30
+
+
         The entry without the long name gets listed when the filename
         fits in the 8.3 DOS limitation and doesn't have a whitespace
         character.
@@ -272,7 +277,10 @@ class _MdirParser:
         if not name:
             # We have the case where the name fit in the DOS limitations
             # and we need to parse dos_name.
-            name = dos_name[:DOS_NAME_LEN].strip() + "." + dos_name[DOS_NAME_LEN + 1:]
+            name = dos_name[:DOS_NAME_LEN].strip()
+            ext = dos_name[DOS_NAME_LEN + 1:].rstrip()  # 1 is for the dot
+            if ext:
+                name += "." + ext
         timestamp = time.mktime(time.strptime(date, "%Y-%m-%d  %H:%M"))
         return FileEntryField.dictify(name, size, int(timestamp))
 
