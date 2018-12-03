@@ -50,7 +50,7 @@ class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
 	render() {
 		if (this.state.error != null) {
 			return (<div className="guru-meditation">
-				<div className="guru-meditation__frame">
+				<div className="guru-meditation__frame"><div className="guru-meditation__inner-frame">
 					<h1 className="guru-meditation__section">GURU MEDITATION</h1>
 					<p className="guru-meditation__section">ADF OTG has failed.</p>
 					<p className="guru-meditation__section guru-meditation__section--error">{this.state.error.toString()}</p>
@@ -60,7 +60,7 @@ class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
 						at<br/><a className="link" href="https://github.com/Zalewa/adfotg">https://github.com/Zalewa/adfotg</a>
 					</p>
 					<p className="guru-meditation__section">Browser's console may contain more detailed information.</p>
-				</div>
+				</div></div>
 			</div>);
 		}
 
