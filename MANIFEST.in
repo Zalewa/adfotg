@@ -1,4 +1,4 @@
 include README.md
 include LICENSE
-include conf/adfotg.conf
+include adfotg/conf/adfotg.conf
 recursive-include adfotg/site/ *
