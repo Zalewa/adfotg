@@ -257,11 +257,11 @@ class DiskForm extends Component<DiskFormProps, DiskFormState> {
 					note={this.state.nameError && {
 						type: NoteType.Error,
 						message: this.state.nameError}}>
-					<input value={name} type="text" className="text-input"
+					<input value={name} type="text" className="text-input form__widget--full"
 						onChange={e => props.onNameEdited(e.target.value)} />
 				</FormItem>
 				<FormItem label="Label">
-					<input value={label} type="text" className="text-input"
+					<input value={label} type="text" className="text-input form__widget--full"
 						onChange={e => props.onLabelEdited(e.target.value)} />
 				</FormItem>
 				<FormItem label="Contents">
