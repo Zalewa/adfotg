@@ -34,6 +34,7 @@ interface MountState {
 	inspectedImage: string,
 	sortImages: Sort,
 	deleteSelected: boolean
+	refreshCounter: number
 }
 
 export default class Mount extends Component<MountProps, MountState> {
@@ -45,7 +46,8 @@ export default class Mount extends Component<MountProps, MountState> {
 		imagesSelection: [],
 		inspectedImage: null,
 		sortImages: createSort(Field.Name),
-		deleteSelected: false
+		deleteSelected: false,
+		refreshCounter: 0
 	}
 
 	render() {
@@ -88,6 +90,7 @@ export default class Mount extends Component<MountProps, MountState> {
 
 	componentWillReceiveProps(props: MountProps) {
 		if (this.props.refresh !== props.refresh) {
+			this.setState({refreshCounter: this.state.refreshCounter + 1});
 			this.refresh();
 		}
 	}
@@ -95,7 +98,10 @@ export default class Mount extends Component<MountProps, MountState> {
 	private renderMountStatus(): JSX.Element {
 		return (<Section subsection title="Mounted Image" className="mountedImage">
 			<MountStatusDisplay {...this.state} />
-			{this.state.mountedImageName && <MountImageDetails showName={false} name={this.state.mountedImageName} />}
+			{this.state.mountedImageName && (
+				<MountImageDetails showName={false} name={this.state.mountedImageName}
+					refreshCounter={this.state.refreshCounter} />)
+			}
 		</Section>);
 	}
 
@@ -104,7 +110,8 @@ export default class Mount extends Component<MountProps, MountState> {
 			return (<Section subsection title="Inspect Image" className="inspectedImage">
 				<button className="button button--section-close"
 					onClick={() => this.setState({inspectedImage: null})}>Close</button>
-				<MountImageDetails name={this.state.inspectedImage} />
+				<MountImageDetails name={this.state.inspectedImage}
+					refreshCounter={this.state.refreshCounter} />
 			</Section>);
 		} else {
 			return null;
@@ -355,11 +362,13 @@ class MountActions extends React.Component<MountActionsProps> {
 interface MountImageDetailsProps {
 	name: string
 	showName?: boolean
+	refreshCounter: number
 }
 
 interface MountImageDetailsState {
 	listing: FileTableEntry[]
 }
+
 
 class MountImageDetails extends Component<MountImageDetailsProps, MountImageDetailsState> {
 	readonly state: MountImageDetailsState = {
@@ -383,7 +392,8 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 	}
 
 	componentWillReceiveProps(props: MountImageDetailsProps) {
-		if (this.props.name !== props.name) {
+		if (this.props.name !== props.name ||
+				this.props.refreshCounter !== props.refreshCounter) {
 			this.refresh(props.name);
 		}
 	}

@@ -189,6 +189,40 @@ def create_adf(name):
     return ''
 
 
+@app.route("/adf/<name>/quickmount", methods=["POST"])
+def quickmount_adf(name):
+    '''Just mount a specified, single ADF.
+
+    This performs following steps in one go:
+
+    1. Unmounts any mount image if already mounted.
+    2. Creates a new temporary mount image. This image is
+       created in the normal directory for the mount images
+       but is always named .QUICKMOUNT.
+
+       2.1. Old temporary mount image is deleted, if there is any.
+    3. Mounts this temporary mount image.
+
+    Errors:
+    - 404 if ADF is not found
+
+    Returns: nothing on success.
+    '''
+    adf_path = safe_join(config.adf_dir, name)
+    if not os.path.isfile(adf_path):
+        return _apierr(404, "ADF '{}' cannot be found".format(name))
+    old_mount = Mount.current()
+    if old_mount.state() == mountimg.MountStatus.Mounted:
+        old_mount.unmount()
+    img = _quickmount_image()
+    if img.exists():
+        img.delete()
+    img.pack([adf_path])
+    img_mount = Mount(img.imagefile)
+    img_mount.mount()
+    return ""
+
+
 @app.route("/mount", methods=["GET"])
 def get_mounted_flash_drive():
     mount = Mount.current()
@@ -416,6 +450,10 @@ def _del_files(dirpath, filenames):
         except Exception as e:
             deleted.append((500, filename, str(e)))
     return deleted
+
+
+def _quickmount_image():
+    return MountImage(safe_join(config.mount_images_dir, ".QUICKMOUNT"))
 
 
 def _sorting():

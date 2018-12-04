@@ -20,7 +20,8 @@ export default class Home extends Component<{}, HomeState> {
 			<div>
 				<Mount refresh={this.state.refreshSwitch} />
 				<ImageLibrary refresh={this.state.refreshSwitch}
-					onCreatedImage={this.promptRefresh} />
+					onCreatedImage={this.promptRefresh}
+					onMountedImage={this.promptRefresh} />
 			</div>);
 	}
 

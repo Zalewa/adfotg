@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Component, PureComponent } from 'react';
 import { boundMethod } from 'autobind-decorator';
 
+import { ActionSet } from './Actions';
 import { LinkText, formatDate, formatSize } from './ui';
 
 export const enum Field {
@@ -38,6 +39,8 @@ export function createSort(field: Field, oldSort?: Sort): Sort {
 	return {field: field, ascending: ascending}
 }
 
+type FileRenderFunc = (file: FileTableEntry) => JSX.Element;
+
 interface FileTableProps {
 	listing: FileTableEntry[]
 	showSize: boolean,
@@ -46,6 +49,7 @@ interface FileTableProps {
 	selected: FileTableEntry[],
 	sort: Sort,
 	fileLinkPrefix?: string
+	renderFileActions?: FileRenderFunc
 }
 
 interface FileTableState {
@@ -71,7 +75,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 					null;
 				rows.push(<FileTableRow
 					entry={e} key={e.name} showSize={this.props.showSize}
-					url={url}
+					url={url} renderFileActions={this.props.renderFileActions}
 					selected={this.isSelected(e.name)}
 					onSelected={this.props.onSelected && this.onSelect || null}
 				/>);
@@ -192,32 +196,69 @@ interface FileTableRowProps {
 	selected: boolean,
 	onSelected: (e: React.ChangeEvent<HTMLInputElement>) => void,
 	url?: string
+	renderFileActions: FileRenderFunc
 }
 
 class FileTableRow extends PureComponent<FileTableRowProps> {
 	render() {
 		const props = this.props;
-		let nameTd: JSX.Element
-		if (props.url != null) {
-			nameTd = (<td className="table__data-cell"><a className="link link--table"
-				href={props.url}>{props.entry.name}</a></td>);
-		} else {
-			nameTd = <td className="table__data-cell">{props.entry.name}</td>;
-		}
-		let sizeTd = null;
-		if (props.showSize)
-			sizeTd = (<td className="table__data-cell">{formatSize(props.entry.size)}</td>);
-		const date = new Date(props.entry.mtime * 1000);
 		return (<tr className="table__record">
-			{props.onSelected &&
-			<td className="table__data-cell table__data-cell--select">
+			{this.renderSelectCell()}
+			{this.renderNameCell()}
+			{this.renderSizeCell()}
+			{this.renderDateCell()}
+		</tr>);
+	}
+
+	private renderSelectCell(): JSX.Element {
+		const { props } = this;
+		if (props.onSelected) {
+			return (<td className="table__data-cell table__data-cell--select">
 				<input name={props.entry.name} type="checkbox"
 					checked={props.selected}
 					onChange={props.onSelected} />
-			</td>}
-			{nameTd}
-			{sizeTd}
-			<td className="table__data-cell">{formatDate(date)}</td>
-		</tr>);
+			</td>);
+		}
+		return null;
+	}
+
+	private renderNameCell(): JSX.Element {
+		return (<td className="table__data-cell">
+			<div className="table__cell-contents">
+				{this.renderName()}
+				{this.renderActions()}
+			</div>
+		</td>)
+	}
+
+	private renderName(): JSX.Element {
+		const { props } = this;
+		if (props.url != null) {
+			return <a className="link link--table"
+				href={props.url}>{props.entry.name}</a>;
+		} else {
+			return <span>{props.entry.name}</span>;
+		}
+	}
+
+	private renderSizeCell(): JSX.Element {
+		if (this.props.showSize)
+			return <td className="table__data-cell">{formatSize(this.props.entry.size)}</td>;
+		return null;
+	}
+
+	private renderDateCell(): JSX.Element {
+		const date = new Date(this.props.entry.mtime * 1000);
+		return <td className="table__data-cell">{formatDate(date)}</td>
+	}
+
+	private renderActions(): JSX.Element {
+		const { props } = this;
+		if (props.renderFileActions) {
+			return (<ActionSet right>
+				{props.renderFileActions(props.entry)}
+			</ActionSet>);
+		}
+		return null;
 	}
 };

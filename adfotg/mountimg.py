@@ -125,6 +125,8 @@ class MountImage:
         return _MdirParser().parse(stdout)
 
     def pack(self, files):
+        if not isinstance(files, list):
+            raise ValueError("files argument must be a list")
         sum_size = 0
         for file in files:
             sum_size += os.path.getsize(file)

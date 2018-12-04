@@ -16,7 +16,8 @@ import Section from './Section';
 import { DeleteButton } from './ui';
 
 interface ImageLibraryProps {
-	onCreatedImage: ()=>void,
+	onCreatedImage: ()=>void
+	onMountedImage: ()=>void
 	refresh: boolean
 }
 
@@ -55,7 +56,8 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 				showSize={false} onHeaderClick={this.onHeaderClick}
 				selected={this.state.selection}
 				onSelected={this.onImagesSelected}
-				sort={this.state.sort} fileLinkPrefix="/adf/" />
+				sort={this.state.sort} fileLinkPrefix="/adf/"
+				renderFileActions={this.renderFileActions} />
 			<Pager page={this.state.page} total={this.state.listingTotal}
 				onPageChanged={page => this.refresh({page})} />
 		</Section>);
@@ -101,6 +103,24 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 			</ConfirmModal>)
 		}
 		return null;
+	}
+
+	@boundMethod
+	private renderFileActions(file: FileTableEntry): JSX.Element {
+		return (<button className="button button--table"
+					onClick={() => this.quickMount(file.name)}>
+			Quick Mount
+		</button>);
+	}
+
+	@boundMethod
+	private quickMount(file: string): void {
+		request.post('/adf/' + file + '/quickmount').end((err, res) => {
+			dispatchRequestError(err);
+			if (!err && this.props.onMountedImage) {
+				this.props.onMountedImage();
+			}
+		});
 	}
 
 	@boundMethod
