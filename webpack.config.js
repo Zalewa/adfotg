@@ -33,7 +33,7 @@ module.exports = {
 		extensions: [".ts", ".tsx", ".js", ".json"]
 	},
 	output: {
-		path: path.resolve(__dirname, 'adfotg/site'),
+		path: path.resolve(__dirname, 'site/dist'),
 		filename: 'bundle.js'
 	},
 	devServer: {

@@ -14,6 +14,7 @@ clean:
 	rm -rf adfotg/__pycache__
 	rm -rf adfotg.egg-info build dist
 	rm -rf adfotg/site
+	rm -rf site/dist
 
 purge: clean
 	rm -rf node_modules

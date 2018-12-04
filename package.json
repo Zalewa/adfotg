@@ -39,7 +39,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "selfdev": "./node_modules/.bin/webpack-dev-server --mode development",
     "dev": "./node_modules/.bin/webpack --mode development --progress --watch",
-    "dist": "./node_modules/.bin/webpack --mode production"
+    "dist": "./node_modules/.bin/webpack --mode production --config webpack.release.config.js"
   },
   "author": "Robikz",
   "email": "zalewapl@gmail.com",
