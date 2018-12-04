@@ -74,7 +74,7 @@ export class ConfirmModal extends Component<ConfirmModalProps> {
 
 	render() {
 		return (<Modal onClose={() => this.props.onCancel()}>
-			<span className="modal__text">{this.props.text}</span>
+			<p className="modal__text">{this.props.text}</p>
 			{this.props.children}
 			<div className="modal__buttons">
 				<button className={"button " + this.props.acceptClass}

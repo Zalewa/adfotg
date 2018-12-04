@@ -337,6 +337,7 @@
 	&__display {
 		color: @workbenchTextColor;
 		background-color: @workbenchBackground;
+		min-width: 300px;
 		.workbench-border-light-dark--mixin();
 	}
 
@@ -364,9 +365,11 @@
 
 	&__middle {
 		display: table;
+		width: 100%;
 	}
 
 	&__text {
+		margin-bottom: 16px;
 	}
 
 	&__titlebar {
