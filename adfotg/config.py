@@ -2,6 +2,7 @@ from . import error, version
 
 from configparser import ConfigParser
 import os
+import sys
 
 _PROGNAME = version.SHORTNAME
 _CFG_FILENAME = "{}.conf".format(_PROGNAME)
@@ -27,16 +28,37 @@ class ConfigError(error.AdfotgError):
 
 
 class _Config:
+    def __init__(self):
+        self.port = DEFAULT_PORT
+        self.adf_dir = DEFAULT_ADF_DIR
+        self.upload_dir = DEFAULT_UPLOAD_DIR
+        self.work_dir = DEFAULT_WORK_DIR
+
     def load(self, parser):
         SECTION = _PROGNAME
-        self.port = parser.getint(SECTION, 'port', fallback=DEFAULT_PORT)
-        self.adf_dir = parser.get(SECTION, 'adf_dir', fallback=DEFAULT_ADF_DIR)
-        self.upload_dir = parser.get(SECTION, 'upload_dir', fallback=DEFAULT_UPLOAD_DIR)
-        self.work_dir = parser.get(SECTION, 'work_dir', fallback=DEFAULT_WORK_DIR)
-        self.mount_images_dir = os.path.join(self.work_dir, "mount_images")
+
+        def _load(attr):
+            setattr(self, attr, parser.get(
+                SECTION, attr, fallback=getattr(self, attr)))
+
+        self.port = parser.getint(SECTION, 'port', fallback=self.port)
+        _load('adf_dir')
+        _load('upload_dir')
+        _load('work_dir')
+
+    @property
+    def mount_images_dir(self):
+        return os.path.join(self.work_dir, "mount_images")
 
 
 def load(filenames=None):
+    if not _load_from_file(filenames):
+        _log("will attempt zeroconfig")
+    _log_cfg()
+    _create_env()
+
+
+def _load_from_file(filenames=None):
     '''Config is loaded into the 'config' object which can be imported from
     this module elsewhere. Failure to load results in ConfigError throw.
     '''
@@ -57,9 +79,37 @@ def load(filenames=None):
         cfgparser = ConfigParser()
         if cfgparser.read(filename):
             config.load(cfgparser)
-            return
-    raise ConfigError("could not load config file from any of these locations: {}"
-                      .format(', '.join(locations)))
+            return True
+    _log("could not load config file from any of these "
+         "locations: {}" .format(', '.join(locations)))
+    return False
+
+
+def _log_cfg():
+    _log("Configuration:")
+    for cfgvar in sorted(vars(config)):
+        if cfgvar.startswith("_"):
+            continue
+        _log("  {} = {}".format(cfgvar, getattr(config, cfgvar)))
+
+
+def _create_env():
+    dirs_to_create = [
+        config.work_dir,
+        config.adf_dir,
+        config.upload_dir
+    ]
+    for dir_ in dirs_to_create:
+        try:
+            os.makedirs(dir_, exist_ok=True)
+        except PermissionError as e:
+            raise ConfigError(
+                "could not create directory '{}'; ensure you are "
+                "running as an appropriate user ({})".format(dir_, e)) from e
+
+
+def _log(*args):
+    print(*args, file=sys.stderr)
 
 
 # This is a globally accessible object loaded at app startup.
