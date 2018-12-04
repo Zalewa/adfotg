@@ -1,7 +1,7 @@
-.PHONY: all clean purge server site site_to_server
+.PHONY: all clean purge server site
 
 
-all: site_to_server server
+all: site server
 
 server:
 	python3 ./setup.py sdist
@@ -10,12 +10,10 @@ site:
 	npm install
 	npm run dist
 
-site_to_server: site
-	cp -R site/dist adfotg/site
-
 clean:
 	rm -rf adfotg/__pycache__
-	rm -rf adfotg/site adfotg.egg-info build dist
+	rm -rf adfotg.egg-info build dist
+	rm -rf adfotg/site
 	rm -rf site/dist
 
 purge: clean
