@@ -2,9 +2,7 @@
 *.pyo
 __pycache__
 
+adfotg/site/
 adfotg.egg-info/
 node_modules/
-site/dist/
 npm-debug.log
-bower_components/
-.module-cache
