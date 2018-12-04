@@ -94,7 +94,7 @@ export default class AdfWizard extends Component {
 		if (idx != -1) {
 			this.disks.splice(idx, 1);
 		}
-		this.setState({disks: this.disks});
+		this.setState({disks: this.disks, submitted: false});
 	}
 
 	@boundMethod
