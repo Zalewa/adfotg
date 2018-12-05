@@ -268,10 +268,14 @@ class _MdirParser:
         DOS_LEN = DOS_NAME_LEN + 1 + DOS_EXT_LEN  # NAME DOT EXT
         dos_name = line[:DOS_LEN]
 
-        NAME_EXT_LEN = 16
-        line = line[NAME_EXT_LEN:]
-        size = int(line[:line.find(' ')])
-        line = line[line.find(' ') + 1:]
+        line = line[DOS_LEN:]
+        size_start_index = self._find_index_of_first_non_space(line, 0)
+        if size_start_index < 0:
+            raise ValueError("cannot parse line '{}' as file entry: "
+                             "size not found".format(line))
+        size_end_index = line.find(' ', size_start_index)
+        size = int(line[size_start_index:size_end_index])
+        line = line[size_end_index + 1:]  # +1 space
         # Products of a drunken stupor.
         date = line[:line.find('  ', line.find('  ') + 2)]
         # Programmers know how to party hard.
@@ -285,6 +289,12 @@ class _MdirParser:
                 name += "." + ext
         timestamp = time.mktime(time.strptime(date, "%Y-%m-%d  %H:%M"))
         return FileEntryField.dictify(name, size, int(timestamp))
+
+    def _find_index_of_first_non_space(self, haystack, start):
+        for i in range(start, len(haystack)):
+            if haystack[i] != ' ':
+                return i
+        return -1
 
 
 def _mk_mounter():
