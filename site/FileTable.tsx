@@ -136,16 +136,9 @@ interface HeaderProps extends FileTableProps {
 
 class Header extends Component<HeaderProps> {
 	render() {
-		let { onHeaderClick } = this.props;
-		if (!onHeaderClick)
-			onHeaderClick = ()=>{};
-		const headerProps = {
-			...this.props,
-			onHeaderClick: onHeaderClick
-		}
 		let sizeTd = null;
 		if (this.props.showSize)
-			sizeTd = (<HeaderCell {...headerProps} field={Field.Size} label="Size" fixed />);
+			sizeTd = (<HeaderCell {...this.props} field={Field.Size} label="Size" fixed />);
 		return (<thead>
 			<tr className="table__header">
 				{this.props.onSelected &&
@@ -154,9 +147,9 @@ class Header extends Component<HeaderProps> {
 						checked={this.props.selectedAll}
 						onChange={this.props.onSelected} />
 				</th>}
-				<HeaderCell {...headerProps} field={Field.Name} label="Name" />
+				<HeaderCell {...this.props} field={Field.Name} label="Name" />
 				{sizeTd}
-				<HeaderCell {...headerProps} field={Field.Mtime} label="Modified Date" rightmost fixed />
+				<HeaderCell {...this.props} field={Field.Mtime} label="Modified Date" rightmost fixed />
 			</tr>
 		</thead>);
 	}
@@ -167,7 +160,7 @@ class Header extends Component<HeaderProps> {
 interface HeaderCellProps extends FileTableProps {
 	field: Field,
 	label: string,
-	onHeaderClick: (field: Field) => void
+	onHeaderClick?: (field: Field) => void
 	rightmost?: boolean
 	fixed?: boolean
 }
@@ -185,9 +178,13 @@ const HeaderCell = (props: HeaderCellProps) => {
 		else
 			klass += " table__header-cell--sorted-desc";
 	}
-	return <th className={klass}>
-		<LinkText className="link--table" onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>
-	</th>
+	let label: JSX.Element;
+	if (props.onHeaderClick) {
+		label = <LinkText className="link--table" onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>;
+	} else {
+		label = <span>{props.label}</span>
+	}
+	return <th className={klass}>{label}</th>
 }
 
 interface FileTableRowProps {
