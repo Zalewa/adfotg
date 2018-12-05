@@ -203,25 +203,31 @@ export default class Mount extends Component<MountProps, MountState> {
 }
 
 export interface CreateMountImageProps {
-	adfs: string[],
+	adfs: string[]
 	onDone?: ()=>void
 }
 
 interface CreateMountImageState {
-	error: Error,
+	error: Error
 	imageName: string
+	sortedAdfs: string[]
 }
 
 export class CreateMountImage extends React.Component<CreateMountImageProps, CreateMountImageState> {
-	readonly state: CreateMountImageState = {
-		error: null,
-		imageName: ""
+	constructor(props: CreateMountImageProps) {
+		super(props);
+		this.state = {
+			...this.propsToState(props),
+			error: null,
+			imageName: ""
+		}
 	}
 
 	render() {
 		return (<div className="createMountImage">
 			<span>Create Mount Image with following ADFs:</span>
-			<Listing listing={this.sortedAdfs()} />
+			<Listing listing={this.state.sortedAdfs}
+				onOrderChange={(sortedAdfs) => this.setState({sortedAdfs})} />
 			<input autoFocus className="text-input" type="text"
 				value={this.state.imageName}
 				onChange={e => this.onNameChange(e.target.value)}
@@ -236,8 +242,16 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 		</div>);
 	}
 
-	private sortedAdfs(): string[] {
-		let cloned = this.props.adfs.slice(0);
+	componentWillReceiveProps(props: CreateMountImageProps) {
+		this.setState(this.propsToState(props));
+	}
+
+	private propsToState(props: CreateMountImageProps) {
+		return {sortedAdfs: this.sorted(props.adfs)};
+	}
+
+	private sorted(list: string[]): string[] {
+		let cloned = list.slice(0);
 		cloned.sort((a: string, b: string) => a.localeCompare(b));
 		return cloned;
 	}
@@ -254,7 +268,7 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 		if (!this.state.imageName)
 			return;
 		request.put("/mount_image/" + this.state.imageName + "/pack_adfs")
-			.send({adfs: this.sortedAdfs()})
+			.send({adfs: this.state.sortedAdfs})
 			.end((err, res) => {
 				if (err) {
 					this.setState({error: err});
