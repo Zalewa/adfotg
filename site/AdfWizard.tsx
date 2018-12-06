@@ -228,7 +228,7 @@ class DiskComposition extends Component<DiskCompositionProps> {
 	}
 
 	private renderDone(disk: DiskDescriptor) {
-		return <Notification note={{
+		return <Notification key={disk.key} note={{
 			type: NoteType.Success,
 			message: "Disk '" + disk.name + "' done!"}} />
 	}
