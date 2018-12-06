@@ -27,7 +27,7 @@ export class FormItem extends Component<FormItemProps> {
 				</td>
 				<td className="form__cell form__cell--hint">{hint ? hint : ""}</td>
 			</tr>
-			{note && this.renderNote()}
+			{note && this.renderNote() || null}
 		</tbody>);
 	}
 

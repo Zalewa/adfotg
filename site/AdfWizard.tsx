@@ -29,13 +29,14 @@ export default class AdfWizard extends Component {
 		submitted: false
 	}
 
-	private disks: DiskDescriptor[];
+	private disks: DiskDescriptor[] = [];
 	private diskKey: number = 1;
 
 	render() {
 		return (<div>
 			<Uploader actions={this.actions()}
 				onSelected={selection => this.setState({selection})} />
+			<button className="button" onClick={this.addEmptyDisk}>Add Empty ADF</button>
 			{this.state.submitted && this.renderSubmitted()}
 			{this.state.disks.length > 0 && this.renderComposition()}
 		</div>);
@@ -69,6 +70,14 @@ export default class AdfWizard extends Component {
 				type: NoteType.Error,
 				message: "Some disks were not created." }} />
 		}
+	}
+
+	@boundMethod
+	private addEmptyDisk(): void {
+		this.addDisk(
+			this.state.basename + "_" + this.diskKey,
+			this.state.basename + " " + this.diskKey,
+			[]);
 	}
 
 	private addDisk(name: string, label: string, contents: FileOp[]): void {
