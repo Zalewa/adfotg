@@ -57,10 +57,10 @@ export function dispatchApiErrors(title: string, apiResults: ApiResult[]) {
 	});
 }
 
-export function dispatchError(e: Error) {
+export function dispatchError(e: Error | string) {
 	dispatch({
 		type: NoteType.Error,
-		message: e.toString()
+		message: (typeof e === "string") ? e : e.toString()
 	});
 }
 

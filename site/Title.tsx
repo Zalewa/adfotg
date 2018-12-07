@@ -3,6 +3,7 @@ import { Component } from 'react';
 import { NavLink, NavLinkProps } from 'react-router-dom';
 import * as request from 'superagent';
 
+import { HealthBar } from './Health';
 import { ADFWIZARD_LINK, HOME_LINK } from './routes';
 import { dispatchRequestError } from './Notifier';
 import { Labelled, formatSize } from './ui';
@@ -22,6 +23,7 @@ export default class Title extends Component<TitleProps> {
 				</div>
 				<div className="title__section title__section--right">
 					<SpaceInfo refresh={this.props.refresh} />
+					<HealthBar />
 					<div className="title__row">
 						<a className="link" href="/help">API Help</a>
 						<VersionInfo />
@@ -77,8 +79,8 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	}
 
 	render() {
-		return (<div className="spaceInfo">
-			<table className="table spaceInfo__table">
+		return (<div className="space-info">
+			<table className="table table--no-margin">
 				<thead>
 					<tr className="table__header">
 						<th className="table__header-cell table__header-cell--left">Mount Point</th>

@@ -262,6 +262,49 @@
 }
 
 
+.healthbar {
+	@border: 2px solid gray;
+	background-color: @workbenchBackground;
+	border-collapse: separate;
+	border-left: @border;
+	border-right: @border;
+	border-bottom: @border;
+	border-spacing: 2px 0;
+	padding: 1px;
+	margin-bottom: 1px;
+	width: 100%;
+
+	&__row {
+		justify-items: stretch;
+	}
+
+	&__point {
+		min-height: 4px;
+		height: 4px;
+
+		&:nth-child(last) {
+			margin-right: 2px;
+		}
+
+		&--good {
+			background-color: @successColor;
+		}
+
+		&--bad {
+			background-color: @dangerColor;
+		}
+
+		&--unknown {
+			background-color: @paneBackground;
+		}
+	}
+
+	&--has-errors {
+		cursor: pointer;
+	}
+}
+
+
 .imageDetails {
 	&__name {
 	}
@@ -530,9 +573,7 @@
 }
 
 
-.spaceInfo {
-	&__table {
-	}
+.space-info {
 }
 
 
@@ -613,6 +654,10 @@
 
 	&--full-page {
 		width: 100%
+	}
+
+	&--no-margin {
+		margin: 0px;
 	}
 }
 
