@@ -75,7 +75,7 @@ export default class AdfWizard extends Component {
 	@boundMethod
 	private addEmptyDisk(): void {
 		this.addDisk(
-			this.state.basename + "_" + this.diskKey,
+			this.state.basename + "" + this.diskKey,
 			this.state.basename + " " + this.diskKey,
 			[]);
 	}
