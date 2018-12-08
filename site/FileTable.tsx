@@ -138,7 +138,7 @@ class Header extends Component<HeaderProps> {
 	render() {
 		let sizeTd = null;
 		if (this.props.showSize)
-			sizeTd = (<HeaderCell {...this.props} field={Field.Size} label="Size" fixed />);
+			sizeTd = (<HeaderCell {...this.props} field={Field.Size} label="Size" modifier="fixed-short" />);
 		return (<thead>
 			<tr className="table__header">
 				{this.props.onSelected &&
@@ -149,7 +149,7 @@ class Header extends Component<HeaderProps> {
 				</th>}
 				<HeaderCell {...this.props} field={Field.Name} label="Name" />
 				{sizeTd}
-				<HeaderCell {...this.props} field={Field.Mtime} label="Modified Date" rightmost fixed />
+				<HeaderCell {...this.props} field={Field.Mtime} label="Modified Date" rightmost modifier="fixed" />
 			</tr>
 		</thead>);
 	}
@@ -162,15 +162,15 @@ interface HeaderCellProps extends FileTableProps {
 	label: string,
 	onHeaderClick?: (field: Field) => void
 	rightmost?: boolean
-	fixed?: boolean
+	modifier?: string
 }
 
 const HeaderCell = (props: HeaderCellProps) => {
 	let klass = "table__header-cell";
 	if (props.rightmost)
 		klass += " table__header-cell--right";
-	if (props.fixed)
-		klass += " table__header-cell--fixed";
+	if (props.modifier)
+		klass += " table__header-cell--" + props.modifier;
 	const sortedBy: boolean = props.sort && props.sort.field == props.field;
 	if (sortedBy) {
 		if (props.sort.ascending)
