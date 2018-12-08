@@ -97,7 +97,8 @@ def _create_env():
     dirs_to_create = [
         config.work_dir,
         config.adf_dir,
-        config.upload_dir
+        config.upload_dir,
+        config.mount_images_dir
     ]
     for dir_ in dirs_to_create:
         try:
