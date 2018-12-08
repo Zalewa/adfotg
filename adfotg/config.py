@@ -50,6 +50,15 @@ class _Config:
     def mount_images_dir(self):
         return os.path.join(self.work_dir, "mount_images")
 
+    @property
+    def all_workspace_dirs(self):
+        return [
+            self.work_dir,
+            self.adf_dir,
+            self.upload_dir,
+            self.mount_images_dir
+        ]
+
 
 def load(filenames=None):
     if not _load_from_file(filenames):
@@ -94,13 +103,7 @@ def _log_cfg():
 
 
 def _create_env():
-    dirs_to_create = [
-        config.work_dir,
-        config.adf_dir,
-        config.upload_dir,
-        config.mount_images_dir
-    ]
-    for dir_ in dirs_to_create:
+    for dir_ in config.all_workspace_dirs:
         try:
             os.makedirs(dir_, exist_ok=True)
         except PermissionError as e:

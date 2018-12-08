@@ -424,6 +424,8 @@ def self_check():
     - xdftool -- is xdftool available
     - mtools -- are mtools installed; several tools needed to
       manipulate the USB drive images are checked
+    - storage -- do all workspace directories exists and are
+      they writable
     '''
     return jsonify(**selfcheck.self_check())
 

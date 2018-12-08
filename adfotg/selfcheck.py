@@ -1,7 +1,11 @@
 '''
 This module implements the self-check API.
 '''
+import os
 import subprocess
+import traceback
+
+from .config import config
 
 
 def self_check():
@@ -9,10 +13,22 @@ def self_check():
         'rpi': _check_rpi(),
         'g_mass_storage': _check_mass_storage(),
         'mtools': _check_mtools(),
-        'xdftool': _check_xdftool()
+        'xdftool': _check_xdftool(),
+        'storage': _check_storage()
     }
 
 
+def _catch_error(func):
+    def _catcher(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            traceback.print_exc()
+            return str(e)
+    return _catcher
+
+
+@_catch_error
 def _check_rpi():
     '''Credits: https://raspberrypi.stackexchange.com/a/74541'''
     try:
@@ -36,30 +52,52 @@ def _check_rpi():
     return ''
 
 
+@_catch_error
 def _check_mass_storage():
     if 0 != _call(['modinfo', 'g_mass_storage']):
         return 'g_mass_storage Kernel module not found'
     return ''
 
 
+@_catch_error
 def _check_mtools():
     commands = ['mdir', 'mcopy', 'mkdosfs']
-    errors = _check_commands(commands)
-    return '\n'.join(errors)
+    return _check_commands(commands)
 
 
+@_catch_error
 def _check_xdftool():
     return _check_command('xdftool')
 
 
+@_catch_error
+def _check_storage():
+    return _check_errors(_check_dir_writeable, config.all_workspace_dirs)
+
+
 def _check_commands(cmds):
-    return [error for error in map(_check_command, cmds) if error]
+    return _check_errors(_check_command, cmds)
 
 
 def _check_command(name):
     if 0 != _call(['which', name]):
         return '{} not found on $PATH'.format(name)
     return ''
+
+
+def _check_dir_writeable(dirpath):
+    if not os.path.isdir(dirpath):
+        return "'{}' does not exist or is not a directory".format(dirpath)
+    if not os.access(dirpath, os.W_OK):
+        return "'{}' directory exists but is not writeable".format(dirpath)
+    if not os.access(dirpath, os.R_OK):
+        return "'{}' directory exists but is not readable".format(dirpath)
+    return ''
+
+
+def _check_errors(checker, elems):
+    return '\n'.join(
+        [error for error in map(checker, elems) if error])
 
 
 def _call(command):

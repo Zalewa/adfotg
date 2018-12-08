@@ -10,7 +10,8 @@ enum HealthPoint {
 	Rpi = "rpi",
 	MassStorage = "g_mass_storage",
 	Xdftool = "xdftool",
-	Mtools = "mtools"
+	Mtools = "mtools",
+	Storage = "storage"
 }
 
 
@@ -60,6 +61,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 		}
 		const className = "healthbar__point healthbar__point--" + modifier;
 		return (<td key={healthPoint} className={className}
+			id={"healthbar__" + healthPoint}
 			title={message} />);
 	}
 
