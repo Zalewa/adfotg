@@ -176,10 +176,12 @@ class _RealMount:
 
     def mount(self, imagefile):
         self.unmount()
-        subprocess.check_call(
-            ['sudo', 'modprobe', 'g_mass_storage',
-             'file={}'.format(shlex.quote(imagefile)),
-             'stall=0', 'removable=1'])
+        # It must be run with 'shell=True' as I couldn't figure
+        # out how to make paths with whitespace work otherwise.
+        cmd = ('sudo modprobe g_mass_storage file={} '
+               'stall=0 removable=1'.format(
+                   shlex.quote(imagefile)))
+        subprocess.check_call(cmd, shell=True)
 
     def unmount(self):
         subprocess.check_call(['sudo', 'modprobe', '-r', 'g_mass_storage'])
