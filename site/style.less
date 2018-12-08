@@ -503,11 +503,17 @@
 
 
 .page {
-	background-color: @pageBackground;
+	background-color: darken(@pageBackground, 5%);
 	color: @pageForeground;
 	font-family: @mainFont,Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;
 	font-size: 1em;
+	margin: 0px auto;
 	max-width: 800px;
+
+	&__main {
+		background-color: @pageBackground;
+		margin: auto 0;
+	}
 }
 
 
