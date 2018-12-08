@@ -217,6 +217,7 @@ def quickmount_adf(name):
     img = _quickmount_image()
     if img.exists():
         img.delete()
+    os.makedirs(os.path.dirname(img.imagefile), exist_ok=True)
     img.pack([adf_path])
     img_mount = Mount(img.imagefile)
     img_mount.mount()

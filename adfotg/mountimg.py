@@ -167,9 +167,6 @@ class _RealMount:
     Currently mounted file is available in
     /sys/module/g_mass_storage/parameters/file
     '''
-    def __init__(self, imagefile):
-        self._imagefile = imagefile
-
     def mounted(self):
         try:
             with open('/sys/module/g_mass_storage/parameters/file', 'r') as f:
