@@ -1,3 +1,4 @@
+include HARDWARE_DAMAGE_RISK.txt
 include README.md
 include LICENSE
 include adfotg/conf/adfotg.conf
