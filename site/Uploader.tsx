@@ -156,10 +156,8 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 		return (
 			<div className="uploadzone">
 				<div className="uploadzone__pane">
-					<div className="uploadzone__group">
-						{!this.state.uploading && this.renderDropZone()}
-						{this.state.uploading && <Loader classMod="loader--upload" />}
-					</div>
+					{!this.state.uploading && this.state.uploadSuccess === null && this.renderDropZone()}
+					{this.state.uploading && <Loader classMod="loader--upload" />}
 					{this.state.uploadSuccess !== null && this.renderUploadDoneNotifier()}
 				</div>
 			</div>
@@ -177,11 +175,9 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 
 	private renderUploadDoneNotifier(): JSX.Element {
 		const note: Note = this.state.uploadSuccess ?
-			{type: NoteType.Success, message: "Upload done!"} :
-			{type: NoteType.Error, message: "Upload failed!"};
-		return (<div className="uploadzone__group">
-			<Notification note={note} />
-		</div>)
+			{type: NoteType.Success, message: "UPLOAD DONE !"} :
+			{type: NoteType.Error, message: "UPLOAD FAILED !"};
+		return <Notification note={note} classMod="uploader" />;
 	}
 
 	@boundMethod
@@ -208,7 +204,7 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 		this.resetTimer = setTimeout(() => {
 			this.resetTimer = null;
 			this.setState({uploadSuccess: null});
-		}, 1000);
+		}, 2000);
 	}
 }
 

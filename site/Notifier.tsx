@@ -114,14 +114,17 @@ export default class Notifier extends Component<{}, NotifierState> {
 }
 
 interface NotificationProps {
+	classMod?: string
 	onClose?: (key: number) => void
 	note: Note
 }
 
 export class Notification extends Component<NotificationProps> {
 	render() {
-		const note = this.props.note;
-		return (<div className={"notification notification--" + note.type}>
+		const { note, classMod } = this.props;
+		const klass = "notification notification--" + note.type + " "
+			+ (classMod ? ("notification--" + classMod) :  "");
+		return (<div className={klass}>
 			{this.props.onClose &&
 			<button className="button button--notification-close"
 				onClick={() => this.props.onClose(note.key)}>X</button>
