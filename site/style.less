@@ -378,6 +378,13 @@
 }
 
 
+.loader {
+	&--upload {
+		width: 100%;
+	}
+}
+
+
 .modal {
 	.fullpage--mixin();
 	background-color: rgba(0,0,0,0.5); /* Black background with opacity */
@@ -709,8 +716,16 @@
 }
 
 .uploadzone {
-	display: table;
-	margin: 0 1em 1em 4em;
+	padding: 0 2em 1em 2em;
+
+	&__group {
+		display: table-row;
+	}
+
+	&__pane {
+		display: table;
+		width: 100%;
+	}
 
 	&__uploadarea {
 		cursor: pointer;

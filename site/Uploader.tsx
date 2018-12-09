@@ -8,9 +8,10 @@ import { Actions, ActionSet } from './Actions';
 import FileTable, { FileTableEntry, Field, Sort, createSort } from './FileTable';
 import Listing from './Listing';
 import { ConfirmModal } from './Modal';
-import { dispatchApiErrors, dispatchRequestError } from './Notifier';
+import { Notification, Note, NoteType, dispatchApiErrors,
+	dispatchRequestError } from './Notifier';
 import Section from './Section';
-import { DeleteButton } from './ui';
+import { DeleteButton, Loader } from './ui';
 
 
 interface UploaderProps {
@@ -31,7 +32,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 		listing: [],
 		sort: createSort(Field.Mtime),
 		selection: [],
-		deleteSelected: false
+		deleteSelected: false,
 	}
 
 	render() {
@@ -134,36 +135,80 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 	}
 }
 
-class UploadZoneProps {
+interface UploadZoneProps {
 	onUpload: () => void;
 }
 
-class UploadZone extends Component<UploadZoneProps> {
+interface UploadZoneState {
+	uploading: boolean
+	uploadSuccess: boolean | null
+}
+
+class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
+	readonly state: UploadZoneState = {
+		uploading: false,
+		uploadSuccess: null
+	};
+
+	private resetTimer?: ReturnType<typeof setTimeout>;
+
 	render() {
 		return (
 			<div className="uploadzone">
-				<Dropzone onDrop={this.onDrop}
-						className="uploadzone__uploadarea"
-						acceptClassName="uploadzone__uploadarea--accept"
-						rejectClassName="uplaodzone__uplaodarea--reject">
-					<div>Drag & drop or click to select files to upload.</div>
-				</Dropzone>
+				<div className="uploadzone__pane">
+					<div className="uploadzone__group">
+						{!this.state.uploading && this.renderDropZone()}
+						{this.state.uploading && <Loader classMod="loader--upload" />}
+					</div>
+					{this.state.uploadSuccess !== null && this.renderUploadDoneNotifier()}
+				</div>
 			</div>
 		);
 	}
 
+	private renderDropZone(): JSX.Element {
+		return (<Dropzone onDrop={this.onDrop}
+			className="uploadzone__uploadarea"
+			acceptClassName="uploadzone__uploadarea--accept"
+			rejectClassName="uplaodzone__uplaodarea--reject">
+				<div>Drag & drop or click to select files to upload.</div>
+		</Dropzone>);
+	}
+
+	private renderUploadDoneNotifier(): JSX.Element {
+		const note: Note = this.state.uploadSuccess ?
+			{type: NoteType.Success, message: "Upload done!"} :
+			{type: NoteType.Error, message: "Upload failed!"};
+		return (<div className="uploadzone__group">
+			<Notification note={note} />
+		</div>)
+	}
+
 	@boundMethod
 	onDrop(accepted: File[], rejected: File[]): void {
+		this.setState({uploading: true, uploadSuccess: null});
 		const req = request.post('/upload');
 		accepted.forEach(file => {
 			req.attach(file.name, file);
 		});
 		req.end((err, res) => {
+			this.setState({uploading: false, uploadSuccess: !err});
 			dispatchRequestError(err);
 			if (!err) {
 				this.props.onUpload();
 			}
+			this.triggerReset();
 		});
+	}
+
+	private triggerReset(): void {
+		if (this.resetTimer !== null) {
+			clearTimeout(this.resetTimer);
+		}
+		this.resetTimer = setTimeout(() => {
+			this.resetTimer = null;
+			this.setState({uploadSuccess: null});
+		}, 1000);
 	}
 }
 

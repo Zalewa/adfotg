@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import { errorToString } from './Notifier';
+import * as res from './res';
 
 export const DeleteButton = (props: any) => {
 	let klass: string = "button button--delete"
@@ -32,6 +33,11 @@ export const Labelled = (props: LabelledProps) => {
 export const LinkText = (props: any) => {
 	return (<span className={"link " + (props.className ? props.className : "")}
 		onClick={() => {props.onClick(); return false;}}>{props.children}</span>)
+}
+
+export const Loader = (props: {classMod?: string}) => {
+	return (<img src={res.loader}
+		className={"loader " + (props.classMod || "")} />);
 }
 
 
