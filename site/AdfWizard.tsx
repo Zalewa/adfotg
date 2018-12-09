@@ -314,6 +314,7 @@ class Distributor {
 	private static readonly BUFFER_SPACE = 15 * 1024;
 	private static readonly META_SPACE_PER_FILE = 2 * 1024;
 	private static readonly MAX_SIZE = Distributor.ADF_SIZE - Distributor.BUFFER_SPACE;
+	private static readonly MAX_FILENAME = 30;
 	private files: FileTableEntry[];
 
 	constructor(files: FileTableEntry[]) {
@@ -344,7 +345,7 @@ class Distributor {
 					(bigfile.size - start) : Distributor.MAX_SIZE;
 				splits.push({
 					name: bigfile.name, start, length,
-					rename: bigfile.name + "." + Strings.leftpad("" + (i + 1), "0", 3)
+					rename: this.trimFilename(bigfile.name, "." + Strings.leftpad("" + (i + 1), "0", 3))
 				});
 			}
 		});
@@ -376,9 +377,23 @@ class Distributor {
 					break;
 				}
 			}
-			distribution.push(disk.map(f => {return {name: f.name}}));
+			distribution.push(disk.map(f => {return {
+				name: f.name,
+				rename: this.trimFilename(f.name)}
+			}));
 		}
 
 		return distribution;
+	}
+
+	private trimFilename(name: string, trail?: string): string {
+		trail = trail || "";
+		const maxLen = Distributor.MAX_FILENAME;
+		if ((name + trail).length < maxLen) {
+			return name + trail;
+		} else {
+			const fitNameLen = maxLen - trail.length;
+			return name.substr(0, fitNameLen) + trail;
+		}
 	}
 }

@@ -10,6 +10,8 @@ from .error import ActionError, AdfotgError
 
 ADF_SIZE = 901120
 
+MAX_FFS_FILENAME = 30
+
 
 class FileUploadOp:
     def __init__(self, source, pos=None, rename=None):
@@ -22,15 +24,17 @@ class FileUploadOp:
     @classmethod
     def interpret_api(cls, base_dir, api_arg):
         if isinstance(api_arg, dict):
-            return cls(
+            op = cls(
                 safe_join(base_dir, api_arg['name']),
                 pos=cls._interpret_pos(api_arg),
                 rename=api_arg.get('rename')
             )
         elif isinstance(api_arg, str):
-            return cls(safe_join(base_dir, api_arg))
+            op = cls(safe_join(base_dir, api_arg))
         else:
             raise ActionError("unknown API argument for file upload op")
+        op.validate()
+        return op
 
     @staticmethod
     def _interpret_pos(api_arg):
@@ -70,6 +74,14 @@ class FileUploadOp:
             self._adf_name
         ]
         return cmd
+
+    def validate(self):
+        if len(self._adf_name) > MAX_FFS_FILENAME:
+            raise ActionError(
+                "Amiga filenames must be in {} character "
+                "limit; '{}' is {}".format(
+                    MAX_FFS_FILENAME, self._adf_name,
+                    len(self._adf_name)))
 
     @property
     def _sys_name(self):

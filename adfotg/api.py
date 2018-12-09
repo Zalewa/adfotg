@@ -151,6 +151,10 @@ def create_adf(name):
 
     This API requires xdftool.
 
+    There's a limitation of max. 30 characters on a filename
+    and label length. If a source file exceeds this limitation,
+    it's allowed to use the renaming mechanism so that it fits.
+
     URL args:
     - name -- name of the ADF file to create. Must not exist.
 
@@ -175,6 +179,21 @@ def create_adf(name):
 
     - An empty list will result in empty but formatted ADF.
 
+    Returns: nothing if successful
+
+    Errors:
+
+    - 400
+      - if ADF already exists
+      - if disk label is not specified or exceeds the limit
+        of 30 characters
+      - if a filename exceeds the limit of 30 characters
+      - if an invalid argument is specified for a file operation
+
+    - 500 can be returned if xdftool fails, even if that
+      failure was caused by the client preparing the operations
+      incorrectly.
+
     '''
     target_path = safe_join(config.adf_dir, name)
     if os.path.exists(target_path):
@@ -182,6 +201,9 @@ def create_adf(name):
     label = request.get_json().get("label")
     if not label:
         raise ActionError("must specify label")
+    if len(label) > adf.MAX_FFS_FILENAME:
+        raise ActionError("label length exceeds limit; max '{}', is '{}'".format(
+            adf.MAX_FFS_FILENAME, len(label)))
     contents = request.get_json().get("contents", [])
     file_ops = [adf.FileUploadOp.interpret_api(config.upload_dir, piece)
                 for piece in contents]
