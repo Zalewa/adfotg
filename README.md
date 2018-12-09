@@ -48,7 +48,11 @@ without password prompt.
 Status
 ======
 
-Work-in-Progress. At the moment it's completely unusable.
+Work-in-Progress.
+
+The first version of the program is finished. It now goes through
+some touch-ups, small fixes and general testing. The UI is also
+gradually being adapted towards better display on mobile devices.
 
 
 Requirements
