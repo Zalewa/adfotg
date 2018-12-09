@@ -1,24 +1,37 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { NavLink, NavLinkProps } from 'react-router-dom';
+import { boundMethod } from 'autobind-decorator';
 import * as request from 'superagent';
 
 import { HealthBar } from './Health';
-import { ADFWIZARD_LINK, HOME_LINK } from './routes';
 import { dispatchRequestError } from './Notifier';
+import * as responsive from './responsive';
+import { ADFWIZARD_LINK, HOME_LINK } from './routes';
 import { Labelled, formatSize } from './ui';
 
 interface TitleProps {
 	refresh: boolean
 }
 
-export default class Title extends Component<TitleProps> {
+interface TitleState {
+	title: string
+}
+
+export default class Title extends Component<TitleProps, TitleState> {
+	constructor(props: TitleProps) {
+		super(props);
+		this.state = {
+			title: this.getMatchMediaTitle()
+		};
+	}
+
 	render() {
 		return (
 			<div className="title">
 				<div className="title__row">
 				<div className="title__section">
-					<AppLink className="title__main" exact to={HOME_LINK}>ADF On-The-Go</AppLink>
+					<AppLink className="title__main" exact to={HOME_LINK}>{this.state.title}</AppLink>
 					<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
 				</div>
 				<div className="title__section title__section--right">
@@ -32,6 +45,23 @@ export default class Title extends Component<TitleProps> {
 				</div>
 			</div>
 		);
+	}
+
+	componentDidMount() {
+		responsive.matchWidth.addListener(this.matchMedia);
+	}
+
+	componentWillUnmount() {
+		responsive.matchWidth.removeListener(this.matchMedia);
+	}
+
+	@boundMethod
+	private matchMedia(): void {
+		this.setState({title: this.getMatchMediaTitle()});
+	}
+
+	private getMatchMediaTitle(): string {
+		return responsive.matchWidth.matches ? "ADF OTG" : "ADF On-The-Go";
 	}
 }
 
