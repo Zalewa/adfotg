@@ -1,3 +1,19 @@
+!!! HARDWARE DAMAGE RISK !!!
+============================
+
+**CUT THE +5V LINE FROM THE USB CABLE!**
+
+This line will connect the voltage from the Raspberry Pi and
+power up your Gotek and your Amiga, putting it in a strange
+half-state when the normal PSU is OFF and preventing Power LED
+dimming when PSU is ON and Amiga reboots.
+
+**FOR SAFETY MEASURES, CUT THE +5V LINE! I DID IN MINE.**
+
+
+ADF On-The-Go
+=============
+
 ADF On-The-Go (adfotg) is a HTTP service designed for use in a Raspberry
 Pi Zero which is connected through its USB OTG port to a Gotek Floppy
 Drive emulator in use in an Amiga computer. It allows to feed the Gotek
@@ -8,9 +24,9 @@ ADF images directly. It allows to store a bundle of ADF files on its
 own drive and swap them freely.
 
 ```
-  ----------- Linux ------------ USB --------- IDE ---------
-  | ADF OTG |------>| RPi Zero |---->| Gotek |---->| Amiga |
-  -----------       ------------     ---------     ---------
+  ----------- Linux ------------  USB  --------- IDE ---------
+  | ADF OTG |------>| RPi Zero |------>| Gotek |---->| Amiga |
+  -----------       ------------ no+5V ---------     ---------
 ```
 
 
