@@ -4,6 +4,7 @@ __pycache__
 
 adfotg/site/
 adfotg.egg-info/
+dist/
 node_modules/
 site/dist/
 npm-debug.log
