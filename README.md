@@ -4,9 +4,11 @@
 **CUT THE +5V LINE FROM THE USB CABLE!**
 
 This line will connect the voltage from the Raspberry Pi and
-power up your Gotek and your Amiga, putting it in a strange
-half-state when the normal PSU is OFF and preventing Power LED
-dimming when PSU is ON and Amiga reboots.
+power up your Gotek and your Amiga. When Amiga PSU is OFF, the Amiga
+will be put in a strange half-state with LEDs lighting up but the
+computer remaining off. The RPi will also reboot. When Amiga PSU is
+ON, the +5V USB line will prevent the Amiga's Power LED from dimming
+when Amiga reboots.
 
 **FOR SAFETY MEASURES, CUT THE +5V LINE! I DID IN MINE.**
 
