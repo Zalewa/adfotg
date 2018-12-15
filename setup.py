@@ -38,9 +38,10 @@ def get_git_describe(tag):
         # Cut off the number if we're building directly from the tag.
         if tagged[:3] == "-0-":
             tagged = tagged[2:]
-        return tagged
+        version = "+" + tagged[1:]
     else:
-        return "-g" + out_to_str(stdout)
+        version = "+g" + out_to_str(stdout)
+    return version.replace('-', '.')
 
 
 with open('LICENSE') as f:
