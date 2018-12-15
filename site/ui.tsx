@@ -18,6 +18,29 @@ export const ErrorLabel = (props: {error: Error}) => {
 	</div>
 }
 
+interface IconProps {
+	button?: boolean
+	table?: boolean
+	src: string
+	alt?: string
+	title?: string
+}
+
+export const Icon = (props: IconProps) => {
+	const base: string = "icon";
+	let klass = base;
+	if (props.button) {
+		if (props.table) {
+			klass += " " + base + "--table-button";
+		} else {
+			klass += " " + base + "--button";
+		}
+	}
+	const alt = props.alt || props.title;
+	return <img className={klass} src={props.src} alt={alt}
+		title={props.title} />
+}
+
 interface LabelledProps {
 	label: string,
 	contents: string|number

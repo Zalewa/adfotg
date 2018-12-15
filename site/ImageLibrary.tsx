@@ -13,7 +13,8 @@ import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import Pager, { Page } from './Pager';
 import Search from './Search';
 import Section from './Section';
-import { DeleteButton } from './ui';
+import * as res from './res';
+import { DeleteButton, Icon } from './ui';
 
 interface ImageLibraryProps {
 	onCreatedImage: ()=>void
@@ -107,9 +108,9 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 
 	@boundMethod
 	private renderFileActions(file: FileTableEntry): JSX.Element {
-		return (<button className="button button--table"
+		return (<button className="button button--table button--icon-table"
 					onClick={() => this.quickMount(file.name)}>
-			Quick Mount
+			<Icon table button title="Quick Mount" src={res.usb_icon_horz} />
 		</button>);
 	}
 

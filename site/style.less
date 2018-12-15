@@ -183,6 +183,14 @@
 	&--table {
 		font-size: 0.75em;
 	}
+
+	&--icon-table {
+		box-sizing: content-box;
+		font-size: 1em;
+		padding: 2px;
+		width: 28px;
+		height: 14px;
+	}
 }
 
 .disk-composition {
@@ -319,6 +327,14 @@
 
 	&--has-errors {
 		cursor: pointer;
+	}
+}
+
+
+.icon {
+	&--table-button {
+		width: 24px;
+		height: 14px;
 	}
 }
 
@@ -698,6 +714,7 @@
 
 	&__data-cell {
 		padding: 4px 2px;
+		vertical-align: middle;
 
 		&--select {
 			.cell--select--mixin();

@@ -10,7 +10,7 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /(\.gif|\.html|\.ttf|\.txt)$/,
+				test: /(\.gif|\.html|\.svg|\.ttf|\.txt)$/,
 				loader: 'file-loader?name=[path][name].[ext]',
 			},
 			{
