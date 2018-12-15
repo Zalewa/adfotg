@@ -81,7 +81,7 @@ Provided you have the Raspberry Pi Zero, do the following:
 Commands:
 
 ```
-  sudo apt update && sudo apt install mtools
+  sudo apt update && sudo apt install mtools python-pip python3-pip
   sudo pip2 install amitools
   sudo pip3 install adfotg
 ```
