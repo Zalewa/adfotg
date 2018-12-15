@@ -3,6 +3,9 @@
 
 all: site server
 
+publish: clean site
+	python3 ./setup.py sdist upload
+
 server:
 	python3 ./setup.py sdist
 

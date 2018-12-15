@@ -83,9 +83,8 @@ recommended, although will succeed and should be harmless (no warranty).
 
 Provided you have the Raspberry Pi Zero, do the following:
 
-1. Download or build the release package.
-2. `pip3 install <package>`
-3. `xdftool` is essential but needs to be installed separately.
+1. `pip3 install adfotg`
+2. `xdftool` is essential but needs to be installed separately.
    This can be installed from `pip2 install amitools`
 
 The adfotg package is not in PyPI, yet.
