@@ -34,7 +34,11 @@ def get_git_describe(tag):
     if exitcode != 0:
         raise Exception('fail: {}'.format(out_to_str(stderr)))
     if tag is not None:
-        return out_to_str(stdout)[len(tag):]
+        tagged = out_to_str(stdout)[len(tag):]
+        # Cut off the number if we're building directly from the tag.
+        if tagged[:3] == "-0-":
+            tagged = tagged[2:]
+        return tagged
     else:
         return "-g" + out_to_str(stdout)
 
