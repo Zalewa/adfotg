@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 from tempfile import NamedTemporaryFile
 
 from flask import safe_join
@@ -123,10 +124,12 @@ def create_adf(adf_path, label, file_ops):
             file_op.open()
             file_commands.append('+')
             file_commands += file_op.command()
-        print("calling command", cmd_base + file_commands)
+        print("calling command", cmd_base + file_commands, file=sys.stderr)
+        env = dict(os.environ)
+        env['PYTHONIOENCODING'] = 'utf-8'
         p = subprocess.Popen(
             cmd_base + file_commands,
-            cwd=workdir,
+            cwd=workdir, stdin=subprocess.DEVNULL, env=env,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, _ = p.communicate()
         exitcode = p.wait()
