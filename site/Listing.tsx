@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import { ActionSet } from './Actions';
+import * as res from './res';
+import { Icon } from './ui';
 
 interface ListingProps {
 	listing: string[]
@@ -33,10 +35,14 @@ export default class Listing extends Component<ListingProps> {
 	private renderActions(entry_idx: number): JSX.Element {
 		if (this.props.onOrderChange) {
 			return (<ActionSet right>
-				<button className="button button--listing"
-					onClick={() => this.moveUp(entry_idx)}>Up</button>
-				<button className="button button--listing"
-					onClick={() => this.moveDown(entry_idx)}>Down</button>
+				<button className="button button--listing button--icon-table"
+					onClick={() => this.moveUp(entry_idx)}>
+					<Icon table button src={res.arrow_up} />
+				</button>
+				<button className="button button--listing button--icon-table"
+					onClick={() => this.moveDown(entry_idx)}>
+					<Icon table button src={res.arrow_down} />
+				</button>
 			</ActionSet>);
 		}
 		return null;
