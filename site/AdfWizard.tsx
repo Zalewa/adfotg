@@ -87,7 +87,7 @@ export default class AdfWizard extends Component {
 		descriptor.contents = contents.slice();
 		descriptor.key = this.diskKey++;
 		this.disks.push(descriptor);
-		this.setState({disks: this.disks});
+		this.setState({disks: this.disks, submitted: false});
 	}
 
 	@boundMethod
