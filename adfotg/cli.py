@@ -1,5 +1,6 @@
 # coding: utf-8
 from . import config, version
+from .os_install import install, InstallError
 import adfotg
 
 from optparse import OptionParser
@@ -22,6 +23,12 @@ def main():
         if options.version:
             exit(0)
         print("", file=sys.stderr)
+        if options.install:
+            try:
+                install()
+            except InstallError as e:
+                print("Install failed: {}".format(e), file=sys.stderr)
+            exit(0)
         try:
             config.load(options.cfgfile)
         except config.ConfigError as cfg_error:
@@ -53,10 +60,13 @@ def parse_args():
     opt_parser.add_option(
         '-c', '--cfg', dest='cfgfile',
         help=('path to config file; by default looks in: {}' .format(
-            ', '.join(config.DEFAULT_CONFIG_DIRS))))
+            ', '.join(config.DEFAULT_CONFIG_LOCATIONS))))
     opt_parser.add_option(
         '-p', '--port', dest='port', type=int,
         help='port on which to host the service (overrides config)')
+    opt_parser.add_option(
+        '--install', dest='install', default=False, action='store_true',
+        help='Integrate adfotg with the Raspbian Operating System')
     opt_parser.add_option(
         '-V', '--version', dest='version', default=False,
         action='store_true', help='display version and quit')

@@ -91,6 +91,25 @@ Provided you have the Raspberry Pi Zero, do the following:
 The adfotg package is not in PyPI, yet.
 
 
+Integrating with Raspbian
+-------------------------
+
+After pip3 install:
+
+```
+  sudo adfotg --install
+```
+
+This will:
+
+1. Add 'adfotg' system user to Raspbian and allow this user a
+   password-less sudo privilege.
+2. Create adfotg's default config file in `/etc/adfotg.conf`.
+3. Create adfotg's base directory at `/var/lib/adfotg`.
+4. Add `adfotg.service` to systemd; adfotg will start with the system.
+
+
+
 Development
 ===========
 

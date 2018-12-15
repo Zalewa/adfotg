@@ -7,10 +7,11 @@ import sys
 _PROGNAME = version.SHORTNAME
 _CFG_FILENAME = "{}.conf".format(_PROGNAME)
 
-DEFAULT_CONFIG_DIRS = [os.path.join(dirp, _CFG_FILENAME) for dirp in [
+DEFAULT_CONFIG_LOCATIONS = [os.path.join(dirp, _CFG_FILENAME) for dirp in [
     os.curdir,
     os.path.expanduser("~/.config"),
-    "/etc/{}".format(_PROGNAME)
+    "/etc/{}".format(_PROGNAME),
+    "/etc"
 ]]
 
 
@@ -72,13 +73,7 @@ def _load_from_file(filenames=None):
     this module elsewhere. Failure to load results in ConfigError throw.
     '''
     if filenames is None:
-        locations_dirs = [
-            os.curdir,
-            os.path.expanduser("~/.config"),
-            "/etc/{}".format(_PROGNAME)
-        ]
-        locations = [os.path.join(dirp, _CFG_FILENAME)
-                     for dirp in locations_dirs]
+        locations = DEFAULT_CONFIG_LOCATIONS[:]
     else:
         if not isinstance(filenames, (list, tuple)):
             filenames = [filenames]
@@ -88,6 +83,7 @@ def _load_from_file(filenames=None):
         cfgparser = ConfigParser()
         if cfgparser.read(filename):
             config.load(cfgparser)
+            _log("loaded configuration from '{}'".format(filename))
             return True
     _log("could not load config file from any of these "
          "locations: {}" .format(', '.join(locations)))
