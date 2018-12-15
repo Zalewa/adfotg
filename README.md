@@ -110,6 +110,7 @@ it not only doesn't solve the inconvenience of disk swapping but makes
 it worse by replacing labeled floppy-disks with incomprehensible
 ordinal numbers (from 0 to 999).
 
+
 [Raspberry Pi Zero](https://www.raspberrypi.org/) is a cheap mini-computer
 that can run Linux. It has two major features that are in use in this project:
 
@@ -125,6 +126,11 @@ line tools and which we can program to serve the content we want.
 
 Guide for setting up OTG mode on Raspberry Pi can be found here:
 https://gist.github.com/gbaman/50b6cca61dd1c3f88f41
+
+
+[amitools](https://github.com/cnvogelg/amitools/) contains xdftool,
+with which adfotg is capable of manipulating ADF image files to
+some extent.
 
 
 REST API
