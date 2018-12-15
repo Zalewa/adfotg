@@ -122,7 +122,7 @@ for `g_mass_storage` module.
 2. Enable it in Raspbian `echo "dwc2" | sudo tee -a /etc/modules`
 3. Now pick which module you want to use from the list above,
    for ADF OTG we need `g_mass_storage`, so:
-   `echo "g_ether" | sudo tee -a /etc/modules`.
+   `echo "g_mass_storage" | sudo tee -a /etc/modules`.
 4. Reboot your RPi.
 
 In case of trouble connecting with Gotek, you may try to
