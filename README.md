@@ -47,16 +47,6 @@ operations. While the application will run as a normal user, it will abuse
 without password prompt.
 
 
-Status
-======
-
-Work-in-Progress.
-
-The first version of the program is finished. It now goes through
-some touch-ups, small fixes and general testing. The UI is also
-gradually being adapted towards better display on mobile devices.
-
-
 Requirements
 ============
 
