@@ -1,5 +1,5 @@
-.PHONY: all clean purge server site
-
+.PHONY: all clean publish purge server site
+.NOTPARALLEL:
 
 all: site server
 
