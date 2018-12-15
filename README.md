@@ -107,11 +107,45 @@ This will:
 4. Add `adfotg.service` to systemd; adfotg will start with the system.
 
 
+Preparing your Raspberry Pi
+---------------------------
+
+**This is mandatory.** Follow the instructions from
+https://gist.github.com/gbaman/50b6cca61dd1c3f88f41
+to enable dwc2 and g_mass_storage modules.
+
+Hereby is a copy of the excerpt from the guide with adjustment
+for `g_mass_storage` module.
+
+1. We need to make sure we are using the dwc2 USB driver
+   `echo "dtoverlay=dwc2" | sudo tee -a /boot/config.txt`
+2. Enable it in Raspbian `echo "dwc2" | sudo tee -a /etc/modules`
+3. Now pick which module you want to use from the list above,
+   for ADF OTG we need `g_mass_storage`, so:
+   `echo "g_ether" | sudo tee -a /etc/modules`.
+4. Reboot your RPi.
+
+In case of trouble connecting with Gotek, you may try to
+diagnose some problems by connecting the RPi to an USB socket
+in a PC. When an USB drive image is mounted, the PC should see
+the RPi as an USB drive.
+
 
 Development
 ===========
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+
+Troubleshooting
+===============
+
+**Problem:** Gotek perpetually displays `---` when connected to RPi,
+even though it works with my usual USB drive.
+
+**Solution:** `---` indicates that you have Cortex firmware installed on
+your Gotek. See if you have `SELECTOR.ADF` on your USB drive. If yes,
+this ADF must also be placed on every mount image you create in adfotg.
 
 
 Background
