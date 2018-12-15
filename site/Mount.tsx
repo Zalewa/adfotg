@@ -10,7 +10,7 @@ import Listing from './Listing';
 import { ConfirmModal } from './Modal';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import Section from './Section';
-import { DeleteButton, ErrorLabel, Labelled } from './ui';
+import { DeleteButton, ErrorLabel, Labelled, LineInput } from './ui';
 
 
 const enum MountStatus {
@@ -228,16 +228,22 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 			<span>Create Mount Image with following ADFs:</span>
 			<Listing listing={this.state.sortedAdfs}
 				onOrderChange={(sortedAdfs) => this.setState({sortedAdfs})} />
-			<input autoFocus className="text-input" type="text"
-				value={this.state.imageName}
-				onChange={e => this.onNameChange(e.target.value)}
-				onKeyPress={e => {
-					if (e.key === "Enter") {
-						this.create();
-					}
-				}} />
-			<button className="button button--submit" onClick={this.create}
-				disabled={this.state.imageName.length == 0}>Create</button>
+			<Actions submit fullrow>
+			<ActionSet>
+				<LineInput autoFocus type="text"
+					value={this.state.imageName}
+					onChange={e => this.onNameChange(e.target.value)}
+					onKeyPress={e => {
+						if (e.key === "Enter") {
+							this.create();
+						}
+					}} />
+			</ActionSet>
+			<ActionSet right>
+				<button className="button button--submit" onClick={this.create}
+					disabled={this.state.imageName.length == 0}>Create</button>
+			</ActionSet>
+			</Actions>
 			{this.errorWidget()}
 		</div>);
 	}

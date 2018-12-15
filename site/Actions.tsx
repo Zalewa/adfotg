@@ -1,26 +1,40 @@
 import * as React from 'react';
 import { Component } from 'react';
 
-export const Actions = (props: any) => {
-	return (<div className="actions">
+interface ActionsProps {
+	fullrow?: boolean
+	submit?: boolean
+	children?: JSX.Element | JSX.Element[]
+}
+
+export const Actions = (props: ActionsProps) => {
+	const base: string = "actions";
+	let klass = base;
+	if (props.fullrow)
+		klass += " " + base + "--fullrow";
+	if (props.submit)
+		klass += " " + base + "--submit";
+	return (<div className={klass}>
 		{props.children}
 	</div>);
 }
 
 interface ActionSetProps {
-	className?: string,
-	right?: boolean,
+	className?: string
+	even?: boolean
+	right?: boolean
 	children: JSX.Element[] | JSX.Element
 }
 
 export const ActionSet = (props: ActionSetProps) => {
-	let klass: string = "actions__set";
-	if (props.right) {
-		klass += "--right";
-	}
-	if (props.className) {
+	const base: string = "actions__set"
+	let klass = base;
+	if (props.even)
+		klass += " " + base + "--even"
+	if (props.right)
+		klass += " " + base + "--right";
+	if (props.className)
 		klass += " " + props.className;
-	}
 	return (<div className={klass}>
 		{props.children}
 	</div>);

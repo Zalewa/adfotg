@@ -30,6 +30,16 @@ export const Labelled = (props: LabelledProps) => {
 	</div>
 }
 
+type LineInputProps = React.DetailedHTMLProps<
+	React.InputHTMLAttributes<HTMLInputElement>,
+	HTMLInputElement>;
+
+export const LineInput = (props: LineInputProps) => {
+	return (<div className="line-input">
+		<input className="line-input__input" {...props} />
+	</div>);
+}
+
 export const LinkText = (props: any) => {
 	return (<span className={"link " + (props.className ? props.className : "")}
 		onClick={() => {props.onClick(); return false;}}>{props.children}</span>)

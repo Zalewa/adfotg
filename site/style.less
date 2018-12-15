@@ -29,6 +29,12 @@
 @pageBackground: @kickstartBackground;
 @pageForeground: @kickstartTextColor;
 
+/* Media query thresholds */
+@tightScreen: ~"min-width:600px";
+@normalScreen: ~"max-width:600px";
+
+/* Mixins */
+
 /** Covers the whole browser viewport. */
 .fullpage--mixin {
 	position: fixed; /* Sit on top of the page content */
@@ -75,7 +81,7 @@
 	border-bottom: @workbenchBorderLight;
 }
 
-
+/* BEM elements */
 .actions {
 	display: flex;
 	align-items: baseline;
@@ -84,6 +90,10 @@
 		display: flex;
 		align-items: stretch;
 
+		&--even {
+			justify-content: space-between;
+		}
+
 		&--right {
 			margin-left: auto;
 		}
@@ -91,6 +101,14 @@
 
 	&__element--center {
 		align-self: center;
+	}
+
+	&--fullrow {
+		align-items: stretch;
+	}
+
+	&--submit {
+		margin-top: 1em;
 	}
 }
 
@@ -325,6 +343,19 @@
 	}
 
 	&__content {
+	}
+}
+
+
+.line-input {
+	width: auto;
+
+	&__input {
+		border-radius: 0;
+		box-sizing: border-box;
+		min-width: 10px;
+		height: 100%;
+		width: 100%;
 	}
 }
 
@@ -622,7 +653,12 @@
 			padding-top: 2px;
 
 			&--fixed {
-				width: 9em;
+				@media (@tightScreen) {
+					width: 9em;
+				}
+				@media (@normalScreen) {
+					width: 4em;
+				}
 			}
 
 			&--fixed-short {
@@ -672,6 +708,7 @@
 		display: flex;
 		align-items: center;
 		padding-right: 0.25em;
+		word-break: break-word;
 	}
 
 	&--full-page {

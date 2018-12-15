@@ -9,6 +9,7 @@ import Form, { FormItem } from './Form';
 import Listing from './Listing';
 import { Notification, NoteType, errorToString } from './Notifier';
 import Uploader from './Uploader';
+import { LineInput } from './ui';
 import * as Strings from './strings';
 
 
@@ -49,8 +50,8 @@ export default class AdfWizard extends Component {
 				onClick={this.distributeDisks}>Distribute ADFs</button>,
 			<label key="basenamelabel"
 				className="actions__element--center">Base name:</label>,
-			<input key="basenamevalue" value={this.state.basename}
-				className="text-input" type="text"
+			<LineInput key="basenamevalue" value={this.state.basename}
+				type="text"
 				onChange={e => this.setState({basename: e.target.value})} />
 		]
 	}
