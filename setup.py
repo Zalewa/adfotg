@@ -35,9 +35,11 @@ def get_git_describe(tag):
         raise Exception('fail: {}'.format(out_to_str(stderr)))
     if tag is not None:
         tagged = out_to_str(stdout)[len(tag):]
-        # Cut off the number if we're building directly from the tag.
-        if tagged[:3] == "-0-":
-            tagged = tagged[2:]
+        # If we're building directly from the tag we don't
+        # need git-describe. In fact, PyPI won't like it
+        # as it violates PEP 440. Let's return empty.
+        if tagged[:3] == "-0-" and "dirty" not in tagged:
+            return ""
         version = "+" + tagged[1:]
     else:
         version = "+g" + out_to_str(stdout)
