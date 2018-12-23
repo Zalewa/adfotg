@@ -17,7 +17,7 @@ class _Spec:
                 if route.doc:
                     lines.append(route.doc)
             lines.append("")
-        doc = '\n\n'.join([_preamble(), api.__doc__])
+        doc = '\n\n'.join([_preamble(), api.__doc__, '== Endpoints =='])
         doc += '\n\n'
         doc += '\n'.join(lines)
         return doc

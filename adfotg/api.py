@@ -14,12 +14,64 @@ predict or mitigate (error 500). Refer to the specific documentation
 of each method for details about possible error codes, but expect that
 error code 500 can be produced by any method.
 
+
+== Definitions ==
+
+-- Arguments --
+
+- URL args are specified as a part of URL path
+- Query args are specified in URL query
+- Body args are specified as a JSON object sent as the request's body
+
+-- FileEntry --
+
+File listing returned by this API are returned in a FileEntry
+object format.
+
+  FileEntry {
+    name: file name
+    size: size in bytes, integer
+    mtime: last modification time in seconds since the 1970 epoch
+  }
+
+-- Zones --
+
+- Upload zone - where the generic files are stored upon upload
+- ADF library - where the ADFs are stored
+- Mount images zone - where the USB drive images are stored
+
+-- Mount Image --
+
+A mount image is a file that serves as a FAT32 formatted container.
+It can be mounted on a directory in a Linux filesystem, manipulated
+with mtools and, most importantly, mounted as a mass storage device
+through USB On-The-Go using the g_mass_storage Kernel module.
+
+Simply put: A mount image can be considered to be an USB stick image.
+
+
+== Disclaimer ==
+
 The format of this documentation doesn't adhere to any standard.
 
 Please note that the API is still a WORK IN PROGRESS which means
 it's **unstable**, may change at whim and the documentation may
 be incomplete.
 
+
+== Static Files ==
+
+This application doesn't only provide a REST API service but is also
+a HTTP server that may serve HTML or other content to be rendered
+in the browser. The default 'site' implementation comes with several
+files that are served as-is.
+
+The application handles this by first trying to match the request
+URL to an API endpoint. If no API endpoint matches, it will fall back
+to a generic URL handler which tries to see if there's a static file
+or a web page that matches the requested path. If yes, then this
+static file or web page is served. If there's no such fall-back,
+then 404 is returned.
 '''
 from . import app
 from . import adf, mountimg, selfcheck, storage, version
@@ -38,6 +90,16 @@ import weakref
 
 @app.route("/upload", methods=['POST'])
 def upload():
+    '''Upload a file to the upload zone or the ADF library.
+
+    This is a "smart" function. It accepts file uploads and tries to
+    organize them. It expects files to be uploaded using the HTTP
+    standard "multipart/form-data" format. The uploaded files are
+    analyzed to see if they can be identified as ADFs. ADFs are then
+    stored in the ADF library, while all other files are moved to the
+    upload zone.
+
+    '''
     os.makedirs(config.upload_dir, exist_ok=True)
     for filename, file in request.files.items():
         dest_path = safe_join(config.upload_dir, filename)
@@ -50,6 +112,14 @@ def upload():
 
 @app.route("/upload", methods=['GET'])
 def list_uploads():
+    '''Gets a list of files in the upload zone.
+
+    Query args (all optional):
+    - sort -- sort field, valid values: name, size, mtime; defaults to name
+    - dir -- sort direction, valid values: asc, desc; defaults to asc
+
+    Returns: a list of FileEntry objects.
+    '''
     sorting = _sorting()
     return jsonify(storage.listdir(config.upload_dir, sort=sorting))
 
@@ -71,17 +141,30 @@ def del_uploads():
 
 @app.route("/upload/<name>", methods=["GET"])
 def get_upload(name):
+    '''Retrieve a file from the upload zone.
+
+    URL args:
+    - name -- name of the file to retrieve
+
+    Returns: The file.
+    '''
     return send_from_directory(config.upload_dir, name)
 
 
 @app.route("/upload/<name>", methods=["DELETE"])
 def del_upload(name):
+    '''Delete a file from the upload zone; returns nothing on success.
+
+    URL args:
+    - name -- name of the file to delete
+    '''
     os.unlink(safe_join(config.upload_dir, name))
 
 
 @app.route("/adf", methods=["GET"])
 def list_adfs():
-    '''
+    '''Get a list of ADFs.
+
     Query args (all optional):
     - filter -- name filter, matched as "contains case-insensitive";
       defaults to nothing which disables the filter
@@ -93,13 +176,13 @@ def list_adfs():
       than 0 if specified.
 
     Returns: An object: {
-        "listing": [{...}, {...}, ...],
-        "total": integer
+        listing: [{...}, {...}, ...],
+        total: integer
     }
-    `listing` is a list of FileEntryField objects containing name,
-    size and mtime. `total` is a total number of entries without
-    the limitation which is useful in a query with a `limit` to
-    calculate pages.
+    `listing` is a list of FileEntry objects. `total` is a total number
+    of entries without the limitation which is useful in a query with a
+    `limit` to calculate pages.
+
     '''
     # TODO - recurse into subdirectories or support more ADF dirs than one.
     # Users could potentially store hundreds of those and pagination is required.
@@ -137,11 +220,23 @@ def del_adfs():
 
 @app.route("/adf/<name>", methods=["GET"])
 def get_adf(name):
+    '''Retrieve an ADF.
+
+    URL args:
+    - name -- name of the ADF to retrieve
+
+    Returns: The ADF file.
+    '''
     return send_from_directory(config.adf_dir, name)
 
 
 @app.route("/adf/<name>", methods=["DELETE"])
 def del_adf(name):
+    '''Delete an ADF from the ADF library; returns nothing on success.
+
+    URL args:
+    - name -- name of the ADF to delete
+    '''
     os.unlink(safe_join(config.adf_dir, name))
 
 
@@ -225,10 +320,10 @@ def quickmount_adf(name):
        2.1. Old temporary mount image is deleted, if there is any.
     3. Mounts this temporary mount image.
 
-    Errors:
-    - 404 if ADF is not found
+    Returns: nothing if successful
 
-    Returns: nothing on success.
+    Errors:
+    - 404 -- if the ADF is not found
     '''
     adf_path = safe_join(config.adf_dir, name)
     if not os.path.isfile(adf_path):
@@ -248,6 +343,39 @@ def quickmount_adf(name):
 
 @app.route("/mount", methods=["GET"])
 def get_mounted_flash_drive():
+    '''Obtain mount state and info on the currently mounted image if any.
+
+    There can be only one image mounted at a time.
+
+    This function returns two pieces of information:
+
+    1. Is there anything mounted or is there any error in
+       regards to image mounting?
+
+    2. If there is anything mounted, return details on it.
+
+    Returns: an object {
+      status: a MountStatus value as string
+      file: string, optional; name of the image file if any is mounted
+      listing: optional; list of FileEntry for files contained in the
+          image
+      error: string, optional; present only if there's a problem with
+          obtaining the mount status or the information on the mount
+          image
+    }
+
+    MountStatus is an enum that has following values:
+
+    - mounted -- a valid image is mounted
+    - unmounted -- nothing is currently mounted
+    - no_image -- an image is mounted but it doesn't exist
+      in the filesystem
+    - bad_image -- if a predictable error occurs when trying
+      to obtain the mount information; this may indicate
+      that there's something wrong with the mounted image
+    - other_image_mounted -- an image outside of adfotg is mounted
+
+    '''
     mount = Mount.current()
     imagefile = None
     listing = []
@@ -270,9 +398,26 @@ def get_mounted_flash_drive():
                        listing=listing)
 
 
-@app.route("/mount/<filename>", methods=["POST"])
-def mount_flash_drive(filename):
-    imagefile = safe_join(config.mount_images_dir, filename)
+@app.route("/mount/<imgname>", methods=["POST"])
+def mount_flash_drive(imgname):
+    '''Request to mount a mount image specified by the imgname.
+
+    It is invalid to attempt to mount an image if another image
+    is already mounted. `/unmount` first.
+
+    URL args:
+    - imgname -- name of the mount image file. It must exist
+      in the mount images zone.
+
+    Returns: nothing if successful
+
+    Errors:
+    - 404 -- if the mount image is not found
+    - 500 -- can be returned if the mount image is invalid;
+      this should not happen unless the image was modified
+      externally
+    '''
+    imagefile = safe_join(config.mount_images_dir, imgname)
     mountimg = MountImage(imagefile)
     if not mountimg.exists():
         return _apierr(404, "image not found")
@@ -285,6 +430,13 @@ def mount_flash_drive(filename):
 
 @app.route("/unmount", methods=["POST"])
 def unmount_flash_drive():
+    '''Unmount the currently mounted image.
+
+    Returns: nothing of importance on success.
+
+    Errors:
+    - 400 -- if unmount is requested but nothing is mounted.
+    '''
     mount = Mount.current()
     if mount.state() is mountimg.MountStatus.Mounted:
         mount.unmount()
@@ -295,7 +447,14 @@ def unmount_flash_drive():
 
 @app.route("/mount_image", methods=["GET"])
 def list_mount_images():
-    # TODO same as list_adfs and list_uploads
+    '''Gets a list of files in the mount images zone.
+
+    Query args (all optional):
+    - sort -- sort field, valid values: name, size, mtime; defaults to name
+    - dir -- sort direction, valid values: asc, desc; defaults to asc
+
+    Returns: a list of FileEntry objects.
+    '''
     sorting = _sorting()
     if not os.path.exists(config.mount_images_dir):
         # App controls this directory so if it doesn't exist
@@ -304,14 +463,34 @@ def list_mount_images():
     return jsonify(storage.listdir(config.mount_images_dir, sort=sorting))
 
 
-@app.route("/mount_image/<filename>", methods=["GET"])
-def get_mount_image(filename):
-    return send_from_directory(config.mount_images_dir, filename)
+@app.route("/mount_image/<imgname>", methods=["GET"])
+def get_mount_image(imgname):
+    '''Retrieve a mount image from the mount image zone.
+
+    URL args:
+    - imgname -- name of the mount image to retrieve
+
+    Returns: The mount image.
+
+    Errors:
+    - 404 -- if the mount image is not found
+    '''
+    return send_from_directory(config.mount_images_dir, imgname)
 
 
-@app.route("/mount_image/<filename>/contents", methods=["GET"])
-def get_mount_image_contents(filename):
-    img = MountImage(safe_join(config.mount_images_dir, filename))
+@app.route("/mount_image/<imgname>/contents", methods=["GET"])
+def get_mount_image_contents(imgname):
+    '''List contents of this mount image as if it was a directory.
+
+    URL args:
+    - imgname -- name of the mount image to list.
+
+    Returns: a list of FileEntry objects.
+
+    Errors:
+    - 404 -- if the mount image is not found
+    '''
+    img = MountImage(safe_join(config.mount_images_dir, imgname))
     if not img.exists():
         return _apierr(404, "image not found")
     return jsonify(img.list())
@@ -323,7 +502,14 @@ def get_file_from_mount_image(imgname, filename):
     Retrieve a file from inside of the mount image and
     send it back to the client.
 
-    The file is sent as a HTTP attachment.
+    URL args:
+    - imgname -- name of the image from which the file will be extracted.
+    - filename -- name of the file inside the mount image to extract.
+
+    Returns: The file is sent as a HTTP attachment.
+
+    Errors:
+    - 404 -- if the mount image is not found
     '''
     img = MountImage(safe_join(config.mount_images_dir, imgname))
     if not img.exists():
@@ -367,21 +553,47 @@ def del_mount_images():
     return jsonify(deleted)
 
 
-@app.route("/mount_image/<filename>", methods=["DELETE"])
-def del_mount_image(filename):
-    mountimg = MountImage(safe_join(config.mount_images_dir, filename))
+@app.route("/mount_image/<imgname>", methods=["DELETE"])
+def del_mount_image(imgname):
+    '''Delete a mount image from the mount image zone.
+
+    URL args:
+    - imgname -- name of the mount image to delete
+
+    Returns: nothing if successful
+
+    Errors:
+    - 404 -- if the mount image is not found
+    '''
+    mountimg = MountImage(safe_join(config.mount_images_dir, imgname))
     if not mountimg.exists():
         return _apierr(404, "image not found")
     mountimg.delete()
     return ""
 
 
-@app.route("/mount_image/<filename>/pack_adfs", methods=["PUT"])
-def mount_pack_flash_drive_image(filename):
-    '''
+@app.route("/mount_image/<imgname>/pack_adfs", methods=["PUT"])
+def mount_pack_flash_drive_image(imgname):
+    '''Creates a new mount image with specified ADFs.
+
+    This function takes ADFs from the ADF library and packs
+    them into a new mount image. The ADFs in the library remain
+    untouched and their copies are packed into the mount image.
+
+    The ADFs are copied into the mount image in order in which they are
+    present on the 'adfs' list. This order is important as Gotek will
+    use this order to assign the floppy index to each ADF (this may
+    vary depending on your Gotek's firmware).
+
     Body args:
     - adfs -- list of ADFs to put into the image.
-      Names must be as returned by GET /adf.
+      Specify only the names here as they are returned
+      by GET /adf.
+
+    Errors:
+    - 400 -- if no ADF is specified
+          -- if any of the ADFs is not found in the library
+          -- if mount image with specified name already exists
     '''
     args = request.get_json()
     adfs = args.get("adfs")
@@ -395,10 +607,10 @@ def mount_pack_flash_drive_image(filename):
         if not os.path.isfile(adf_path):
             return _apierr(400, "ADF '{}' not found".format(adf_))
     os.makedirs(config.mount_images_dir, exist_ok=True)
-    imagefile = safe_join(config.mount_images_dir, filename)
+    imagefile = safe_join(config.mount_images_dir, imgname)
     image = MountImage(imagefile)
     if image.exists():
-        return _apierr(400, "image '{}' already exists".format(filename))
+        return _apierr(400, "image '{}' already exists".format(imgname))
     image.pack(adfs_paths)
     return ""
 
@@ -410,9 +622,11 @@ def get_free_space():
     Returned is a list of file-systems that are used for storage by
     the application. Each entry on the list contains:
 
-    - name -- string; mount point of the filesystem
-    - total -- int; total space in bytes
-    - avail -- int; space available for use in bytes
+    object {
+      name: string; mount point of the filesystem
+      total: int; total space in bytes
+      avail: int; space available for use in bytes
+    }
     '''
     paths = [
         config.adf_dir,
@@ -454,6 +668,15 @@ def self_check():
 
 @app.route("/version")
 def get_version():
+    '''adfotg version.
+
+    Returns: an object {
+      version: x.y.z string denoting the version;
+          this doesn't contain the Git commit hash.
+      yearspan: production years span as a string;
+          this is human-readable and for display purposes.
+    }
+    '''
     return jsonify(
         version=version.VERSION,
         yearspan=version.YEARSPAN
@@ -462,6 +685,7 @@ def get_version():
 
 @app.route("/help")
 def api_help():
+    '''Returns the help in text/plain format.'''
     from .apidoc import spec
     return spec.to_text(), 200, {"Content-Type": "text/plain"}
 
