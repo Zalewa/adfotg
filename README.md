@@ -1,3 +1,6 @@
+<img align="left" src="/docs/warning.png">
+<img align="right" src="/docs/warning.png">
+
 !!! HARDWARE DAMAGE RISK !!!
 ============================
 
@@ -31,6 +34,8 @@ own drive and swap them freely.
   -----------       ------------ no+5V ---------     ---------
 ```
 
+
+<img align="right" width=400 src="/docs/mainpage.jpg">
 
 Security
 ========

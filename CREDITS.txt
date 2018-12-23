@@ -1,0 +1,10 @@
+This file lists all included files that are 3rd party.
+
+
+- docs/warning.png
+  Public Domain
+  Source: https://publicdomainvectors.org/en/free-clipart/Hazard-warning-sign-vector-image/15144.html
+
+- site/amiga-topaz/*
+  CC BY 3.0
+  https://smartfonts.com/amiga-topaz.font
