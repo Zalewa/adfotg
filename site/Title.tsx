@@ -32,7 +32,6 @@ export default class Title extends Component<TitleProps, TitleState> {
 				<div className="title__row">
 				<div className="title__section">
 					<AppLink className="title__main" exact to={HOME_LINK}>{this.state.title}</AppLink>
-					<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
 				</div>
 				<div className="title__section title__section--right">
 					<SpaceInfo refresh={this.props.refresh} />
@@ -42,6 +41,9 @@ export default class Title extends Component<TitleProps, TitleState> {
 						<VersionInfo />
 					</div>
 				</div>
+				</div>
+				<div className="title__row">
+					<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
 				</div>
 			</div>
 		);

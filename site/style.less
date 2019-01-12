@@ -765,8 +765,15 @@
 		.title--mixin();
 		.title-shadow--mixin();
 		.link();
+
+		@media (@tightScreen) {
+			font-size: 3em;
+		}
+		@media (@normalScreen) {
+			font-size: 4em;
+		}
+
 		display: block;
-		font-size: 4em;
 		font-style: italic;
 		margin: 0;
 		margin-bottom: 10px;
