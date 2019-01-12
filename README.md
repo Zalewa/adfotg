@@ -1,20 +1,4 @@
-<img align="left" src="/docs/warning.png">
-<img align="right" src="/docs/warning.png">
-
-!!! HARDWARE DAMAGE RISK !!!
-============================
-
-**CUT THE +5V LINE FROM THE USB CABLE!**
-
-This line will connect the voltage from the Raspberry Pi and
-power up your Gotek and your Amiga. When Amiga PSU is OFF, the Amiga
-will be put in a strange half-state with LEDs lighting up but the
-computer remaining off. The RPi will also reboot. When Amiga PSU is
-ON, the +5V USB line will prevent the Amiga's Power LED from dimming
-when Amiga reboots.
-
-**FOR SAFETY MEASURES, CUT THE +5V LINE! I DID IN MINE.**
-
+<img align="left" src="/docs/icon.png">
 
 ADF On-The-Go
 =============
@@ -33,6 +17,24 @@ own drive and swap them freely.
   | ADF OTG |------>| RPi Zero |------>| Gotek |---->| Amiga |
   -----------       ------------ no+5V ---------     ---------
 ```
+
+
+<img align="left" src="/docs/warning.png">
+<img align="right" src="/docs/warning.png">
+
+!!! HARDWARE DAMAGE RISK !!!
+============================
+
+**CUT THE +5V LINE FROM THE USB CABLE!**
+
+This line will connect the voltage from the Raspberry Pi and
+power up your Gotek and your Amiga. When Amiga PSU is OFF, the Amiga
+will be put in a strange half-state with LEDs lighting up but the
+computer remaining off. The RPi will also reboot. When Amiga PSU is
+ON, the +5V USB line will prevent the Amiga's Power LED from dimming
+when Amiga reboots.
+
+**FOR SAFETY MEASURES, CUT THE +5V LINE! I DID IN MINE.**
 
 
 <img align="right" width=400 src="/docs/mainpage.jpg">
