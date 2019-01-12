@@ -452,15 +452,31 @@ def list_mount_images():
     Query args (all optional):
     - sort -- sort field, valid values: name, size, mtime; defaults to name
     - dir -- sort direction, valid values: asc, desc; defaults to asc
+    - start -- denotes index at which to start returning the values.
+      Must be 0 or greater, but can go beyond the total amount.
+    - limit -- maximum amount of elements to return; must be greater
+      than 0 if specified.
 
-    Returns: a list of FileEntry objects.
+    Returns: An object: {
+        listing: [{...}, {...}, ...],
+        total: integer
+    }
+    `listing` is a list of FileEntry objects. `total` is a total number
+    of entries without the limitation which is useful in a query with a
+    `limit` to calculate pages.
+
     '''
     sorting = _sorting()
+    start, limit = _pagination()
     if not os.path.exists(config.mount_images_dir):
         # App controls this directory so if it doesn't exist
         # it's not necessarilly an error.
         return jsonify([])
-    return jsonify(storage.listdir(config.mount_images_dir, sort=sorting))
+    full_list = storage.listdir(config.mount_images_dir, sort=sorting)
+    return jsonify(
+        listing=_limit(full_list, start, limit),
+        total=len(full_list)
+    )
 
 
 @app.route("/mount_image/<imgname>", methods=["GET"])

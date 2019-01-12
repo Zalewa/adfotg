@@ -9,6 +9,7 @@ import FileTable, { FileTableEntry, Field, Sort, createSort }
 import Listing from './Listing';
 import { ConfirmModal } from './Modal';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
+import Pager, { Page } from './Pager';
 import Section from './Section';
 import { DeleteButton, ErrorLabel, Labelled, LineInput } from './ui';
 
@@ -26,16 +27,20 @@ interface MountProps {
 }
 
 interface MountState {
-	mountStatus: MountStatus,
-	error?: string,
-	mountedImageName: string,
-	imagesListing: FileTableEntry[],
-	imagesSelection: FileTableEntry[],
-	inspectedImage: string,
-	sortImages: Sort,
+	mountStatus: MountStatus
+	error?: string
+	mountedImageName: string
+	imagesListing: FileTableEntry[]
+	imagesListingTotal: number
+	imagesSelection: FileTableEntry[]
+	inspectedImage: string
+	sortImages: Sort
 	deleteSelected: boolean
 	refreshCounter: number
+	page: Page
 }
+
+const PAGE_SIZE = 50;
 
 export default class Mount extends Component<MountProps, MountState> {
 	readonly state: MountState = {
@@ -43,11 +48,13 @@ export default class Mount extends Component<MountProps, MountState> {
 		error: null,
 		mountedImageName: "",
 		imagesListing: [],
+		imagesListingTotal: 0,
 		imagesSelection: [],
 		inspectedImage: null,
 		sortImages: createSort(Field.Name),
 		deleteSelected: false,
-		refreshCounter: 0
+		refreshCounter: 0,
+		page: new Page(0, PAGE_SIZE)
 	}
 
 	render() {
@@ -80,12 +87,14 @@ export default class Mount extends Component<MountProps, MountState> {
 				selected={this.state.imagesSelection}
 				onSelected={this.onImagesSelected}
 				/>
+			<Pager page={this.state.page} total={this.state.imagesListingTotal}
+				onPageChanged={page => this.refreshImages({page})} />
 		</Section>);
 	}
 
 	componentDidMount() {
 		this.refresh();
-		this.refreshImages(this.state.sortImages);
+		this.refreshImages();
 	}
 
 	componentWillReceiveProps(props: MountProps) {
@@ -132,23 +141,34 @@ export default class Mount extends Component<MountProps, MountState> {
 				mountedImageName: res.body.file
 			});
 		})
-		this.refreshImages(this.state.sortImages);
+		this.refreshImages();
 	}
 
-	private refreshImages(sort: Sort): void {
+	private refreshImages(args?: {sort?: Sort, page?: Page}): void {
+		args = args || {};
+		const sort = args.sort || this.state.sortImages;
+		const page = args.page || this.state.page;
 		request.get("/mount_image").query({
 			sort: sort.field,
-			dir: sort.ascending ? "asc" : "desc"
+			dir: sort.ascending ? "asc" : "desc",
+			start: page.start,
+			limit: page.limit
 		}).end((err, res) => {
 			dispatchRequestError(err);
 			let listing: FileTableEntry[] = [];
+			let listingTotal: number = 0;
 			if (!err) {
-				listing = res.body;
+				listing = res.body.listing;
+				listingTotal = res.body.total;
 			}
 			this.setState({
 				imagesListing: listing,
-				sortImages: sort
+				imagesListingTotal: listingTotal,
+				sortImages: sort,
+				page
 			})
+			if (page.start != 0 && page.start > listingTotal)
+				this.refreshImages({page: new Page(0, page.limit)});
 		})
 	}
 
@@ -170,7 +190,7 @@ export default class Mount extends Component<MountProps, MountState> {
 
 	@boundMethod
 	private onImagesHeaderClick(field: Field) {
-		this.refreshImages(createSort(field, this.state.sortImages));
+		this.refreshImages({sort: createSort(field, this.state.sortImages)});
 	}
 
 	@boundMethod
@@ -419,7 +439,7 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 	}
 
 	private refresh(name?: string): void {
-		name = name ||this.props.name;
+		name = name || this.props.name;
 		this.setState({listing: []});
 		request.get(this.contentsApi(name)).end((err, res) => {
 			dispatchRequestError(err);
