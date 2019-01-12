@@ -30,8 +30,8 @@
 @pageForeground: @kickstartTextColor;
 
 /* Media query thresholds */
-@tightScreen: ~"min-width:600px";
-@normalScreen: ~"max-width:600px";
+@tightScreen: ~"max-width:600px";
+@normalScreen: ~"min-width:600px";
 
 /* Mixins */
 
@@ -670,10 +670,10 @@
 			padding-top: 2px;
 
 			&--fixed {
-				@media (@tightScreen) {
+				@media (@normalScreen) {
 					width: 9em;
 				}
-				@media (@normalScreen) {
+				@media (@tightScreen) {
 					width: 4em;
 				}
 			}
