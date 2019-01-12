@@ -134,6 +134,7 @@
 	display: inline-block;
 	font-size: 1em;
 	font-family: @mainFont;
+	position: relative;
 
 	&:active {
 		background-color: @workbenchTitleColor;
@@ -144,6 +145,32 @@
 		background-color: lighten(@workbenchBackground, 20%);
 		.workbench-border-light-dark--mixin();
 		color: lighten(@workbenchTextColor, 50%);
+	}
+
+	&__checkmark {
+		content: "";
+		display: none;
+		position: absolute;
+
+		&--checked {
+			display: block;
+			left: 6px;
+			top: 1px;
+			width: 4px;
+			height: 11px;
+			border: solid @workbenchTextColor;
+			border-width: 0 2px 2px 0;
+			-webkit-transform: rotate(45deg);
+			-ms-transform: rotate(45deg);
+			transform: rotate(45deg);
+		}
+	}
+
+	&--checkbox {
+		width: 21px;
+		height: 21px;
+		line-height: 21px;
+		padding: 0px;
 	}
 
 	&--big {
@@ -684,6 +711,7 @@
 
 			&--select {
 				.cell--select--mixin();
+				vertical-align: middle;
 			}
 
 			&--sorted-asc {

@@ -4,6 +4,21 @@ import { Component } from 'react';
 import { errorToString } from './Notifier';
 import * as res from './res';
 
+export const CheckBox = (props: {
+	checked?: boolean,
+	name?: string,
+	onClick?: (name?: string)=>void
+}) => {
+	let klass: string = "button__checkmark";
+	if (props.checked)
+		klass += " button__checkmark--checked";
+	return <button className="button button--checkbox"
+			name={props.name}
+			onClick={() => props.onClick && props.onClick(props.name)}>
+		<span className={klass} />
+	</button>
+}
+
 export const DeleteButton = (props: any) => {
 	let klass: string = "button button--delete"
 	if (props.className) {

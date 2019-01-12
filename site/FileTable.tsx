@@ -3,7 +3,7 @@ import { Component, PureComponent } from 'react';
 import { boundMethod } from 'autobind-decorator';
 
 import { ActionSet } from './Actions';
-import { LinkText, formatDate, formatSize } from './ui';
+import { CheckBox, LinkText, formatDate, formatSize } from './ui';
 
 export const enum Field {
 	Name = "name",
@@ -108,8 +108,8 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 	}
 
 	@boundMethod
-	private onSelect(e: React.ChangeEvent<HTMLInputElement>): void {
-		this.select(e.target.name);
+	private onSelect(name: string): void {
+		this.select(name);
 	}
 
 	private select(name: string): void {
@@ -143,9 +143,10 @@ class Header extends Component<HeaderProps> {
 			<tr className="table__header">
 				{this.props.onSelected &&
 				<th className="table__header-cell table__header-cell--select">
-					<input name="selectAll" type="checkbox"
-						checked={this.props.selectedAll}
-						onChange={this.props.onSelected} />
+					<div className="table__cell-contents">
+						<CheckBox checked={this.props.selectedAll}
+							onClick={this.props.onSelected} />
+					</div>
 				</th>}
 				<HeaderCell {...this.props} field={Field.Name} label="Name" />
 				{sizeTd}
@@ -191,7 +192,7 @@ interface FileTableRowProps {
 	entry: FileTableEntry,
 	showSize: boolean,
 	selected: boolean,
-	onSelected: (e: React.ChangeEvent<HTMLInputElement>) => void,
+	onSelected: (name: string) => void,
 	url?: string
 	renderFileActions: FileRenderFunc
 }
@@ -211,9 +212,11 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 		const { props } = this;
 		if (props.onSelected) {
 			return (<td className="table__data-cell table__data-cell--select">
-				<input name={props.entry.name} type="checkbox"
-					checked={props.selected}
-					onChange={props.onSelected} />
+				<div className="table__cell-contents">
+					<CheckBox name={props.entry.name}
+						checked={props.selected}
+						onClick={props.onSelected} />
+				</div>
 			</td>);
 		}
 		return null;
