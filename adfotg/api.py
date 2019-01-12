@@ -186,16 +186,10 @@ def list_adfs():
     '''
     # TODO - recurse into subdirectories or support more ADF dirs than one.
     # Users could potentially store hundreds of those and pagination is required.
-    filter_pattern = request.args.get("filter")
+    name_filter = _name_filter()
     sorting = _sorting()
 
-    name_filter = None
     start, limit = _pagination()
-    if filter_pattern:
-        filter_pattern = filter_pattern.strip().lower()
-        if filter_pattern:
-            def name_filter(name):
-                return filter_pattern in name.lower()
     full_list = storage.listdir(config.adf_dir, name_filter=name_filter,
                                 sort=sorting)
     return jsonify(
@@ -450,6 +444,8 @@ def list_mount_images():
     '''Gets a list of files in the mount images zone.
 
     Query args (all optional):
+    - filter -- name filter, matched as "contains case-insensitive";
+      defaults to nothing which disables the filter
     - sort -- sort field, valid values: name, size, mtime; defaults to name
     - dir -- sort direction, valid values: asc, desc; defaults to asc
     - start -- denotes index at which to start returning the values.
@@ -466,13 +462,16 @@ def list_mount_images():
     `limit` to calculate pages.
 
     '''
+    name_filter = _name_filter()
     sorting = _sorting()
     start, limit = _pagination()
     if not os.path.exists(config.mount_images_dir):
         # App controls this directory so if it doesn't exist
         # it's not necessarilly an error.
         return jsonify([])
-    full_list = storage.listdir(config.mount_images_dir, sort=sorting)
+    full_list = storage.listdir(config.mount_images_dir,
+                                name_filter=name_filter,
+                                sort=sorting)
     return jsonify(
         listing=_limit(full_list, start, limit),
         total=len(full_list)
@@ -732,6 +731,17 @@ def _pagination():
     start = request.args.get("start")
     limit = request.args.get("limit")
     return _validate_start(start), _validate_limit(limit)
+
+
+def _name_filter():
+    pattern = request.args.get("filter")
+    if pattern:
+        pattern = pattern.strip().lower()
+        if pattern:
+            def name_filter(name):
+                return pattern in name.lower()
+            return name_filter
+    return None
 
 
 def _limit(list_, start, limit):

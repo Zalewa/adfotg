@@ -4,6 +4,7 @@ import { boundMethod } from 'autobind-decorator';
 
 import { ActionSet } from './Actions';
 import { CheckBox, LinkText, formatDate, formatSize } from './ui';
+import { Page } from './Pager';
 
 export const enum Field {
 	Name = "name",
@@ -262,3 +263,48 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 		return null;
 	}
 };
+
+export interface RefreshParams {
+	sort?: Sort
+	page?: Page
+	search?: string
+}
+
+/*
+TODO This is a failed attempt at code deduplication.
+Filtering method is the same in both ADF and Mount Image tables.
+I couldn't immediately figure out common code. I should
+return to this sometime later.
+
+interface QueryArgs {
+	sort: string
+	dir: string
+	search: string
+	start: number
+	limit: number
+}
+
+class RefreshParams {
+	sort?: Sort
+	page?: Page
+	search?: string
+
+	constructor(sort?: Sort, page?: Page, search?: string) {
+		const PAGE_SIZE = 50;
+
+		this.sort = sort || createSort(Field.Name);
+		this.page = page || new Page(0, PAGE_SIZE);
+		this.search = search;
+	}
+
+	toQueryArgs(): QueryArgs {
+		return {
+			sort: sort.field,
+			dir: sort.ascending ? "asc" : "desc",
+			search: this.search;
+			start: page.start,
+			limit: page.limit
+		}
+	}
+}
+*/

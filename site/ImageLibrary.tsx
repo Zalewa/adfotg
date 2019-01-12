@@ -4,14 +4,14 @@ import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 import { Actions, ActionSet } from './Actions';
-import FileTable, { FileTableEntry, Field, Sort, createSort }
-from './FileTable';
+import FileTable, { FileTableEntry, Field, Sort, createSort,
+	RefreshParams }
+	from './FileTable';
 import Listing from './Listing';
 import Modal, { ConfirmModal } from './Modal';
 import { CreateMountImage } from './Mount';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import Pager, { Page } from './Pager';
-import Search from './Search';
 import Section from './Section';
 import * as res from './res';
 import { DeleteButton, Icon } from './ui';
@@ -20,6 +20,7 @@ interface ImageLibraryProps {
 	onCreatedImage: ()=>void
 	onMountedImage: ()=>void
 	refresh: boolean
+	search: string
 }
 
 interface ImageLibraryState {
@@ -29,7 +30,6 @@ interface ImageLibraryState {
 	sort: Sort
 	selection: FileTableEntry[]
 	deleteSelected: boolean
-	search: string
 	page: Page
 }
 
@@ -43,7 +43,6 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 		sort: createSort(Field.Name),
 		selection: [],
 		deleteSelected: false,
-		search: '',
 		page: new Page(0, PAGE_SIZE),
 	}
 
@@ -51,8 +50,6 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 		return (<Section title="ADFs" className="imageLibrary">
 			{this.renderModal()}
 			{this.renderActions()}
-			<Search text={this.state.search} onEdit={this.onSearchEdited}
-				onSubmit={this.onSearchSubmitted} />
 			<FileTable listing={this.state.listing}
 				showSize={false} onHeaderClick={this.onHeaderClick}
 				selected={this.state.selection}
@@ -69,8 +66,8 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	}
 
 	componentWillReceiveProps(props: ImageLibraryProps) {
-		if (this.props.refresh !== props.refresh) {
-			this.refresh();
+		if (this.props.refresh !== props.refresh || this.props.search !== props.search) {
+			this.refresh({search: props.search});
 		}
 	}
 
@@ -146,16 +143,6 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	}
 
 	@boundMethod
-	private onSearchEdited(search: string): void {
-		this.setState({search});
-	}
-
-	@boundMethod
-	private onSearchSubmitted(): void {
-		this.refresh();
-	}
-
-	@boundMethod
 	private deleteSelected() {
 		request.delete("/adf")
 			.send({names: this.state.selection.map(e => e.name)})
@@ -168,11 +155,12 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 			});
 	}
 
-	private refresh(args?: {sort?: Sort, page?: Page, search?: string}): void {
+	private refresh(args?: RefreshParams): void {
 		args = args || {};
 		const sort = args.sort || this.state.sort;
 		const page = args.page || this.state.page;
-		const search = args.search || this.state.search
+		const search = (args.search !== undefined && args.search !== null)
+					 ? args.search : this.props.search;
 		request.get("/adf").query({
 			filter: search,
 			sort: sort.field,
@@ -187,7 +175,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 				listing = res.body.listing;
 				listingTotal = res.body.total;
 			}
-			this.setState({listing, listingTotal, sort, search, page});
+			this.setState({listing, listingTotal, sort, page});
 			if (page.start != 0 && page.start > listingTotal)
 				this.refresh({page: new Page(0, page.limit)});
 		})

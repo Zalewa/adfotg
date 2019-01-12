@@ -4,7 +4,8 @@ import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 import { Actions, ActionSet } from './Actions';
-import FileTable, { FileTableEntry, Field, Sort, createSort }
+import FileTable, { FileTableEntry, Field, Sort, createSort,
+	RefreshParams}
 	from './FileTable';
 import Listing from './Listing';
 import { ConfirmModal } from './Modal';
@@ -24,6 +25,7 @@ const enum MountStatus {
 
 interface MountProps {
 	refresh: boolean
+	search: string
 }
 
 interface MountState {
@@ -98,9 +100,9 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	componentWillReceiveProps(props: MountProps) {
-		if (this.props.refresh !== props.refresh) {
+		if (this.props.refresh !== props.refresh || this.props.search !== props.search) {
 			this.setState({refreshCounter: this.state.refreshCounter + 1});
-			this.refresh();
+			this.refresh({search: props.search});
 		}
 	}
 
@@ -127,7 +129,7 @@ export default class Mount extends Component<MountProps, MountState> {
 		}
 	}
 
-	private refresh(): void {
+	private refresh(args?: RefreshParams): void {
 		this.setState({})
 		request.get("/mount").end((err, res) => {
 			dispatchRequestError(err);
@@ -141,14 +143,17 @@ export default class Mount extends Component<MountProps, MountState> {
 				mountedImageName: res.body.file
 			});
 		})
-		this.refreshImages();
+		this.refreshImages(args);
 	}
 
-	private refreshImages(args?: {sort?: Sort, page?: Page}): void {
+	private refreshImages(args?: RefreshParams): void {
 		args = args || {};
 		const sort = args.sort || this.state.sortImages;
 		const page = args.page || this.state.page;
+		const search = (args.search !== undefined && args.search !== null)
+					 ? args.search : this.props.search;
 		request.get("/mount_image").query({
+			filter: search,
 			sort: sort.field,
 			dir: sort.ascending ? "asc" : "desc",
 			start: page.start,
