@@ -1,4 +1,5 @@
 FULLNAME = "ADF On-The-Go"
 SHORTNAME = "adfotg"
 VERSION = "0.1.1"
-YEARSPAN = "2018"
+YEARS = (2018, 2019)
+YEARSPAN = "{} - {}".format(YEARS[0], YEARS[1])

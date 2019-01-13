@@ -58,11 +58,12 @@ export const Icon = (props: IconProps) => {
 
 interface LabelledProps {
 	label: string,
-	contents: string|number
+	contents: string|number,
+	title?: string
 }
 
 export const Labelled = (props: LabelledProps) => {
-	return <div className="labelled">
+	return <div className="labelled" title={props.title}>
 			<span className="labelled__label">{props.label}</span>
 			<span className="labelled__content">{props.contents}</span>
 	</div>

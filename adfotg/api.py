@@ -730,7 +730,8 @@ def get_version():
     '''
     return jsonify(
         version=version.VERSION,
-        yearspan=version.YEARSPAN
+        yearspan=version.YEARSPAN,
+        lastyear=str(version.YEARS[-1])
     )
 
 

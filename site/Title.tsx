@@ -109,19 +109,21 @@ export default class Title extends Component<TitleProps, TitleState> {
 
 interface VersionInfoState {
 	version: string,
-	yearspan: string
+	yearspan: string,
+	lastyear: string
 }
 
 class VersionInfo extends Component<{}, VersionInfoState> {
 	state: Readonly<VersionInfoState> = {
 		version: "",
-		yearspan: ""
+		yearspan: "",
+		lastyear: ""
 	}
 
 	render() {
 		return (<div className="versionInfo">
-			<Labelled label="Version:"
-				contents={this.state.version + " (" + this.state.yearspan + ")"} />
+			<Labelled label="Version:" title={this.state.yearspan}
+				contents={this.state.version + " (" + this.state.lastyear + ")"} />
 		</div>);
 	}
 
