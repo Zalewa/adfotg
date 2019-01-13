@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
+import * as res from './res';
 
 interface SearchProps {
 	text: string
@@ -10,7 +11,10 @@ interface SearchProps {
 export default class Search extends Component<SearchProps> {
 	render() {
 		return (<div className="search-bar">
-			<button className="button button--submit" onClick={this.props.onSubmit}>Search</button>
+			<button className="button button--icon button--submit"
+					onClick={this.props.onSubmit}>
+				<img alt="Search" title="Search" src={res.looking_glass} />
+			</button>
 			<input className="text-input search-bar__input" type="text"
 				value={this.props.text}
 				onChange={e => this.props.onEdit(e.target.value)}

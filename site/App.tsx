@@ -1,33 +1,77 @@
 import * as React from 'react';
 import { Component } from 'react';
+import { BrowserRouter as Router, Route, RouteComponentProps, Switch,
+	withRouter }
+	from 'react-router-dom';
 
+import AdfWizard from './AdfWizard';
+import Home from './Home';
 import Notifier from './Notifier';
-import Routes from './routes';
+import { HOME_LINK, ADFWIZARD_LINK } from './routes';
 import Title from './Title';
 
-interface AppState {
-	refreshSwitch: boolean
-}
-
-export default class App extends Component<{}, AppState> {
-	readonly state: AppState = {
-		refreshSwitch: false
-	}
-
+export default class App extends Component {
 	render() {
 		return (
 			<ErrorBoundary>
-				<Routes onRouteChanged={
-					(route: string) => this.setState({
-						refreshSwitch: !this.state.refreshSwitch
-					})}
-					>
-					<Title refresh={this.state.refreshSwitch} />
-					<Notifier />
-				</Routes>
+				<Router>
+					<AppRoute />
+				</Router>
 			</ErrorBoundary>);
 	}
 }
+
+type AppProps = RouteComponentProps<{}>;
+
+interface AppState {
+	refreshSwitch: boolean
+	search: string
+}
+
+const AppRoute = withRouter(
+class AppRoute extends Component<AppProps, AppState> {
+	readonly state: AppState = {
+		refreshSwitch: false,
+		search: ""
+	}
+
+	private unlisten: ()=>void;
+
+	render() {
+		return <div>
+			<Title refresh={this.state.refreshSwitch}
+				canSearch={this.canSearch()}
+				search={this.state.search}
+				onSearch={(search) => this.setState({search})} />
+			<Notifier />
+			<Switch>
+				<Route exact path={HOME_LINK} render={
+					(props) => <Home {...props} search={this.state.search} />} />
+				<Route path={ADFWIZARD_LINK} component={AdfWizard} />
+			</Switch>
+		</div>
+	}
+
+	componentDidMount() {
+		this.unlisten = this.props.history.listen((location, action) => {
+			this.setState({refreshSwitch: !this.state.refreshSwitch});
+		})
+	}
+
+	componentWillReceiveProps(props: AppProps) {
+		if (this.props.location.pathname !== props.location.pathname) {
+			this.setState({search: ""});
+		}
+	}
+
+	componentWillUnmount() {
+		this.unlisten();
+	}
+
+	private canSearch(): boolean {
+		return this.props.location.pathname === HOME_LINK;
+	}
+});
 
 interface ErrorBoundaryState {
 	error: Error | null,

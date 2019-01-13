@@ -8,32 +8,41 @@ import { HealthBar } from './Health';
 import { dispatchRequestError } from './Notifier';
 import * as responsive from './responsive';
 import { ADFWIZARD_LINK, HOME_LINK } from './routes';
+import Search from './Search';
 import { Labelled, formatSize } from './ui';
 
 interface TitleProps {
 	refresh: boolean
+	canSearch: boolean
+	search: string
+	onSearch: (s: string)=>void
 }
 
 interface TitleState {
 	title: string
+	searchPrompt: string
 }
 
 export default class Title extends Component<TitleProps, TitleState> {
 	constructor(props: TitleProps) {
 		super(props);
+		this.searchPrompt = "";
 		this.state = {
-			title: this.getMatchMediaTitle()
+			title: this.getMatchMediaTitle(),
+			searchPrompt: ""
 		};
 	}
+
+	searchPrompt: string
 
 	render() {
 		return (
 			<div className="title">
 				<div className="title__row">
-				<div className="title__section">
+				<div className="title__section title__section--fill">
 					<AppLink className="title__main" exact to={HOME_LINK}>{this.state.title}</AppLink>
 				</div>
-				<div className="title__section title__section--right">
+				<div className="title__section">
 					<SpaceInfo refresh={this.props.refresh} />
 					<HealthBar />
 					<div className="title__row">
@@ -43,14 +52,34 @@ export default class Title extends Component<TitleProps, TitleState> {
 				</div>
 				</div>
 				<div className="title__row">
-					<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
+					<div className="title__section title__section--fill">
+						<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
+					</div>
+					{this.renderSearch()}
 				</div>
 			</div>
 		);
 	}
 
+	private renderSearch(): JSX.Element {
+		if (this.props.canSearch) {
+			return (<div className="title__section">
+				<Search text={this.state.searchPrompt}
+					onEdit={this.onSearchEdited}
+					onSubmit={this.onSearchSubmitted} />
+			</div>);
+		} else {
+			return null;
+		}
+	}
+
 	componentDidMount() {
 		responsive.matchWidth.addListener(this.matchMedia);
+	}
+
+	componentWillReceiveProps(props: TitleProps) {
+		this.searchPrompt = props.search;
+		this.setState({searchPrompt: props.search});
 	}
 
 	componentWillUnmount() {
@@ -64,6 +93,17 @@ export default class Title extends Component<TitleProps, TitleState> {
 
 	private getMatchMediaTitle(): string {
 		return responsive.matchWidth.matches ? "ADF OTG" : "ADF On-The-Go";
+	}
+
+	@boundMethod
+	private onSearchEdited(searchPrompt: string): void {
+		this.searchPrompt = searchPrompt;
+		this.setState({searchPrompt});
+	}
+
+	@boundMethod
+	private onSearchSubmitted(): void {
+		this.props.onSearch(this.searchPrompt);
 	}
 }
 
