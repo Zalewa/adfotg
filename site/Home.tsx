@@ -4,36 +4,30 @@ import { boundMethod } from 'autobind-decorator';
 
 import ImageLibrary from './ImageLibrary';
 import Mount from './Mount';
-import Search from './Search';
 import Uploader from './Uploader';
+
+interface HomeProps {
+	search: string
+}
 
 interface HomeState {
 	refreshSwitch: boolean
-	search: string
-	searchPrompt: string
 }
 
-export default class Home extends Component<{}, HomeState> {
+export default class Home extends Component<HomeProps, HomeState> {
 	readonly state: HomeState = {
 		refreshSwitch: false,
-		search: "",
-		searchPrompt: ""
 	}
-
-	searchPrompt: string
 
 	render () {
 		return (
 			<div>
-				<Search text={this.state.searchPrompt}
-					onEdit={this.onSearchEdited}
-					onSubmit={this.onSearchSubmitted} />
 				<Mount refresh={this.state.refreshSwitch}
-					search={this.state.search} />
+					search={this.props.search} />
 				<ImageLibrary refresh={this.state.refreshSwitch}
 					onCreatedImage={this.promptRefresh}
 					onMountedImage={this.promptRefresh}
-					search={this.state.search} />
+					search={this.props.search} />
 			</div>);
 	}
 
@@ -43,16 +37,4 @@ export default class Home extends Component<{}, HomeState> {
 			refreshSwitch: !this.state.refreshSwitch
 		})
 	}
-
-	@boundMethod
-	private onSearchEdited(searchPrompt: string): void {
-		this.searchPrompt = searchPrompt;
-		this.setState({searchPrompt});
-	}
-
-	@boundMethod
-	private onSearchSubmitted(): void {
-		this.setState({search: this.searchPrompt});
-	}
-
 }
