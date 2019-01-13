@@ -39,10 +39,10 @@ export default class Title extends Component<TitleProps, TitleState> {
 		return (
 			<div className="title">
 				<div className="title__row">
-				<div className="title__section">
+				<div className="title__section title__section--fill">
 					<AppLink className="title__main" exact to={HOME_LINK}>{this.state.title}</AppLink>
 				</div>
-				<div className="title__section title__section--right">
+				<div className="title__section">
 					<SpaceInfo refresh={this.props.refresh} />
 					<HealthBar />
 					<div className="title__row">
@@ -52,7 +52,7 @@ export default class Title extends Component<TitleProps, TitleState> {
 				</div>
 				</div>
 				<div className="title__row">
-					<div className="title__section">
+					<div className="title__section title__section--fill">
 						<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
 					</div>
 					{this.renderSearch()}
@@ -63,7 +63,7 @@ export default class Title extends Component<TitleProps, TitleState> {
 
 	private renderSearch(): JSX.Element {
 		if (this.props.canSearch) {
-			return (<div className="title__section title__section--right">
+			return (<div className="title__section">
 				<Search text={this.state.searchPrompt}
 					onEdit={this.onSearchEdited}
 					onSubmit={this.onSearchSubmitted} />
