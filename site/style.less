@@ -30,7 +30,7 @@
 @pageForeground: @kickstartTextColor;
 
 /* Media query thresholds */
-@tighterScreen: ~"max-width:400px";
+@tighterScreen: ~"max-width:430px";
 @tightScreen: ~"max-width:600px";
 @normalScreen: ~"min-width:600px";
 
@@ -190,6 +190,7 @@
 
 	&--icon {
 		padding: 0px 8px;
+		width: 52px;
 	}
 
 	&--listing {
@@ -246,6 +247,11 @@
 		outline: unset;
 		max-height: 800px;
 	}
+}
+
+
+.flex-filler {
+	flex-grow: 1
 }
 
 
@@ -638,13 +644,13 @@
 
 .search-bar {
 	display: flex;
-	width: 250px;
-	@media (@tighterScreen) {
-		width: 200px;
-	}
 
 	&__input {
-		width: 100%;
+		max-width: 200px;
+
+		@media (@tighterScreen) {
+			max-width: 150px;
+		}
 	}
 }
 
