@@ -12,6 +12,7 @@ import { ConfirmModal } from './Modal';
 import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import Pager, { Page } from './Pager';
 import Section from './Section';
+import * as resrc from './res';
 import { DeleteButton, ErrorLabel, Labelled, LineInput } from './ui';
 
 
@@ -236,6 +237,7 @@ interface CreateMountImageState {
 	error: Error
 	imageName: string
 	sortedAdfs: string[]
+	refreshing: boolean
 }
 
 export class CreateMountImage extends React.Component<CreateMountImageProps, CreateMountImageState> {
@@ -244,12 +246,21 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 		this.state = {
 			...this.propsToState(props),
 			error: null,
-			imageName: ""
+			imageName: "",
+			refreshing: true
 		}
 	}
 
 	render() {
 		return (<div className="createMountImage">
+			{this.state.refreshing ?
+				this.renderRefreshing() : this.renderWorkspace()}
+			{this.renderErrorWidget()}
+		</div>);
+	}
+
+	private renderWorkspace(): JSX.Element {
+		return (<div>
 			<span>Create Mount Image with following ADFs:</span>
 			<Listing listing={this.state.sortedAdfs}
 				onOrderChange={(sortedAdfs) => this.setState({sortedAdfs})} />
@@ -269,8 +280,40 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 					disabled={this.state.imageName.length == 0}>Create</button>
 			</ActionSet>
 			</Actions>
-			{this.errorWidget()}
 		</div>);
+	}
+
+	private renderRefreshing(): JSX.Element {
+		if (!this.state.error) {
+			return (<div>
+				<div>Obtaining some extra data ...</div>
+				<div><img width="100%" src={resrc.loader} /></div>
+			</div>);
+		} else {
+			return (<div>An error has occurred during refresh.</div>);
+		}
+	}
+
+	private renderErrorWidget(): JSX.Element {
+		if (this.state.error) {
+			return <ErrorLabel error={this.state.error} />;
+		}
+		return null;
+	}
+
+	componentDidMount() {
+		request.get("/adf_std").end((err, res) => {
+			if (err) {
+				this.setState({error: err})
+			} else {
+				let stdAdfs = res.body;
+				let sortedAdfs = this.state.sortedAdfs;
+				this.setState({
+					sortedAdfs: stdAdfs.concat(sortedAdfs),
+					refreshing: false
+				});
+			}
+		});
 	}
 
 	componentWillReceiveProps(props: CreateMountImageProps) {
@@ -285,13 +328,6 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 		let cloned = list.slice(0);
 		cloned.sort((a: string, b: string) => a.localeCompare(b));
 		return cloned;
-	}
-
-	private errorWidget(): JSX.Element {
-		if (this.state.error) {
-			return <ErrorLabel error={this.state.error} />;
-		}
-		return null;
 	}
 
 	@boundMethod

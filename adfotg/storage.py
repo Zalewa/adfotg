@@ -2,7 +2,9 @@ from .util import Interpretable
 
 from collections import namedtuple
 from enum import Enum
+import fnmatch
 import os
+import re
 
 
 class FileEntryField(Interpretable, Enum):
@@ -47,6 +49,21 @@ def listdir(dirpath, name_filter=None, sort=None):
                             key=lambda f: _case_insensitive(f[field.value]),
                             reverse=not direction.is_ascending()))
     return files
+
+
+def find(dirpath, pattern, case_sensitive=True):
+    '''
+    dirpath -- dir to scan, it's not recursive
+    pattern -- glob pattern
+    case_sensitive -- whether pattern match is case sensitive
+    '''
+    re_flags = 0 if case_sensitive else re.IGNORECASE
+    pattern = re.compile(fnmatch.translate(pattern), re_flags)
+    matches = []
+    for entry in os.scandir(dirpath):
+        if entry.is_file() and pattern.match(entry.name):
+            matches.append(entry.name)
+    return matches
 
 
 def unlink(filepath, optional=False):
