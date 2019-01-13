@@ -30,6 +30,7 @@
 @pageForeground: @kickstartTextColor;
 
 /* Media query thresholds */
+@tighterScreen: ~"max-width:400px";
 @tightScreen: ~"max-width:600px";
 @normalScreen: ~"min-width:600px";
 
@@ -632,7 +633,10 @@
 
 .search-bar {
 	display: flex;
-	width: 100%;
+	width: 250px;
+	@media (@tighterScreen) {
+		width: 200px;
+	}
 
 	&__input {
 		width: 100%;
@@ -775,6 +779,7 @@
 	border-bottom: 1px solid @pageForeground;
 	display: block;
 	margin-bottom: 16px;
+	min-height: 105px;
 	padding-bottom: 1px;
 
 	&__row {
