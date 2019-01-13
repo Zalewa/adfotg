@@ -45,6 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2018-12-15
 First release of the program.
 
-[Unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.1.1...HEAD
-[0.1.1]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.1.0...v0.1.1
+[Unreleased]: https://github.com/Zalewa/adfotg/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/Zalewa/adfotg/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Zalewa/adfotg/compare/c2e8c51ad845fcf1d7d7a371235bafad8982e67b...v0.1.0
