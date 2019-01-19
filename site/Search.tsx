@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Component } from 'react';
-import * as res from './res';
+
+import * as resrc from './res';
+import { Icon } from './ui';
 
 interface SearchProps {
 	text: string
@@ -13,7 +15,7 @@ export default class Search extends Component<SearchProps> {
 		return (<div className="search-bar">
 			<button className="button button--icon button--submit"
 					onClick={this.props.onSubmit}>
-				<img alt="Search" title="Search" src={res.looking_glass} />
+				<Icon button title="Search" src={resrc.looking_glass} />
 			</button>
 			<input className="text-input search-bar__input" type="text"
 				value={this.props.text}
