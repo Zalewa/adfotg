@@ -23,12 +23,15 @@ interface ActionSetProps {
 	className?: string
 	even?: boolean
 	right?: boolean
+	baseline?: boolean
 	children: JSX.Element[] | JSX.Element
 }
 
 export const ActionSet = (props: ActionSetProps) => {
 	const base: string = "actions__set"
 	let klass = base;
+	if (props.baseline)
+		klass += " " + base + "--baseline";
 	if (props.even)
 		klass += " " + base + "--even"
 	if (props.right)

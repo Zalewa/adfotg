@@ -91,6 +91,10 @@
 		display: flex;
 		align-items: stretch;
 
+		&--baseline {
+			align-items: baseline;
+		}
+
 		&--even {
 			justify-content: space-between;
 		}
@@ -544,6 +548,11 @@
 
 .mount {
 	&__actions {
+		margin-right: 0.25em;
+
+		&--empty {
+			margin-right: 0em;
+		}
 	}
 
 	&__status {
