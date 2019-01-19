@@ -424,8 +424,9 @@ class MountActions extends React.Component<MountActionsProps> {
 			case MountStatus.NoImage:
 			case MountStatus.BadImage:
 			case MountStatus.OtherImageMounted:
-			default:
 				return this.rescueActions();
+			default:
+				return [];
 		}
 	}
 
