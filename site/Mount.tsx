@@ -114,21 +114,16 @@ export default class Mount extends Component<MountProps, MountState> {
 
 	private renderMountStatus(): JSX.Element {
 		return (<Section subsection title="Mounted Image" className="mountedImage">
-			<Actions>
-				<ActionSet baseline>
-					<MountActions mountStatus={this.state.mountStatus}
-						images={this.state.imagesSelection.map(e => e.name)}
-						onMount={this.mount}
-						onUnmount={this.unmount}
-					/>
-					<MountStatusDisplay {...this.state} />
-				</ActionSet>
-			</Actions>
-
+			<MountStatusDisplay {...this.state} />
 			{this.state.mountedImageName && (
 				<MountImageDetails showName={false} name={this.state.mountedImageName}
 					refreshCounter={this.state.refreshCounter} />)
 			}
+			<MountActions mountStatus={this.state.mountStatus}
+				images={this.state.imagesSelection.map(e => e.name)}
+				onMount={this.mount}
+				onUnmount={this.unmount}
+				/>
 		</Section>);
 	}
 
