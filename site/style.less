@@ -711,6 +711,14 @@
 	padding: 0px;
 	margin-bottom: 4px;
 
+	@media (@tightScreen) {
+		font-size: 0.9em;
+	}
+
+	@media (@tighterScreen) {
+		font-size: 0.75em;
+	}
+
 	&__header {
 		background: fade(@pageBackground, 25%);
 
