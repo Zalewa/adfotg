@@ -168,6 +168,15 @@ your Gotek. See if you have `SELECTOR.ADF` on your USB drive. If yes,
 this ADF must also be placed on every mount image you create in adfotg.
 
 
+**Problem:** I upgraded to a new version, but there are oddities
+happening or I don't see any changes.
+
+**Solution:** There may be two reasons for this. Your browser might've
+cached the old version of the site or the adfotg service wasn't
+restarted. See the "Update" section in README to learn how to restart
+the service and clear your browser cache.
+
+
 Background
 ==========
 
