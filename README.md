@@ -101,6 +101,13 @@ Update
   sudo pip3 install -U adfotg
 ```
 
+adfotg needs to be restarted now. If you integrated it with your
+Raspbian (see the section below), then it's sufficient to do this:
+
+```
+  sudo service adfotg restart
+```
+
 
 Integrating with Raspbian
 -------------------------
