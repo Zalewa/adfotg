@@ -93,7 +93,13 @@ Commands:
   sudo pip3 install adfotg
 ```
 
-The adfotg package is not in PyPI, yet.
+
+Update
+------
+
+```
+  sudo pip3 install -U adfotg
+```
 
 
 Integrating with Raspbian
