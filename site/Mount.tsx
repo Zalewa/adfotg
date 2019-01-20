@@ -99,15 +99,29 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	private renderFileActions(file: FileTableEntry): JSX.Element {
+		const self = this;
+		function canMount() {
+			return self.state.mountStatus === MountStatus.Unmounted;
+		}
+		function cannotMountReason() {
+			if (self.state.mountStatus === MountStatus.Mounted)
+				return "Currently mounted image must be unmounted first.";
+			else if (self.state.mountStatus == null)
+				return "Cannot mount as current mount status is unknown.";
+			else
+				return "Current mount status forbids mounting an image.";
+		}
+		const mountTitle = canMount() ? "Mount this image" : cannotMountReason();
+
 		return (<ActionSet>
 			<button className="button button--table button--icon-table"
 					onClick={() => this.setState({inspectedImage: file.name})}>
 				<Icon table button title="Inspect" src={resrc.looking_glass} />
 			</button>
 			<button className="button button--table button--icon-table"
-					disabled={this.state.mountStatus !== MountStatus.Unmounted}
+					disabled={!canMount()}
 					onClick={() => this.mount(file.name)}>
-				<Icon table button title="Mount this image" src={resrc.usb_icon_horz} />
+				<Icon table button title={mountTitle} src={resrc.usb_icon_horz} />
 			</button>
 		</ActionSet>);
 	}
