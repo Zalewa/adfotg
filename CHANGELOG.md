@@ -15,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   API or documentation is final now.
 - This CHANGELOG.
 
-
 ### Changed
 - Search bar moved to the title bar. It's now possible to search in both
   ADF library and mount images.
@@ -28,6 +27,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Arrange left-right alignment of components in the title bar by using
   `flex-fill` CSS property instead of forcing right-alignment with
   `margin-left: auto`.
+- Change action buttons that operate on mount images.
+  Actions that operate on a singular mount image are now presented
+  as inline buttons in each row of the "Mount Images" tables. This
+  includes "Inspect" and "Mount" actions. The actions of the buttons
+  are represented by pictograms: a looking glass and the USB trident,
+  respectively. Unmount button has been moved to the area that
+  represents the currently mounted image.
+- Font in file tables will now be smaller on narrow screens.
 
 ### Fixed
 - Fill in missing information in installation instructions.
