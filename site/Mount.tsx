@@ -13,7 +13,7 @@ import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import Pager, { Page } from './Pager';
 import Section from './Section';
 import * as resrc from './res';
-import { DeleteButton, ErrorLabel, Labelled, LineInput } from './ui';
+import { DeleteButton, ErrorLabel, Icon, Labelled, LineInput } from './ui';
 
 
 const enum MountStatus {
@@ -66,16 +66,6 @@ export default class Mount extends Component<MountProps, MountState> {
 			{this.renderMountStatus()}
 			{this.renderImageInspection()}
 			<Actions>
-				<ActionSet>
-					<MountActions mountStatus={this.state.mountStatus}
-						images={this.state.imagesSelection.map(e => e.name)}
-						onMount={this.mount}
-						onUnmount={this.unmount}
-					/>
-					<button className="button"
-						onClick={() => this.setState({inspectedImage: this.state.imagesSelection[0].name}) }
-						disabled={this.state.imagesSelection.length != 1}>Inspect</button>
-				</ActionSet>
 				<ActionSet right={true}>
 					<DeleteButton
 						disabled={this.state.imagesSelection.length == 0}
@@ -89,6 +79,7 @@ export default class Mount extends Component<MountProps, MountState> {
 				fileLinkPrefix="/mount_image/"
 				selected={this.state.imagesSelection}
 				onSelected={this.onImagesSelected}
+				renderFileActions={(name) => this.renderFileActions(name)}
 				/>
 			<Pager page={this.state.page} total={this.state.imagesListingTotal}
 				onPageChanged={page => this.refreshImages({page})} />
@@ -107,6 +98,34 @@ export default class Mount extends Component<MountProps, MountState> {
 		}
 	}
 
+	private renderFileActions(file: FileTableEntry): JSX.Element {
+		const self = this;
+		function canMount() {
+			return self.state.mountStatus === MountStatus.Unmounted;
+		}
+		function cannotMountReason() {
+			if (self.state.mountStatus === MountStatus.Mounted)
+				return "Currently mounted image must be unmounted first.";
+			else if (self.state.mountStatus == null)
+				return "Cannot mount as current mount status is unknown.";
+			else
+				return "Current mount status forbids mounting an image.";
+		}
+		const mountTitle = canMount() ? "Mount this image" : cannotMountReason();
+
+		return (<ActionSet>
+			<button className="button button--table button--icon-table"
+					onClick={() => this.setState({inspectedImage: file.name})}>
+				<Icon table button title="Inspect" src={resrc.looking_glass} />
+			</button>
+			<button className="button button--table button--icon-table"
+					disabled={!canMount()}
+					onClick={() => this.mount(file.name)}>
+				<Icon table button title={mountTitle} src={resrc.usb_icon_horz} />
+			</button>
+		</ActionSet>);
+	}
+
 	private renderMountStatus(): JSX.Element {
 		return (<Section subsection title="Mounted Image" className="mountedImage">
 			<MountStatusDisplay {...this.state} />
@@ -114,6 +133,11 @@ export default class Mount extends Component<MountProps, MountState> {
 				<MountImageDetails showName={false} name={this.state.mountedImageName}
 					refreshCounter={this.state.refreshCounter} />)
 			}
+			<MountActions mountStatus={this.state.mountStatus}
+				images={this.state.imagesSelection.map(e => e.name)}
+				onMount={this.mount}
+				onUnmount={this.unmount}
+				/>
 		</Section>);
 	}
 
@@ -398,8 +422,10 @@ interface MountActionsProps {
 
 class MountActions extends React.Component<MountActionsProps> {
 	render() {
-		return (<div className="mount__actions">
-			{this.actions()}
+		const actions = this.actions();
+		const mod = actions.length == 0 ? " mount__actions--empty" : "";
+		return (<div className={"mount__actions" + mod}>
+			{actions}
 		</div>);
 	}
 
@@ -412,8 +438,9 @@ class MountActions extends React.Component<MountActionsProps> {
 			case MountStatus.NoImage:
 			case MountStatus.BadImage:
 			case MountStatus.OtherImageMounted:
-			default:
 				return this.rescueActions();
+			default:
+				return [];
 		}
 	}
 
@@ -425,11 +452,7 @@ class MountActions extends React.Component<MountActionsProps> {
 	}
 
 	private unmountedActions(): JSX.Element[] {
-		return [
-			<button className="button" key="mount"
-				onClick={() => this.props.onMount(this.props.images[0])}
-				disabled={this.props.images.length != 1}>Mount</button>
-		];
+		return [];
 	}
 
 	private rescueActions(): JSX.Element[] {

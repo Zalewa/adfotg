@@ -91,6 +91,10 @@
 		display: flex;
 		align-items: stretch;
 
+		&--baseline {
+			align-items: baseline;
+		}
+
 		&--even {
 			justify-content: space-between;
 		}
@@ -224,6 +228,7 @@
 		padding: 2px;
 		width: 28px;
 		height: 14px;
+		line-height: 14px;
 	}
 }
 
@@ -544,6 +549,11 @@
 
 .mount {
 	&__actions {
+		margin-right: 0.25em;
+
+		&--empty {
+			margin-right: 0em;
+		}
 	}
 
 	&__status {
@@ -701,6 +711,14 @@
 	border-spacing: 0px;
 	padding: 0px;
 	margin-bottom: 4px;
+
+	@media (@tightScreen) {
+		font-size: 0.9em;
+	}
+
+	@media (@tighterScreen) {
+		font-size: 0.75em;
+	}
 
 	&__header {
 		background: fade(@pageBackground, 25%);
