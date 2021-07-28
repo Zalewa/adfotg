@@ -4,7 +4,9 @@ class Interpretable:
     '''
     @classmethod
     def interpret(cls, o):
-        if o in cls:
-            return o
-        else:
-            return cls(o)
+        try:
+            if o in cls:
+                return o
+        except TypeError:
+            pass
+        return cls(o)
