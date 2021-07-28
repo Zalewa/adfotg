@@ -11,11 +11,19 @@ module.exports = {
 		rules: [
 			{
 				test: /(\.gif|\.html|\.png|\.svg|\.ttf|\.txt)$/,
-				loader: 'file-loader?name=[path][name].[ext]',
+				use: [
+					{
+						loader: 'file-loader',
+						options: {
+							name: '[path][name].[ext]',
+							esModule: false
+						}
+					}
+				]
 			},
 			{
 				test: /\.tsx?$/,
-				loaders: ['babel-loader', 'awesome-typescript-loader']
+				loader: "ts-loader"
 			},
 			{
 				enforce: "pre",
@@ -24,7 +32,7 @@ module.exports = {
 			},
 			{
 				test: /(\.css|\.less)$/,
-				loaders: ["style-loader", "css-loader", "less-loader"]
+				use: ["style-loader", "css-loader", "less-loader"]
 			}
 		]
 	},
@@ -39,11 +47,5 @@ module.exports = {
 	devServer: {
 		contentBase: path.resolve(__dirname, 'site/dist'),
 		historyApiFallback: true
-	},
-	node: {
-		console: true,
-		fs: 'empty',
-		net: 'empty',
-		tls: 'empty'
 	}
 }

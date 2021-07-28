@@ -165,11 +165,21 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 	}
 
 	private renderDropZone(): JSX.Element {
-		return (<Dropzone onDrop={this.onDrop}
-			className="uploadzone__uploadarea"
-			acceptClassName="uploadzone__uploadarea--accept"
-			rejectClassName="uplaodzone__uplaodarea--reject">
-				<div>Drag & drop or click to select files to upload.</div>
+		return (<Dropzone onDropAccepted={this.onDrop}>
+			{({getRootProps, getInputProps, isDragAccept, isDragReject}) => {
+				const css = (
+					"uploadzone__uploadarea"
+					+ (isDragAccept ? " uploadzone__uploadarea--accept" : "")
+					+ (isDragReject ? " uploadzone__uploadarea--reject" : "")
+				);
+
+				return (<div {...getRootProps()}>
+					<input {...getInputProps()} />
+					<p className={css}>
+						Drag & drop or click to select files to upload.
+					</p>
+				</div>);
+			}}
 		</Dropzone>);
 	}
 
@@ -181,7 +191,7 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 	}
 
 	@boundMethod
-	onDrop(accepted: File[], rejected: File[]): void {
+	onDrop(accepted: File[]): void {
 		this.setState({uploading: true, uploadSuccess: null});
 		const req = request.post('/upload');
 		accepted.forEach(file => {

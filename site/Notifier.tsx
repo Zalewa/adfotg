@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { Response } from 'superagent';
+import { Response, HTTPError } from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 export enum NoteType {
@@ -38,8 +38,8 @@ export function errorToString(err: Error): string {
 	} else {
 		message = err.toString();
 	}
-	if (res) {
-		return res.error.message + " -- " + message;
+	if (res && res.error) {
+		return (res.error as HTTPError).text + " -- " + message;
 	} else {
 		return message;
 	}
