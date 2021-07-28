@@ -60,7 +60,6 @@ Requirements
 Software:
 
 * Python 3
-* Python 2 (for xdftool)
 * mtools
 * sudo privileges
 
@@ -81,15 +80,12 @@ recommended, although will succeed and should be harmless (no warranty).
 Provided you have the Raspberry Pi Zero, do the following:
 
 1. `pip3 install adfotg`
-2. `xdftool` is essential but needs to be installed separately.
-   This can be installed from `pip2 install amitools`
-3. `mtools` are also essential
+2. `mtools` are also essential
 
 Commands:
 
 ```
-  sudo apt update && sudo apt install mtools python-pip python3-pip
-  sudo pip2 install amitools
+  sudo apt update && sudo apt install mtools python3-pip
   sudo pip3 install adfotg
 ```
 

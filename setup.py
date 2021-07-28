@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
 from setuptools import setup
 import subprocess
@@ -74,6 +74,7 @@ setup(
     packages=['adfotg'],
     url='https://github.com/Zalewa/adfotg',
     install_requires=[
+        'amitools==0.6.0',
         'Flask',
     ],
     entry_points={

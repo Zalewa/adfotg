@@ -9,7 +9,6 @@ Requirements
 ============
 
 * Python 3
-* Python 2 (xdftool needs it)
 * nodejs, npm
 * GNU Make (for building the release package)
 
@@ -33,14 +32,10 @@ are set up separately.
 Server
 ------
 
-Server is written in Python 3 and uses the Flask framework.
-
-
-Setup virtualenv with Python2 and Python3.
+The server is written in Python 3 and uses the Flask framework.
 
 ```
-python3 -m virtualenv -p python2 ./venv
-python3 -m virtualenv -p python3 ./venv
+python3 -m venv ./venv
 ```
 
 
@@ -59,13 +54,6 @@ Install direct dependencies.
 
 ```
 pip3 install -r ./requirements.txt
-```
-
-
-Install amitools to get xdftool
-
-```
-pip2 install amitools
 ```
 
 
@@ -90,9 +78,8 @@ for the user you run the program as.
 Website
 -------
 
-Website is written in TypeScript and uses the React framework. If you're
-like me, you probably think now that Private Pyle would find himself
-at home here. Regardless, all setup is done through npm.
+Website is written in TypeScript and uses the React framework. All
+setup is done through npm.
 
 Run from the terminal (preferably in a new one, without the virtual env):
 
