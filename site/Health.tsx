@@ -3,6 +3,7 @@ import { Component } from 'react';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
+import { enumKeys } from './enum';
 import { dispatchRequestError, dispatchError } from './Notifier';
 
 
@@ -44,7 +45,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 
 	private renderPoints(): JSX.Element[] {
 		let elems: JSX.Element[] = [];
-		for (const healthPoint in HealthPoint) {
+		for (const healthPoint of enumKeys(HealthPoint)) {
 			elems.push(this.renderPoint(HealthPoint[healthPoint]));
 		}
 		return elems;
