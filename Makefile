@@ -1,10 +1,12 @@
-.PHONY: all clean publish purge server site
+.PHONY: all clean package publish purge server site
 .NOTPARALLEL:
 
-all: site server
+all: package
 
 publish: clean site
 	python3 ./setup.py sdist upload
+
+package: site server
 
 server:
 	python3 ./setup.py sdist
