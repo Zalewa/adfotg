@@ -74,7 +74,7 @@ setup(
     packages=['adfotg'],
     url='https://github.com/Zalewa/adfotg',
     install_requires=[
-        'amitools==0.6.0',
+        'amitools>=0.5,<0.7',
         'Flask',
     ],
     entry_points={
