@@ -39,7 +39,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 		</table>);
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		this.refresh();
 	}
 

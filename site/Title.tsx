@@ -175,7 +175,7 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 		}
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		this.refresh();
 	}
 
