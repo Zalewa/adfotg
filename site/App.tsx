@@ -58,7 +58,7 @@ class AppRoute extends Component<AppProps, AppState> {
 		})
 	}
 
-	componentWillReceiveProps(props: AppProps) {
+	componentDidUpdate(props: AppProps) {
 		if (this.props.location.pathname !== props.location.pathname) {
 			this.setState({search: ""});
 		}

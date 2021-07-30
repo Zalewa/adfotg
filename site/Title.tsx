@@ -26,10 +26,9 @@ interface TitleState {
 export default class Title extends Component<TitleProps, TitleState> {
 	constructor(props: TitleProps) {
 		super(props);
-		this.searchPrompt = "";
 		this.state = {
 			title: this.getMatchMediaTitle(),
-			searchPrompt: ""
+			searchPrompt: props.search
 		};
 	}
 
@@ -77,9 +76,10 @@ export default class Title extends Component<TitleProps, TitleState> {
 		responsive.matchWidth.addListener(this.matchMedia);
 	}
 
-	componentWillReceiveProps(props: TitleProps) {
-		this.searchPrompt = props.search;
-		this.setState({searchPrompt: props.search});
+	componentDidUpdate(props: TitleProps) {
+		if (props.search !== this.props.search) {
+			this.setState({searchPrompt: this.props.search});
+		}
 	}
 
 	componentWillUnmount() {
@@ -97,13 +97,12 @@ export default class Title extends Component<TitleProps, TitleState> {
 
 	@boundMethod
 	private onSearchEdited(searchPrompt: string): void {
-		this.searchPrompt = searchPrompt;
 		this.setState({searchPrompt});
 	}
 
 	@boundMethod
 	private onSearchSubmitted(): void {
-		this.props.onSearch(this.searchPrompt);
+		this.props.onSearch(this.state.searchPrompt);
 	}
 }
 
@@ -169,7 +168,7 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 			</div>);
 	}
 
-	componentWillReceiveProps(props: TitleProps) {
+	componentDidUpdate(props: TitleProps) {
 		if (this.props.refresh !== props.refresh) {
 			this.refresh();
 		}

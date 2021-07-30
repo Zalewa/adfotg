@@ -4,3 +4,9 @@ export function leftpad(input: string, pad: string, size: number): string {
 	}
 	return input;
 }
+
+export function sorted(input: string[]) {
+	let cloned = input.slice(0);
+	cloned.sort((a: string, b: string) => a.localeCompare(b));
+	return cloned;
+}

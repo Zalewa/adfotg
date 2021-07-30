@@ -65,9 +65,9 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 		this.refresh();
 	}
 
-	componentWillReceiveProps(props: ImageLibraryProps) {
+	componentDidUpdate(props: ImageLibraryProps) {
 		if (this.props.refresh !== props.refresh || this.props.search !== props.search) {
-			this.refresh({search: props.search});
+			this.refresh({search: this.props.search});
 		}
 	}
 

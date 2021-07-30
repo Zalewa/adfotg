@@ -285,9 +285,9 @@ class DiskForm extends Component<DiskFormProps, DiskFormState> {
 		this.validateDiskName(this.props.name);
 	}
 
-	componentWillReceiveProps(props: DiskFormProps) {
+	componentDidUpdate(props: DiskFormProps) {
 		if (props.name !== this.props.name) {
-			this.validateDiskName(props.name);
+			this.validateDiskName(this.props.name);
 		}
 	}
 

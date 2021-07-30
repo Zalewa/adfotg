@@ -13,6 +13,7 @@ import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import Pager, { Page } from './Pager';
 import Section from './Section';
 import * as resrc from './res';
+import { sorted } from './strings';
 import { DeleteButton, ErrorLabel, Icon, Labelled, LineInput } from './ui';
 
 
@@ -91,10 +92,10 @@ export default class Mount extends Component<MountProps, MountState> {
 		this.refreshImages();
 	}
 
-	componentWillReceiveProps(props: MountProps) {
+	componentDidUpdate(props: MountProps) {
 		if (this.props.refresh !== props.refresh || this.props.search !== props.search) {
 			this.setState({refreshCounter: this.state.refreshCounter + 1});
-			this.refresh({search: props.search});
+			this.refresh({search: this.props.search});
 		}
 	}
 
@@ -268,7 +269,7 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 	constructor(props: CreateMountImageProps) {
 		super(props);
 		this.state = {
-			...this.propsToState(props),
+			sortedAdfs: sorted(props.adfs),
 			error: null,
 			imageName: "",
 			refreshing: true
@@ -338,20 +339,6 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 				});
 			}
 		});
-	}
-
-	componentWillReceiveProps(props: CreateMountImageProps) {
-		this.setState(this.propsToState(props));
-	}
-
-	private propsToState(props: CreateMountImageProps) {
-		return {sortedAdfs: this.sorted(props.adfs)};
-	}
-
-	private sorted(list: string[]): string[] {
-		let cloned = list.slice(0);
-		cloned.sort((a: string, b: string) => a.localeCompare(b));
-		return cloned;
 	}
 
 	@boundMethod
@@ -495,10 +482,10 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 		this.refresh()
 	}
 
-	componentWillReceiveProps(props: MountImageDetailsProps) {
+	componentDidUpdate(props: MountImageDetailsProps) {
 		if (this.props.name !== props.name ||
 				this.props.refreshCounter !== props.refreshCounter) {
-			this.refresh(props.name);
+			this.refresh(this.props.name);
 		}
 	}
 
