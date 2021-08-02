@@ -1,4 +1,4 @@
-.PHONY: all clean package publish purge server site
+.PHONY: all clean clean-site clean-server package publish purge server site
 .NOTPARALLEL:
 
 all: package
@@ -11,15 +11,19 @@ package: site server
 server:
 	python3 ./setup.py sdist
 
+clean-server:
+	rm -rf adfotg/__pycache__
+	rm -rf adfotg.egg-info build dist
+
 site:
 	npm install
 	npm run dist
 
-clean:
-	rm -rf adfotg/__pycache__
-	rm -rf adfotg.egg-info build dist
+clean-site:
 	rm -rf adfotg/site
 	rm -rf site/dist
+
+clean: clean-site clean-server
 
 purge: clean
 	rm -rf node_modules
