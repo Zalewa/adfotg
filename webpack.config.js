@@ -1,12 +1,37 @@
 var webpack = require('webpack');
 var path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+const isRelease = process.env.NODE_ENV === 'production';
+
+const cssBundler = isRelease ? MiniCssExtractPlugin.loader : "style-loader";
+const cssLoaders = [
+	cssBundler,
+	"css-modules-typescript-loader",
+	{
+		loader: "css-loader",
+		options: {
+			importLoaders: 1,
+			modules: {
+				exportLocalsConvention: "camelCaseOnly",
+				localIdentName: "[name]---[local]",
+			},
+		}
+	},
+];
 
 module.exports = {
 	context: path.resolve(__dirname, 'site'),
 	entry: [
 		path.resolve(__dirname, 'site/index.tsx')
 	],
+	plugins: [].concat(
+		isRelease ? [
+			new MiniCssExtractPlugin({
+				filename: "[name].css",
+			})
+		] : []
+	),
 	module: {
 		rules: [
 			{
@@ -31,8 +56,22 @@ module.exports = {
 				loader: "source-map-loader"
 			},
 			{
-				test: /(\.css|\.less)$/,
-				use: ["style-loader", "css-loader", "less-loader"]
+				test: /\.less$/,
+				use: [
+					...cssLoaders,
+					"less-loader",
+				]
+			},
+			{
+				test: /\.css$/,
+				use: cssLoaders,
+				exclude: [
+					path.resolve(__dirname, "site/reset.css"),
+				]
+			},
+			{
+				test: path.resolve(__dirname, "site/reset.css"),
+				use: [cssBundler, "css-loader"]
 			}
 		]
 	},

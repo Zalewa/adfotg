@@ -10,7 +10,7 @@ interface SectionProps {
 export default class Section extends Component<SectionProps> {
 	render() {
 		let className = !this.props.subsection ? "section" : "subsection";
-		return (<div className={className + " " + className + "--" + this.props.className}>
+		return (<div className={className + " " + this.props.className}>
 			<h1 className={className + "__title"}>{this.props.title}</h1>
 			{this.props.children}
 		</div>);

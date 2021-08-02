@@ -13,6 +13,7 @@ import { dispatchApiErrors, dispatchRequestError } from './Notifier';
 import Pager, { Page } from './Pager';
 import Section from './Section';
 import * as resrc from './res';
+import style from './style.less';
 import { sorted } from './strings';
 import { DeleteButton, ErrorLabel, Icon, Labelled, LineInput } from './ui';
 
@@ -62,7 +63,7 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	render() {
-		return (<Section title="Mounting" className="mount">
+		return (<Section title="Mounting" className={style.mount}>
 			{this.state.deleteSelected && this.renderDeleteSelected()}
 			{this.renderMountStatus()}
 			{this.renderImageInspection()}
