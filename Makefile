@@ -1,4 +1,4 @@
-.PHONY: all clean clean-site clean-server package publish purge server site
+.PHONY: all clean clean-site clean-server distclean package publish server site
 .NOTPARALLEL:
 
 all: package
@@ -25,5 +25,5 @@ clean-site:
 
 clean: clean-site clean-server
 
-purge: clean
+distclean: clean
 	rm -rf node_modules
