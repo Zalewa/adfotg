@@ -5,6 +5,7 @@ import { boundMethod } from 'autobind-decorator';
 
 import { enumKeys } from './enum';
 import { dispatchRequestError, dispatchError } from './Notifier';
+import style from './style.less';
 
 
 enum HealthPoint {
@@ -27,12 +28,12 @@ export class HealthBar extends Component<{}, HealthBarState> {
 	};
 
 	render() {
-		let className = "healthbar";
+		let className = style.healthbar;
 		if (this.hasErrors())
-			className += " healthbar--has-errors"
+			className += ` ${style.healthbarHasErrors}`;
 		return (<table className={className} onClick={this.showErrors}>
 			<tbody>
-				<tr className="healthbar__row">
+				<tr className={style.healthbarRow}>
 					{this.renderPoints()}
 				</tr>
 			</tbody>
@@ -56,11 +57,11 @@ export class HealthBar extends Component<{}, HealthBarState> {
 		let message: string = "";
 		if (this.state.health.has(healthPoint)) {
 			message = this.state.health.get(healthPoint);
-			modifier = !message ? "good" : "bad";
+			modifier = !message ? style.healthbarPointGood : style.healthbarPointBad;
 		} else {
-			modifier = "unknown";
+			modifier = style.healthbarPointUnknown;
 		}
-		const className = "healthbar__point healthbar__point--" + modifier;
+		const className = `${style.healthbarPoint} ${modifier}`;
 		return (<td key={healthPoint} className={className}
 			id={"healthbar__" + healthPoint}
 			title={message} />);

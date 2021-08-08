@@ -5,6 +5,7 @@ import { boundMethod } from 'autobind-decorator';
 import { ActionSet } from './Actions';
 import { CheckBox, LinkText, formatDate, formatSize } from './ui';
 import { Page } from './Pager';
+import style from './style.less';
 
 export const enum Field {
 	Name = "name",
@@ -83,7 +84,7 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 			});
 		}
 		return (
-			<table className="table table--full-page">
+			<table className={`${style.table} ${style.tableFullPage}`}>
 				<Header {...this.props} selectedAll={this.state.selectedAll}
 					onSelected={this.props.onSelected && this.onSelectAll || null} />
 				<tbody>
@@ -139,19 +140,19 @@ class Header extends Component<HeaderProps> {
 	render() {
 		let sizeTd = null;
 		if (this.props.showSize)
-			sizeTd = (<HeaderCell {...this.props} field={Field.Size} label="Size" modifier="fixed-short" />);
+			sizeTd = (<HeaderCell {...this.props} field={Field.Size} label="Size" modifier={style.tableHeaderCellFixedShort} />);
 		return (<thead>
-			<tr className="table__header">
+			<tr className={style.tableHeader}>
 				{this.props.onSelected &&
-				<th className="table__header-cell table__header-cell--select">
-					<div className="table__cell-contents">
+				<th className={`${style.tableHeaderCell} ${style.tableHeaderCellSelect}`}>
+					<div className={style.tableCellContents}>
 						<CheckBox checked={this.props.selectedAll}
 							onClick={this.props.onSelected} />
 					</div>
 				</th>}
 				<HeaderCell {...this.props} field={Field.Name} label="Name" />
 				{sizeTd}
-				<HeaderCell {...this.props} field={Field.Mtime} label="Modified Date" rightmost modifier="fixed" />
+				<HeaderCell {...this.props} field={Field.Mtime} label="Modified Date" rightmost modifier={style.tableHeaderCellFixed} />
 			</tr>
 		</thead>);
 	}
@@ -168,21 +169,21 @@ interface HeaderCellProps extends FileTableProps {
 }
 
 const HeaderCell = (props: HeaderCellProps) => {
-	let klass = "table__header-cell";
+	let klass = style.tableHeaderCell;
 	if (props.rightmost)
-		klass += " table__header-cell--right";
+		klass += ` ${style.tableHeaderCellRight}`;
 	if (props.modifier)
-		klass += " table__header-cell--" + props.modifier;
+		klass += ` ${props.modifier}`;
 	const sortedBy: boolean = props.sort && props.sort.field == props.field;
 	if (sortedBy) {
 		if (props.sort.ascending)
-			klass += " table__header-cell--sorted-asc";
+			klass += ` ${style.tableHeaderCellSortedAsc}`;
 		else
-			klass += " table__header-cell--sorted-desc";
+			klass += ` ${style.tableHeaderCellSortedDesc}`;
 	}
 	let label: JSX.Element;
 	if (props.onHeaderClick) {
-		label = <LinkText className="link--table" onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>;
+		label = <LinkText className={style.linkTable} onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>;
 	} else {
 		label = <span>{props.label}</span>
 	}
@@ -201,7 +202,7 @@ interface FileTableRowProps {
 class FileTableRow extends PureComponent<FileTableRowProps> {
 	render() {
 		const props = this.props;
-		return (<tr className="table__record">
+		return (<tr className={style.tableRecord}>
 			{this.renderSelectCell()}
 			{this.renderNameCell()}
 			{this.renderSizeCell()}
@@ -212,8 +213,8 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 	private renderSelectCell(): JSX.Element {
 		const { props } = this;
 		if (props.onSelected) {
-			return (<td className="table__data-cell table__data-cell--select">
-				<div className="table__cell-contents">
+			return (<td className={`${style.tableDataCell} ${style.tableDataCellSelect}`}>
+				<div className={style.tableCellContents}>
 					<CheckBox name={props.entry.name}
 						checked={props.selected}
 						onClick={props.onSelected} />
@@ -224,8 +225,8 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 	}
 
 	private renderNameCell(): JSX.Element {
-		return (<td className="table__data-cell">
-			<div className="table__cell-contents">
+		return (<td className={style.tableDataCell}>
+			<div className={style.tableCellContents}>
 				{this.renderName()}
 				{this.renderActions()}
 			</div>
@@ -235,7 +236,7 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 	private renderName(): JSX.Element {
 		const { props } = this;
 		if (props.url != null) {
-			return <a className="link link--table"
+			return <a className={`${style.link} ${style.linkTable}`}
 				href={props.url}>{props.entry.name}</a>;
 		} else {
 			return <span>{props.entry.name}</span>;
@@ -244,13 +245,13 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 
 	private renderSizeCell(): JSX.Element {
 		if (this.props.showSize)
-			return <td className="table__data-cell">{formatSize(this.props.entry.size)}</td>;
+			return <td className={`${style.tableDataCell}`}>{formatSize(this.props.entry.size)}</td>;
 		return null;
 	}
 
 	private renderDateCell(): JSX.Element {
 		const date = new Date(this.props.entry.mtime * 1000);
-		return <td className="table__data-cell">{formatDate(date)}</td>
+		return <td className={`${style.tableDataCell}`}>{formatDate(date)}</td>
 	}
 
 	private renderActions(): JSX.Element {

@@ -3,6 +3,8 @@ import { Component } from 'react';
 import { Response, HTTPError } from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
+import style from './style.less';
+
 export enum NoteType {
 	Error = "error",
 	Success = "success"
@@ -93,7 +95,7 @@ export default class Notifier extends Component<{}, NotifierState> {
 			notifications.push(<Notification key={note.key} note={note}
 				onClose={this.onClose} />)
 		});
-		return (<div className="notifier">
+		return (<div className={style.notifier}>
 			{notifications}
 		</div>);
 	}
@@ -122,14 +124,25 @@ interface NotificationProps {
 export class Notification extends Component<NotificationProps> {
 	render() {
 		const { note, classMod } = this.props;
-		const klass = "notification notification--" + note.type + " "
+		const klass = `${style.notification} ${this.noteClassName(note)}` + " "
 			+ (classMod ? ("notification--" + classMod) :  "");
 		return (<div className={klass}>
 			{this.props.onClose &&
-			<button className="button button--notification-close"
+			<button className={`${style.button} ${style.buttonNotificationClose}`}
 				onClick={() => this.props.onClose(note.key)}>X</button>
 			}
 			<span>{note.message}</span>
 		</div>);
+	}
+
+	private noteClassName(note: Note) {
+		switch (note.type) {
+		case NoteType.Error:
+			return style.notificationError;
+		case NoteType.Success:
+			return style.notificationSuccess;
+		default:
+			return "";
+		}
 	}
 }

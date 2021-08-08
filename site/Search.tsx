@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import * as resrc from './res';
+import style from './style.less';
 import { Icon } from './ui';
 
 interface SearchProps {
@@ -12,12 +13,12 @@ interface SearchProps {
 
 export default class Search extends Component<SearchProps> {
 	render() {
-		return (<div className="search-bar">
-			<button className="button button--icon button--submit"
+		return (<div className={style.searchBar}>
+			<button className={`${style.button} ${style.buttonIcon} ${style.buttonSubmit}`}
 					onClick={this.props.onSubmit}>
 				<Icon button title="Search" src={resrc.looking_glass} />
 			</button>
-			<input className="text-input search-bar__input" type="text"
+			<input className={`${style.textInput} ${style.searchBarInput}`} type="text"
 				value={this.props.text}
 				onChange={e => this.props.onEdit(e.target.value)}
 				onKeyPress={e => {

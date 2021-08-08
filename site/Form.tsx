@@ -2,11 +2,12 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import { Notification, Note } from './Notifier';
+import style from './style.less';
 
 
 export default class Form extends Component {
 	render() {
-		return (<table className="form">{this.props.children}</table>);
+		return (<table className={style.form}>{this.props.children}</table>);
 	}
 }
 
@@ -19,13 +20,13 @@ interface FormItemProps {
 export class FormItem extends Component<FormItemProps> {
 	render() {
 		const { label, hint, children, note } = this.props;
-		return (<tbody className="form__item">
-			<tr className="form__row">
-				<td className="form__cell form__cell--label">{label + ":"}</td>
-				<td className="form__cell form__cell--widget">
+		return (<tbody className={style.formItem}>
+			<tr className={style.formRow}>
+				<td className={`${style.formCell} ${style.formCellLabel}`}>{label + ":"}</td>
+				<td className={`${style.formCell} ${style.formCellWidget}`}>
 					{children}
 				</td>
-				<td className="form__cell form__cell--hint">{hint ? hint : ""}</td>
+				<td className={`${style.formCell} ${style.formCellHint}`}>{hint ? hint : ""}</td>
 			</tr>
 			{note && this.renderNote() || null}
 		</tbody>);
@@ -33,7 +34,7 @@ export class FormItem extends Component<FormItemProps> {
 
 	private renderNote(): JSX.Element {
 		return (<tr>
-			<td colSpan={3} className="form__item-note">
+			<td colSpan={3} className={style.formItemNote}>
 				<Notification note={this.props.note} />
 			</td>
 		</tr>);

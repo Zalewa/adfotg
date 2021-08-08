@@ -11,6 +11,7 @@ import { ConfirmModal } from './Modal';
 import { Notification, Note, NoteType, dispatchApiErrors,
 	dispatchRequestError } from './Notifier';
 import Section from './Section';
+import style from './style.less';
 import { DeleteButton, Loader } from './ui';
 
 
@@ -37,7 +38,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 
 	render() {
 		return (
-			<Section title="Upload Zone" className="uploader">
+			<Section title="Upload Zone" className={style.uploadzone}>
 				{this.state.deleteSelected && this.renderDeleteSelected()}
 				<UploadZone onUpload={this.onUpload} />
 				{this.renderActions()}
@@ -76,7 +77,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 				onAccept={this.deleteSelected}
 				onCancel={() => this.setState({deleteSelected: false})}
 				acceptText="Delete"
-				acceptClass="button--delete">
+				acceptClass={style.buttonDelete}>
 			<Listing listing={this.state.selection.map(e => e.name)} />
 		</ConfirmModal>)
 	}
@@ -154,10 +155,10 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 
 	render() {
 		return (
-			<div className="uploadzone">
-				<div className="uploadzone__pane">
+			<div className={style.uploadzone}>
+				<div className={style.uploadzonePane}>
 					{!this.state.uploading && this.state.uploadSuccess === null && this.renderDropZone()}
-					{this.state.uploading && <Loader classMod="loader--upload" />}
+					{this.state.uploading && <Loader classMod={style.loaderUpload} />}
 					{this.state.uploadSuccess !== null && this.renderUploadDoneNotifier()}
 				</div>
 			</div>
@@ -168,9 +169,9 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 		return (<Dropzone onDropAccepted={this.onDrop}>
 			{({getRootProps, getInputProps, isDragAccept, isDragReject}) => {
 				const css = (
-					"uploadzone__uploadarea"
-					+ (isDragAccept ? " uploadzone__uploadarea--accept" : "")
-					+ (isDragReject ? " uploadzone__uploadarea--reject" : "")
+					style.uploadzoneUploadarea
+					+ (isDragAccept ? ` ${style.uploadzoneUploadareaAccept}` : "")
+					+ (isDragReject ? ` ${style.uploadzoneUploadareaReject}` : "")
 				);
 
 				return (<div {...getRootProps()}>
@@ -187,7 +188,7 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 		const note: Note = this.state.uploadSuccess ?
 			{type: NoteType.Success, message: "UPLOAD DONE !"} :
 			{type: NoteType.Error, message: "UPLOAD FAILED !"};
-		return <Notification note={note} classMod="uploader" />;
+		return <Notification note={note} classMod={style.notificationUploader} />;
 	}
 
 	@boundMethod

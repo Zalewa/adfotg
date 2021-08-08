@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Component } from 'react';
 import { boundMethod } from 'autobind-decorator';
 
+import style from './style.less';
 import { LinkText } from './ui';
 
 export class Page {
@@ -26,7 +27,7 @@ export default class Pager extends Component<PagerProps> {
 	render() {
 		if (!this.hasPages())
 			return null;
-		return (<div className="pager">
+		return (<div className={style.pager}>
 			{this.renderLeft()}
 			{this.renderNumbers()}
 			{this.renderRight()}
@@ -34,35 +35,33 @@ export default class Pager extends Component<PagerProps> {
 	}
 
 	private renderLeft(): JSX.Element {
-		const klass = "pager__left";
 		if (this.hasLeft()) {
-			return (<div className={klass}>
-				<LinkText className="pager__page" onClick={() => this.change(0)}>&lt;&lt;</LinkText>
-				<LinkText className="pager__page" onClick={() => this.change(this.page() - 1)}>&lt;</LinkText>
+			return (<div className={style.pagerLeft}>
+				<LinkText className={style.pagerPage} onClick={() => this.change(0)}>&lt;&lt;</LinkText>
+				<LinkText className={style.pagerPage} onClick={() => this.change(this.page() - 1)}>&lt;</LinkText>
 			</div>);
 		} else {
-			return <div className={klass} />
+			return <div className={style.pagerLeft} />
 		}
 	}
 
 	private renderRight(): JSX.Element {
-		const klass = "pager__right";
 		if (this.hasRight()) {
-			return (<div className={klass}>
-				<LinkText className="pager__page" onClick={() => this.change(this.page() + 1)}>&gt;</LinkText>
-				<LinkText className="pager__page" onClick={() => this.change(this.lastPage())}>&gt;&gt;</LinkText>
+			return (<div className={style.pagerRight}>
+				<LinkText className={style.pagerPage} onClick={() => this.change(this.page() + 1)}>&gt;</LinkText>
+				<LinkText className={style.pagerPage} onClick={() => this.change(this.lastPage())}>&gt;&gt;</LinkText>
 			</div>);
 		} else {
-			return <div className={klass} />
+			return <div className={style.pagerRight} />
 		}
 	}
 
 	private renderNumbers(): JSX.Element[] {
 		let links: JSX.Element[] = [];
 		for (let page = 0; page < this.numPages(); ++page) {
-			let klass = "pager__page";
+			let klass = style.pagerPage;
 			if (page == this.page())
-				klass += " pager__page--selected";
+				klass += ` ${style.pagerPageSelected}`;
 			links.push(<LinkText key={page} className={klass}
 					onClick={() => this.change(page)}>
 				{page + 1}

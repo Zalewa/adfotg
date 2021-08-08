@@ -180,6 +180,7 @@
 	}
 
 	&--big {
+		/**/
 	}
 
 	&--delete {
@@ -203,6 +204,7 @@
 	}
 
 	&--modal-close {
+		/**/
 	}
 
 	&--notification-close {
@@ -216,6 +218,7 @@
 	}
 
 	&--submit {
+		/**/
 	}
 
 	&--table {
@@ -233,6 +236,7 @@
 }
 
 .disk-composition {
+	/**/
 }
 
 
@@ -255,6 +259,11 @@
 }
 
 
+.errorLabel {
+	/**/
+}
+
+
 .flex-filler {
 	flex-grow: 1
 }
@@ -265,9 +274,11 @@
 	border-spacing: 0.25em;
 
 	&__row {
+		/**/
 	}
 
 	&__item {
+		/**/
 		&-note {
 			/* Don't ask me why this works.
 			   I'll just wait till it breaks.*/
@@ -276,6 +287,10 @@
 	}
 
 	&__cell {
+		/**/
+		&--hint {
+			/**/
+		}
 		&--label {
 			.label--mixin();
 			text-align: right;
@@ -286,6 +301,7 @@
 	}
 
 	&__widget {
+		/**/
 		&--full {
 			width: 100%;
 		}
@@ -321,6 +337,7 @@
 	}
 
 	&__section {
+		/**/
 		&--error {
 			margin-left: 32px;
 		}
@@ -376,6 +393,11 @@
 
 
 .icon {
+	/**/
+	&--button {
+		/**/
+	}
+
 	&--table-button {
 		height: 14px;
 	}
@@ -383,25 +405,32 @@
 
 
 .imageDetails {
+	/**/
 	&__name {
+		/**/
 	}
 }
 
 
 .imageLibrary {
+	/**/
 }
 
 
 .inspectedImage {
+	/**/
 }
 
 
 .labelled {
+	/**/
 	&__label {
+		/**/
 		.label--mixin();
 	}
 
 	&__content {
+		/**/
 	}
 }
 
@@ -471,6 +500,7 @@
 
 
 .loader {
+	/**/
 	&--upload {
 		width: 100%;
 	}
@@ -545,9 +575,11 @@
 
 
 .createMountImage {
+	/**/
 }
 
 .mount {
+	/**/
 	&__actions {
 		margin-right: 0.25em;
 
@@ -556,8 +588,14 @@
 		}
 	}
 
+	&__image-name {
+		/**/
+	}
+
 	&__status {
+		/**/
 		&-label {
+			/**/
 			&--badstatus {
 				color: @dangerColor;
 			}
@@ -583,13 +621,16 @@
 
 
 .mountedImage {
+	/**/
 }
 
 
 .notifier {
+	/**/
 }
 
 .notification {
+	/**/
 	border: 1px dashed;
 	padding: 0.25em;
 	margin: 0.25em;
@@ -670,9 +711,6 @@
 	margin-bottom: 16px;
 	position: relative;
 
-	&--uploader {
-	}
-
 	&__title {
 		.title--mixin();
 		.title-shadow--mixin();
@@ -682,6 +720,7 @@
 }
 
 .subsection {
+	/**/
 	.pane--mixin();
 
 	&__title {
@@ -692,6 +731,7 @@
 
 
 .space-info {
+	/**/
 }
 
 
@@ -748,12 +788,15 @@
 			}
 
 			&--sorted-asc {
+				/**/
 			}
 
 			&--sorted-desc {
+				/**/
 			}
 
 			&--left {
+				/**/
 			}
 
 			&--right {
@@ -763,6 +806,7 @@
 	}
 
 	&__record {
+		/**/
 		&:nth-child(even) {
 			background: fade(@pageBackground, 10%);
 		}
@@ -779,6 +823,7 @@
 		vertical-align: middle;
 
 		&--select {
+			/**/
 			.cell--select--mixin();
 		}
 	}

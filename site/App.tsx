@@ -8,6 +8,7 @@ import AdfWizard from './AdfWizard';
 import Home from './Home';
 import Notifier from './Notifier';
 import { HOME_LINK, ADFWIZARD_LINK } from './routes';
+import style from './style.less';
 import Title from './Title';
 
 export default class App extends Component {
@@ -93,17 +94,17 @@ class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
 
 	render() {
 		if (this.state.error != null) {
-			return (<div className="guru-meditation">
-				<div className="guru-meditation__frame"><div className="guru-meditation__inner-frame">
-					<h1 className="guru-meditation__section">GURU MEDITATION</h1>
-					<p className="guru-meditation__section">ADF OTG has failed.</p>
-					<p className="guru-meditation__section guru-meditation__section--error">{this.state.error.toString()}</p>
-					<p className="guru-meditation__section">
+			return (<div className={style.guruMeditation}>
+				<div className={style.guruMeditationFrame}><div className={style.guruMeditationInnerFrame}>
+					<h1 className={style.guruMeditationSection}>GURU MEDITATION</h1>
+					<p className={style.guruMeditationSection}>ADF OTG has failed.</p>
+					<p className={`${style.guruMeditationSection} ${style.guruMeditationSectionError}`}>{this.state.error.toString()}</p>
+					<p className={style.guruMeditationSection}>
 						If you think this was caused by a bug, please
 						write down steps to reproduce it and report it
-						at<br/><a className="link" href="https://github.com/Zalewa/adfotg">https://github.com/Zalewa/adfotg</a>
+						at<br/><a className={style.link} href="https://github.com/Zalewa/adfotg">https://github.com/Zalewa/adfotg</a>
 					</p>
-					<p className="guru-meditation__section">Browser's console may contain more detailed information.</p>
+					<p className={style.guruMeditationSection}>Browser's console may contain more detailed information.</p>
 				</div></div>
 			</div>);
 		}

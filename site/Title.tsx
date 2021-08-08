@@ -9,6 +9,7 @@ import { dispatchRequestError } from './Notifier';
 import * as responsive from './responsive';
 import { ADFWIZARD_LINK, HOME_LINK } from './routes';
 import Search from './Search';
+import style from './style.less';
 import { Labelled, formatSize } from './ui';
 
 interface TitleProps {
@@ -36,22 +37,22 @@ export default class Title extends Component<TitleProps, TitleState> {
 
 	render() {
 		return (
-			<div className="title">
-				<div className="title__row">
-				<div className="title__section title__section--fill">
-					<AppLink className="title__main" exact to={HOME_LINK}>{this.state.title}</AppLink>
+			<div className={style.title}>
+				<div className={style.titleRow}>
+				<div className={`${style.titleSection} ${style.titleSectionFill}`}>
+					<AppLink className={style.titleMain} exact to={HOME_LINK}>{this.state.title}</AppLink>
 				</div>
-				<div className="title__section">
+				<div className={style.titleSection}>
 					<SpaceInfo refresh={this.props.refresh} />
 					<HealthBar />
-					<div className="title__row">
-						<a className="link" href="/help">API Help</a>
+					<div className={style.titleRow}>
+						<a className={style.link} href="/help">API Help</a>
 						<VersionInfo />
 					</div>
 				</div>
 				</div>
-				<div className="title__row">
-					<div className="title__section title__section--fill">
+				<div className={style.titleRow}>
+					<div className={`${style.titleSection} ${style.titleSectionFill}`}>
 						<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
 					</div>
 					{this.renderSearch()}
@@ -62,7 +63,7 @@ export default class Title extends Component<TitleProps, TitleState> {
 
 	private renderSearch(): JSX.Element {
 		if (this.props.canSearch) {
-			return (<div className="title__section">
+			return (<div className={style.titleSection}>
 				<Search text={this.state.searchPrompt}
 					onEdit={this.onSearchEdited}
 					onSubmit={this.onSearchSubmitted} />
@@ -120,7 +121,7 @@ class VersionInfo extends Component<{}, VersionInfoState> {
 	}
 
 	render() {
-		return (<div className="versionInfo">
+		return (<div className={style.versionInfo}>
 			<Labelled label="Version:" title={this.state.yearspan}
 				contents={this.state.version + " (" + this.state.lastyear + ")"} />
 		</div>);
@@ -152,13 +153,13 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	}
 
 	render() {
-		return (<div className="space-info">
-			<table className="table table--no-margin">
+		return (<div className={style.spaceInfo}>
+			<table className={`${style.table} ${style.tableNoMargin}`}>
 				<thead>
-					<tr className="table__header">
-						<th className="table__header-cell table__header-cell--left">Mount Point</th>
-						<th className="table__header-cell">Available</th>
-						<th className="table__header-cell table__header-cell--right">Total Space</th>
+					<tr className={style.tableHeader}>
+						<th className={`${style.tableHeaderCell} ${style.tableHeaderCellLeft}`}>Mount Point</th>
+						<th className={style.tableHeaderCell}>Available</th>
+						<th className={`${style.tableHeaderCell} ${style.tableHeaderCellRight}`}>Total Space</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -181,10 +182,10 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	private renderStats(): JSX.Element[] {
 		let el: JSX.Element[] = [];
 		this.state.fsStats.forEach((stat: FsStats) => {
-			el.push(<tr className="table__record" key={stat.name}>
-				<th className="table__label-cell">{stat.name}</th>
-				<td className="table__data-cell">{formatSize(stat.avail)}</td>
-				<td className="table__data-cell">{formatSize(stat.total)}</td>
+			el.push(<tr className={style.tableRecord} key={stat.name}>
+				<th className={style.tableLabelCell}>{stat.name}</th>
+				<td className={style.tableDataCell}>{formatSize(stat.avail)}</td>
+				<td className={style.tableDataCell}>{formatSize(stat.total)}</td>
 			</tr>)
 		});
 		return el;
@@ -202,8 +203,8 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 
 const AppLink = (props: NavLinkProps & {children: string | JSX.Element[] | JSX.Element, className?: string}) => {
 	return <NavLink exact={props.exact}
-		className={props.className ? props.className : "app-link"}
-		activeClassName="app-link--selected"
+		className={props.className ? props.className : style.appLink}
+		activeClassName={style.appLinkSelected}
 		to={props.to}>
 		{props.children}
 	</NavLink>
