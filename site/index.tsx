@@ -3,8 +3,10 @@ import "core-js/stable";
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import './reset.css'; // important to import this before App
+import './reset.css'; // important to import this before App and style
 import App from './App';
+
+import style from './style.less';
 
 // Amiga Topaz.ttf.
 // The license requires to import all files.
@@ -16,6 +18,8 @@ import './res/favicon_16.png';
 import './res/favicon_64.png';
 import './index.html';
 
+document.getElementsByTagName("body")[0].className = style.page;
+document.getElementById('app').className = style.pageMain;
 ReactDOM.render(
 	<App />,
 	document.getElementById('app'))
