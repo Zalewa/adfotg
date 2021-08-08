@@ -67,6 +67,7 @@ setup(
     version=version_string,
     description='ADF On-The-Go - convert your RPi Zero to Gotek-ready USB disk',
     long_description=readme,
+    long_description_content_type='text/markdown',
     author='Robikz',
     author_email='zalewapl@gmail.com',
     license=license,
