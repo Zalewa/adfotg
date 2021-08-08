@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Component } from 'react';
 
+import style from './style.less';
+
 interface ActionsProps {
 	fullrow?: boolean
 	submit?: boolean
@@ -8,12 +10,11 @@ interface ActionsProps {
 }
 
 export const Actions = (props: ActionsProps) => {
-	const base: string = "actions";
-	let klass = base;
+	let klass = style.actions;
 	if (props.fullrow)
-		klass += " " + base + "--fullrow";
+		klass += " " + style.actionsFullrow;
 	if (props.submit)
-		klass += " " + base + "--submit";
+		klass += " " + style.actionsSubmit;
 	return (<div className={klass}>
 		{props.children}
 	</div>);
@@ -28,14 +29,13 @@ interface ActionSetProps {
 }
 
 export const ActionSet = (props: ActionSetProps) => {
-	const base: string = "actions__set"
-	let klass = base;
+	let klass = style.actionsSet;
 	if (props.baseline)
-		klass += " " + base + "--baseline";
+		klass += " " + style.actionsSetBaseline;
 	if (props.even)
-		klass += " " + base + "--even"
+		klass += " " + style.actionsSetEven;
 	if (props.right)
-		klass += " " + base + "--right";
+		klass += " " + style.actionsSetRight;
 	if (props.className)
 		klass += " " + props.className;
 	return (<div className={klass}>

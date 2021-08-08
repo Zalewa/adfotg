@@ -2,25 +2,27 @@ import * as React from 'react';
 import { Component } from 'react';
 import { boundMethod } from 'autobind-decorator';
 
+import style from './style.less';
+
 interface ModalProps {
 	onClose: ()=>void
 }
 
 export default class Modal extends Component<ModalProps> {
 	render() {
-		return <div className="modal" onClick={this.handleOutsideClick}>
-			<div className="modal__display" onClick={this.handleInsideClick}>
-				<div className="modal__titlebar">
-					<button className="button button--modal-close" onClick={this.props.onClose}>X</button>
+		return <div className={style.modal} onClick={this.handleOutsideClick}>
+			<div className={style.modalDisplay} onClick={this.handleInsideClick}>
+				<div className={style.modalTitlebar}>
+					<button className={`${style.button} ${style.buttonModalClose}`} onClick={this.props.onClose}>X</button>
 				</div>
-				<div className="modal__middle">
-					<div className="modal__frame modal__frame--left" />
-					<div className="modal__contents">
+				<div className={style.modalMiddle}>
+					<div className={`${style.modalFrame} ${style.modalFrameLeft}`} />
+					<div className={style.modalContents}>
 						{this.props.children}
 					</div>
-					<div className="modal__frame modal__frame--right" />
+					<div className={`${style.modalFrame} ${style.modalFrameRight}`} />
 				</div>
-				<div className="modal__frame modal__frame--bottom" />
+				<div className={`${style.modalFrame} ${style.modalFrameBottom}`} />
 			</div>
 		</div>;
 	}
@@ -69,18 +71,18 @@ export class ConfirmModal extends Component<ConfirmModalProps> {
 		onCancel: ()=>{},
 		acceptText: "OK",
 		cancelText: "Cancel",
-		acceptClass: "button--submit"
+		acceptClass: style.buttonSubmit,
 	}
 
 	render() {
 		return (<Modal onClose={() => this.props.onCancel()}>
-			<p className="modal__text">{this.props.text}</p>
+			<p className={style.modalText}>{this.props.text}</p>
 			{this.props.children}
-			<div className="modal__buttons">
-				<button className={"button " + this.props.acceptClass}
+			<div className={style.modalButtons}>
+				<button className={`${style.button} ${this.props.acceptClass}`}
 					onClick={this.props.onAccept}>
 					{this.props.acceptText}</button>
-				<button className="button" onClick={this.props.onCancel}>{this.props.cancelText}</button>
+				<button className={style.button} onClick={this.props.onCancel}>{this.props.cancelText}</button>
 			</div>
 		</Modal>);
 	}

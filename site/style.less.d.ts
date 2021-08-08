@@ -34,9 +34,11 @@ interface CssExports {
   'diskForm': string;
   'diskFormClose': string;
   'diskFormListing': string;
+  'errorLabel': string;
   'flexFiller': string;
   'form': string;
   'formCell': string;
+  'formCellHint': string;
   'formCellLabel': string;
   'formCellWidget': string;
   'formItem': string;
@@ -58,6 +60,7 @@ interface CssExports {
   'healthbarPointUnknown': string;
   'healthbarRow': string;
   'icon': string;
+  'iconButton': string;
   'iconTableButton': string;
   'imageDetails': string;
   'imageDetailsName': string;
@@ -89,6 +92,7 @@ interface CssExports {
   'mount': string;
   'mountActions': string;
   'mountActionsEmpty': string;
+  'mountImageName': string;
   'mountStatus': string;
   'mountStatusLabel': string;
   'mountStatusLabelBadstatus': string;

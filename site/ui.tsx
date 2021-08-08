@@ -3,16 +3,17 @@ import { Component } from 'react';
 
 import { errorToString } from './Notifier';
 import * as res from './res';
+import style from './style.less';
 
 export const CheckBox = (props: {
 	checked?: boolean,
 	name?: string,
 	onClick?: (name?: string)=>void
 }) => {
-	let klass: string = "button__checkmark";
+	let klass: string = style.buttonCheckmark;
 	if (props.checked)
-		klass += " button__checkmark--checked";
-	return <button className="button button--checkbox"
+		klass += ` ${style.buttonCheckmarkChecked}`;
+	return <button className={`${style.button} ${style.buttonCheckbox}`}
 			name={props.name}
 			onClick={() => props.onClick && props.onClick(props.name)}>
 		<span className={klass} />
@@ -20,7 +21,7 @@ export const CheckBox = (props: {
 }
 
 export const DeleteButton = (props: any) => {
-	let klass: string = "button button--delete"
+	let klass: string = `${style.button} ${style.buttonDelete}`
 	if (props.className) {
 		klass += " " + props.className;
 	}
@@ -28,7 +29,7 @@ export const DeleteButton = (props: any) => {
 }
 
 export const ErrorLabel = (props: {error: Error}) => {
-	return <div className="errorLabel">
+	return <div className={style.errorLabel}>
 		{errorToString(props.error)}
 	</div>
 }
@@ -42,13 +43,12 @@ interface IconProps {
 }
 
 export const Icon = (props: IconProps) => {
-	const base: string = "icon";
-	let klass = base;
+	let klass = style.icon;
 	if (props.button) {
 		if (props.table) {
-			klass += " " + base + "--table-button";
+			klass += ` ${style.iconTableButton}`;
 		} else {
-			klass += " " + base + "--button";
+			klass += ` ${style.iconButton}`;
 		}
 	}
 	const alt = props.alt || props.title;
@@ -63,9 +63,9 @@ interface LabelledProps {
 }
 
 export const Labelled = (props: LabelledProps) => {
-	return <div className="labelled" title={props.title}>
-			<span className="labelled__label">{props.label}</span>
-			<span className="labelled__content">{props.contents}</span>
+	return <div className={style.labelled} title={props.title}>
+			<span className={style.labelledLabel}>{props.label}</span>
+			<span className={style.labelledContent}>{props.contents}</span>
 	</div>
 }
 
@@ -74,19 +74,19 @@ type LineInputProps = React.DetailedHTMLProps<
 	HTMLInputElement>;
 
 export const LineInput = (props: LineInputProps) => {
-	return (<div className="line-input">
-		<input className="line-input__input" {...props} />
+	return (<div className={style.lineInput}>
+		<input className={style.lineInputInput} {...props} />
 	</div>);
 }
 
 export const LinkText = (props: any) => {
-	return (<span className={"link " + (props.className ? props.className : "")}
+	return (<span className={style.link + " " + (props.className ? props.className : "")}
 		onClick={() => {props.onClick(); return false;}}>{props.children}</span>)
 }
 
 export const Loader = (props: {classMod?: string}) => {
 	return (<img src={res.loader}
-		className={"loader " + (props.classMod || "")} />);
+		className={style.loader + " " + (props.classMod || "")} />);
 }
 
 

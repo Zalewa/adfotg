@@ -3,6 +3,7 @@ import { Component } from 'react';
 
 import { ActionSet } from './Actions';
 import * as res from './res';
+import style from './style.less';
 import { Icon } from './ui';
 
 interface ListingProps {
@@ -15,7 +16,7 @@ export default class Listing extends Component<ListingProps> {
 	render() {
 		const { props } = this;
 		if (props.listing.length > 0) {
-			return (<ul className={"listing " + (props.className ? props.className : "")}>
+			return (<ul className={`${style.listing} ${props.className ? props.className : ""}`}>
 				{this.renderRecords()}
 			</ul>);
 		} else {
@@ -25,9 +26,8 @@ export default class Listing extends Component<ListingProps> {
 
 	private renderRecords(): JSX.Element[] {
 		const { props } = this;
-		const customEntryClass = (props.className ? props.className + "__entry" : "");
 		return props.listing.map((entry: string, idx: number) => {
-			return <li className={"listing__entry " + customEntryClass}
+			return <li className={style.listingEntry}
 				key={entry}>{entry}{this.renderActions(idx)}</li>;
 		});
 	}
@@ -35,11 +35,11 @@ export default class Listing extends Component<ListingProps> {
 	private renderActions(entry_idx: number): JSX.Element {
 		if (this.props.onOrderChange) {
 			return (<ActionSet right>
-				<button className="button button--listing button--icon-table"
+				<button className={`${style.button} ${style.buttonTable} ${style.buttonIconTable}`}
 					onClick={() => this.moveUp(entry_idx)}>
 					<Icon table button src={res.arrow_up} />
 				</button>
-				<button className="button button--listing button--icon-table"
+				<button className={`${style.button} ${style.buttonTable} ${style.buttonIconTable}`}
 					onClick={() => this.moveDown(entry_idx)}>
 					<Icon table button src={res.arrow_down} />
 				</button>
