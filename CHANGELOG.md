@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Use amitools 0.6.0 which support Python 3. Python 2 no longer necessary.
+- Set the minimal supported Python version to 3.5.
+- Update the npm packages.
+- Update the UI code to React 17: update the component lifecycle methods.
+- Font is now in the "res/" directory together with other UI resources.
+
+### Fixed
+- Fix crash on checking if value is part of an enum in Python 3.8.
 
 ## [0.2.0] - 2019-01-20
 ### Added
