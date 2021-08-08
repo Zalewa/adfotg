@@ -35,16 +35,8 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /(\.gif|\.html|\.png|\.svg|\.ttf|\.txt)$/,
-				use: [
-					{
-						loader: 'file-loader',
-						options: {
-							name: '[path][name].[ext]',
-							esModule: false
-						}
-					}
-				]
+				test: /\.(gif|html|jpeg|jpg|png|svg|ttf|txt)$/,
+				type: 'asset/resource',
 			},
 			{
 				test: /\.tsx?$/,
@@ -81,7 +73,8 @@ module.exports = {
 	},
 	output: {
 		path: path.resolve(__dirname, 'site/dist'),
-		filename: 'bundle.js'
+		filename: 'bundle.js',
+		assetModuleFilename: '[path][name][ext]',
 	},
 	devServer: {
 		contentBase: path.resolve(__dirname, 'site/dist'),
