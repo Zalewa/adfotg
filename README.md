@@ -3,14 +3,24 @@
 ADF On-The-Go
 =============
 
+ADF On-The-Go (adfotg) converts your Raspberry Pi Zero into an USB drive
+with a web interface. It organises your ADF images and allows you to
+bundle one or more of them into virtual USB drives. You can swap them
+freely from any modern web browser. This permits to freely upload,
+download and mount ADFs without ever disconnecting the USB cable from
+your Gotek.
+
 ADF On-The-Go (adfotg) is a HTTP service designed for use in a Raspberry
-Pi Zero which is connected through its USB OTG port to a Gotek Floppy
-Drive emulator in use in an Amiga computer. It allows to feed the Gotek
-with fully programmable contents using a human-friendly user interface
-that can be accessed from any web browser. It can prepare ADF images
-from files, split big files into floppy-size chunks or just serve the
-ADF images directly. It allows to store a bundle of ADF files on its
-own drive and swap them freely.
+Pi Zero. The RPi must be connected through its USB OTG port to a Gotek
+Floppy Drive emulator in use in an Amiga computer. Then everything can
+be controlled from a website user interface. ADF On-The-Go can prepare
+ADF images from files, split big files into floppy-sized chunks or just
+mount the ADF images directly. It allows to store bundles of ADF files
+on their own virtual USB drives and swap multiple virtual USB drives
+freely.
+
+There also is a REST API, if you happen to not like the default UI, but
+its current status is **unstable**.
 
 ```
   ----------- Linux ------------  USB  --------- IDE ---------
