@@ -83,8 +83,8 @@ Hardware:
 Install
 =======
 
-This program is designed to be run on a *Raspberry Pi Zero* with the Raspbian
-Operating System. Installing the release package on anything else is not
+This program is designed to be run on a *Raspberry Pi Zero* with the
+Raspberry Pi OS. Installing the release package on anything else is not
 recommended, although will succeed and should be harmless (no warranty).
 
 Provided you have the Raspberry Pi Zero, do the following:
@@ -108,15 +108,15 @@ Update
 ```
 
 adfotg needs to be restarted now. If you integrated it with your
-Raspbian (see the section below), then it's sufficient to do this:
+Raspberry Pi OS (see the section below), then it's sufficient to do this:
 
 ```
   sudo service adfotg restart
 ```
 
 
-Integrating with Raspbian
--------------------------
+Integrating with Raspberry Pi OS
+--------------------------------
 
 After pip3 install:
 
@@ -126,7 +126,7 @@ After pip3 install:
 
 This will:
 
-1. Add 'adfotg' system user to Raspbian and allow this user a
+1. Add 'adfotg' system user to Raspberry Pi OS and allow this user a
    password-less sudo privilege.
 2. Create adfotg's default config file in `/etc/adfotg.conf`.
 3. Create adfotg's base directory at `/var/lib/adfotg`.
@@ -140,12 +140,12 @@ Preparing your Raspberry Pi
 https://gist.github.com/gbaman/50b6cca61dd1c3f88f41
 to enable dwc2 and g_mass_storage modules.
 
-Hereby is a copy of the excerpt from the guide with adjustment
+Hereby is the excerpt from the guide with adjustment
 for `g_mass_storage` module.
 
 1. We need to make sure we are using the dwc2 USB driver
    `echo "dtoverlay=dwc2" | sudo tee -a /boot/config.txt`
-2. Enable it in Raspbian `echo "dwc2" | sudo tee -a /etc/modules`
+2. Enable it in Raspberry PI OS `echo "dwc2" | sudo tee -a /etc/modules`
 3. Now pick which module you want to use from the list above,
    for ADF OTG we need `g_mass_storage`, so:
    `echo "g_mass_storage" | sudo tee -a /etc/modules`.

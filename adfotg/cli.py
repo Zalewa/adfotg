@@ -66,7 +66,7 @@ def parse_args():
         help='port on which to host the service (overrides config)')
     opt_parser.add_option(
         '--install', dest='install', default=False, action='store_true',
-        help='Integrate adfotg with the Raspbian Operating System')
+        help='Integrate adfotg with the Raspberry Pi OS')
     opt_parser.add_option(
         '-V', '--version', dest='version', default=False,
         action='store_true', help='display version and quit')

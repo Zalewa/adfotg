@@ -30,7 +30,7 @@ def _check_preconditions():
     os_id = _os_id()
     _log("OS ID:", os_id)
     if os_id != 'Raspbian':
-        raise InstallError("OS must be Raspbian")
+        raise InstallError("OS must be Raspberry Pi OS / Raspbian")
     if not os.path.isdir("/lib/systemd"):
         raise InstallError("systemd not detected")
     if not _has_res(_CONF_RESOURCE):
