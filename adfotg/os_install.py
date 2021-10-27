@@ -52,9 +52,9 @@ def _install():
 def _add_user():
     try:
         pwd.getpwnam(_OS_USER)
+        _log("OS user '{}' already exists; skipping".format(_OS_USER))
         return
     except KeyError:
-        _log("OS user '{}' already exists; skipping".format(_OS_USER))
         pass
     _log("Adding OS user '{}'".format(_OS_USER))
     empty_dir = mkdtemp()
