@@ -3,9 +3,9 @@ import { Component } from 'react';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-import { enumKeys } from './enum';
-import { dispatchRequestError, dispatchError } from './Notifier';
-import style from './style.less';
+import { enumKeys } from '../enum';
+import { dispatchRequestError, dispatchError } from '../component/Notifier';
+import style from '../style.less';
 
 
 enum HealthPoint {

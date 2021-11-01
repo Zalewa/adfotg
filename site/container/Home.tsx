@@ -4,7 +4,6 @@ import { boundMethod } from 'autobind-decorator';
 
 import ImageLibrary from './ImageLibrary';
 import Mount from './Mount';
-import Uploader from './Uploader';
 
 interface HomeProps {
 	search: string

@@ -3,7 +3,7 @@ import { Component } from 'react';
 import { Response, HTTPError } from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-import style from './style.less';
+import style from '../style.less';
 
 export enum NoteType {
 	Error = "error",

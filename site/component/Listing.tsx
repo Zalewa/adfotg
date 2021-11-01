@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import { ActionSet } from './Actions';
-import * as res from './res';
-import style from './style.less';
+import * as res from '../res';
+import style from '../style.less';
 import { Icon } from './ui';
 
 interface ListingProps {

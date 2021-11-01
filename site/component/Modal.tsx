@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Component } from 'react';
 import { boundMethod } from 'autobind-decorator';
 
-import style from './style.less';
+import style from '../style.less';
 
 interface ModalProps {
 	onClose: ()=>void

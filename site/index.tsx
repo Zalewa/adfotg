@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import './reset.css'; // important to import this before App and style
-import App from './App';
+import App from './container/App';
 
 import style from './style.less';
 

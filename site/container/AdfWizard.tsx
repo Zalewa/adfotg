@@ -3,15 +3,14 @@ import { Component } from 'react';
 import { boundMethod } from 'autobind-decorator';
 import * as request from 'superagent';
 
-import { Actions, ActionSet } from './Actions';
-import { FileTableEntry } from './FileTable';
-import Form, { FormItem } from './Form';
-import Listing from './Listing';
-import { Notification, NoteType, errorToString } from './Notifier';
+import { FileTableEntry } from '../component/FileTable';
+import Form, { FormItem } from '../component/Form';
+import Listing from '../component/Listing';
+import { Notification, NoteType, errorToString } from '../component/Notifier';
 import Uploader from './Uploader';
-import { LineInput } from './ui';
-import * as Strings from './strings';
-import style from './style.less';
+import { LineInput } from '../component/ui';
+import * as Strings from '../strings';
+import style from '../style.less';
 
 
 interface AdfWizardState {

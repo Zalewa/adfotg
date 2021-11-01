@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Component } from 'react';
 
-import * as resrc from './res';
-import style from './style.less';
+import * as resrc from '../res';
+import style from '../style.less';
 import { Icon } from './ui';
 
 interface SearchProps {

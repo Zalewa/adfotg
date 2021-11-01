@@ -5,12 +5,12 @@ import { boundMethod } from 'autobind-decorator';
 import * as request from 'superagent';
 
 import { HealthBar } from './Health';
-import { dispatchRequestError } from './Notifier';
-import * as responsive from './responsive';
-import { ADFWIZARD_LINK, HOME_LINK } from './routes';
-import Search from './Search';
-import style from './style.less';
-import { Labelled, formatSize } from './ui';
+import { dispatchRequestError } from '../component/Notifier';
+import * as responsive from '../responsive';
+import { ADFWIZARD_LINK, HOME_LINK } from '../routes';
+import Search from '../component/Search';
+import style from '../style.less';
+import { Labelled, formatSize } from '../component/ui';
 
 interface TitleProps {
 	refresh: boolean

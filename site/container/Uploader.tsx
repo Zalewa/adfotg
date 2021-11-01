@@ -4,15 +4,15 @@ import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-import { Actions, ActionSet } from './Actions';
-import FileTable, { FileTableEntry, Field, Sort, createSort } from './FileTable';
-import Listing from './Listing';
-import { ConfirmModal } from './Modal';
+import { Actions, ActionSet } from '../component/Actions';
+import FileTable, { FileTableEntry, Field, Sort, createSort } from '../component/FileTable';
+import Listing from '../component/Listing';
+import { ConfirmModal } from '../component/Modal';
 import { Notification, Note, NoteType, dispatchApiErrors,
-	dispatchRequestError } from './Notifier';
-import Section from './Section';
-import style from './style.less';
-import { DeleteButton, Loader } from './ui';
+	dispatchRequestError } from '../component/Notifier';
+import Section from '../component/Section';
+import style from '../style.less';
+import { DeleteButton, Loader } from '../component/ui';
 
 
 interface UploaderProps {

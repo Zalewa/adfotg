@@ -5,7 +5,7 @@ import { boundMethod } from 'autobind-decorator';
 import { ActionSet } from './Actions';
 import { CheckBox, LinkText, formatDate, formatSize } from './ui';
 import { Page } from './Pager';
-import style from './style.less';
+import style from '../style.less';
 
 export const enum Field {
 	Name = "name",

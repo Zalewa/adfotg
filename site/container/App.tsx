@@ -6,9 +6,9 @@ import { BrowserRouter as Router, Route, RouteComponentProps, Switch,
 
 import AdfWizard from './AdfWizard';
 import Home from './Home';
-import Notifier from './Notifier';
-import { HOME_LINK, ADFWIZARD_LINK } from './routes';
-import style from './style.less';
+import Notifier from '../component/Notifier';
+import { HOME_LINK, ADFWIZARD_LINK } from '../routes';
+import style from '../style.less';
 import Title from './Title';
 
 export default class App extends Component {

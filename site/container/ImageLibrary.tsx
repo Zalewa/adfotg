@@ -3,19 +3,19 @@ import { Component } from 'react';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-import { Actions, ActionSet } from './Actions';
+import { Actions, ActionSet } from '../component/Actions';
 import FileTable, { FileTableEntry, Field, Sort, createSort,
 	RefreshParams }
-	from './FileTable';
-import Listing from './Listing';
-import Modal, { ConfirmModal } from './Modal';
+	from '../component/FileTable';
+import Listing from '../component/Listing';
+import Modal, { ConfirmModal } from '../component/Modal';
 import { CreateMountImage } from './Mount';
-import { dispatchApiErrors, dispatchRequestError } from './Notifier';
-import Pager, { Page } from './Pager';
-import * as res from './res';
-import Section from './Section';
-import style from './style.less';
-import { DeleteButton, Icon } from './ui';
+import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
+import Pager, { Page } from '../component/Pager';
+import * as res from '../res';
+import Section from '../component/Section';
+import style from '../style.less';
+import { DeleteButton, Icon } from '../component/ui';
 
 interface ImageLibraryProps {
 	onCreatedImage: ()=>void

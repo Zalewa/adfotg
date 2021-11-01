@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import { Notification, Note } from './Notifier';
-import style from './style.less';
+import style from '../style.less';
 
 
 export default class Form extends Component {

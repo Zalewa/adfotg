@@ -3,19 +3,19 @@ import { Component } from 'react';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-import { Actions, ActionSet } from './Actions';
+import { Actions, ActionSet } from '../component/Actions';
 import FileTable, { FileTableEntry, Field, Sort, createSort,
 	RefreshParams}
-	from './FileTable';
-import Listing from './Listing';
-import { ConfirmModal } from './Modal';
-import { dispatchApiErrors, dispatchRequestError } from './Notifier';
-import Pager, { Page } from './Pager';
-import Section from './Section';
-import * as resrc from './res';
-import style from './style.less';
-import { sorted } from './strings';
-import { DeleteButton, ErrorLabel, Icon, Labelled, LineInput } from './ui';
+	from '../component/FileTable';
+import Listing from '../component/Listing';
+import { ConfirmModal } from '../component/Modal';
+import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
+import Pager, { Page } from '../component/Pager';
+import Section from '../component/Section';
+import * as resrc from '../res';
+import style from '../style.less';
+import { sorted } from '../strings';
+import { DeleteButton, ErrorLabel, Icon, Labelled, LineInput } from '../component/ui';
 
 
 const enum MountStatus {

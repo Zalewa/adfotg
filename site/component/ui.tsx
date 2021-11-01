@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { Component } from 'react';
 
 import { errorToString } from './Notifier';
-import * as res from './res';
-import style from './style.less';
+import * as res from '../res';
+import style from '../style.less';
 
 export const CheckBox = (props: {
 	checked?: boolean,
