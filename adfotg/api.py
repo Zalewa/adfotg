@@ -73,21 +73,27 @@ or a web page that matches the requested path. If yes, then this
 static file or web page is served. If there's no such fall-back,
 then 404 is returned.
 '''
-from flask import jsonify
+from flask import jsonify, Blueprint
 
-from . import app, storage, version
+from . import storage, version
 from .config import config
 
 # Import APIs so that they can mount their routes
-from .adf import api as adf_api  # noqa:F401
-from .mountimg import api as mountimg_api  # noqa:F401
-from .mount import api as mount_api  # noqa:F401
-from .quickmount import api as quickmount_api  # noqa:F401
-from .selfcheck import api as selfcheck_api  # noqa:F401
-from .upload import api as upload_api  # noqa:F401
+from .adf.api import api as adf_api
+from .mount.api import api as mount_api
+from .mountimg.api import api as mountimg_api
+from .quickmount.api import api as quickmount_api
+from .selfcheck.api import api as selfcheck_api
+from .upload.api import api as upload_api
 
 
-@app.route("/filesystem", methods=['GET'])
+api = Blueprint("api", __name__, url_prefix="/api")
+for subapi in [adf_api, mount_api, mountimg_api, quickmount_api,
+               selfcheck_api, upload_api]:
+    api.register_blueprint(subapi)
+
+
+@api.route("/filesystem", methods=['GET'])
 def get_free_space():
     '''Details of file-system roots for all file-systems used by the app.
 
@@ -115,7 +121,7 @@ def get_free_space():
     } for fs in fs_stats])
 
 
-@app.route("/version")
+@api.route("/version")
 def get_version():
     '''adfotg version.
 
@@ -133,7 +139,8 @@ def get_version():
     )
 
 
-@app.route("/help")
+@api.route("/")
+@api.route("/help")
 def api_help():
     '''Returns the help in text/plain format.'''
     from .apidoc import spec

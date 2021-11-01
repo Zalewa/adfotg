@@ -6,6 +6,7 @@ from tempfile import NamedTemporaryFile
 from flask import safe_join
 
 from adfotg import storage
+from adfotg.config import config
 from adfotg.error import ActionError, AdfotgError
 
 
@@ -139,6 +140,32 @@ def create_adf(adf_path, label, file_ops):
     finally:
         for file_op in file_ops:
             file_op.close()
+
+
+def list_standard_adfs():
+    '''Returns a list of standard ADFs that may be used in specialized
+    cases. These ADFs have known names and when placed on the USB drive
+    will be used in special ways.
+
+    The ADFs are returned only if they exist in the ADF library.
+
+    Currently, the only recognized standard ADF is "SELECTOR.ADF" for
+    Cortex firmware. Gotek with Cortex will not work without
+    the selector.
+
+    Returns: a list of ADF names with case adjusted to the actual
+    case of the filename. If multiple files have the same but
+    differently cased filename, then a single but undefined name
+    is returned. If there are no matches, the returned list is empty.
+    '''
+    STANDARD_ADFS = ["selector.adf"]
+    matches = []
+    for adf_name in STANDARD_ADFS:
+        found = storage.find(config.adf_dir, adf_name,
+                             case_sensitive=False)
+        if found:
+            matches.append(found[0])
+    return matches
 
 
 def _api_int(i):
