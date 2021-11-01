@@ -55,8 +55,10 @@ class _Route:
         self.url = urllib.parse.unquote(url_for(
             rule.endpoint, **self._format_args(self.args)))
         try:
-            self.api_func = getattr(api, self.endpoint)
-        except AttributeError:
+            self.api_func = app.view_functions[rule.endpoint]
+        except KeyError:
+            self.api_func = None
+        if self.api_func and not self.api_func.__module__.endswith('.api'):
             self.api_func = None
         if self.api_func:
             self.doc = self.api_func.__doc__

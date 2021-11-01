@@ -5,8 +5,8 @@ from tempfile import NamedTemporaryFile
 
 from flask import safe_join
 
-from . import storage
-from .error import ActionError, AdfotgError
+from adfotg import storage
+from adfotg.error import ActionError, AdfotgError
 
 
 ADF_SIZE = 901120

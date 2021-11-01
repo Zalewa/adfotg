@@ -5,7 +5,7 @@ import os
 import subprocess
 import traceback
 
-from .config import config
+from adfotg.config import config
 
 
 def self_check():
