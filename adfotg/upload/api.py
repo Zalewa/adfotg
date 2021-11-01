@@ -1,14 +1,17 @@
 import os
 import shutil
 
-from flask import jsonify, request, safe_join, send_from_directory
+from flask import jsonify, request, safe_join, send_from_directory, Blueprint
 
-from adfotg import adf, app, storage
+from adfotg import adf, storage
 from adfotg.apiutil import Listing, del_files
 from adfotg.config import config
 
 
-@app.route("/upload", methods=['POST'])
+api = Blueprint("upload", __name__, url_prefix="/upload")
+
+
+@api.route("", methods=['POST'])
 def upload():
     '''Upload a file to the upload zone or the ADF library.
 
@@ -30,7 +33,7 @@ def upload():
     return ""
 
 
-@app.route("/upload", methods=['GET'])
+@api.route("", methods=['GET'])
 def list_uploads():
     '''Gets a list of files in the upload zone.
 
@@ -44,7 +47,7 @@ def list_uploads():
     return jsonify(storage.listdir(config.upload_dir, sort=listing.sorting))
 
 
-@app.route("/upload", methods=["DELETE"])
+@api.route("", methods=["DELETE"])
 def del_uploads():
     '''Bulk delete of uploads.
 
@@ -59,7 +62,7 @@ def del_uploads():
     return jsonify(del_files(config.upload_dir, filenames))
 
 
-@app.route("/upload/<name>", methods=["GET"])
+@api.route("/<name>", methods=["GET"])
 def get_upload(name):
     '''Retrieve a file from the upload zone.
 
@@ -71,7 +74,7 @@ def get_upload(name):
     return send_from_directory(config.upload_dir, name)
 
 
-@app.route("/upload/<name>", methods=["DELETE"])
+@api.route("/<name>", methods=["DELETE"])
 def del_upload(name):
     '''Delete a file from the upload zone; returns nothing on success.
 

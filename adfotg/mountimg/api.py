@@ -2,15 +2,19 @@ import os
 import tempfile
 import weakref
 
-from adfotg import app, storage
+from flask import jsonify, request, safe_join, send_file, \
+    send_from_directory, Blueprint
+
+from adfotg import storage
 from adfotg.apiutil import apierr, Listing
 from adfotg.config import config
 from adfotg.mountimg import MountImage
 
-from flask import jsonify, request, safe_join, send_file, send_from_directory
+
+api = Blueprint("mountimg", __name__, url_prefix="/mountimg")
 
 
-@app.route("/mount_image", methods=["GET"])
+@api.route("", methods=["GET"])
 def list_mount_images():
     '''Gets a list of files in the mount images zone.
 
@@ -47,7 +51,7 @@ def list_mount_images():
     )
 
 
-@app.route("/mount_image/<imgname>", methods=["GET"])
+@api.route("/<imgname>", methods=["GET"])
 def get_mount_image(imgname):
     '''Retrieve a mount image from the mount image zone.
 
@@ -62,7 +66,7 @@ def get_mount_image(imgname):
     return send_from_directory(config.mount_images_dir, imgname)
 
 
-@app.route("/mount_image/<imgname>/contents", methods=["GET"])
+@api.route("/<imgname>/contents", methods=["GET"])
 def get_mount_image_contents(imgname):
     '''List contents of this mount image as if it was a directory.
 
@@ -80,7 +84,7 @@ def get_mount_image_contents(imgname):
     return jsonify(img.list())
 
 
-@app.route("/mount_image/<imgname>/contents/<filename>", methods=["GET"])
+@api.route("/<imgname>/contents/<filename>", methods=["GET"])
 def get_file_from_mount_image(imgname, filename):
     '''
     Retrieve a file from inside of the mount image and
@@ -113,7 +117,7 @@ def get_file_from_mount_image(imgname, filename):
     return response
 
 
-@app.route("/mount_image", methods=["DELETE"])
+@api.route("", methods=["DELETE"])
 def del_mount_images():
     '''Bulk delete of mount images.
 
@@ -137,7 +141,7 @@ def del_mount_images():
     return jsonify(deleted)
 
 
-@app.route("/mount_image/<imgname>", methods=["DELETE"])
+@api.route("/<imgname>", methods=["DELETE"])
 def del_mount_image(imgname):
     '''Delete a mount image from the mount image zone.
 
@@ -156,7 +160,7 @@ def del_mount_image(imgname):
     return ""
 
 
-@app.route("/mount_image/<imgname>/pack_adfs", methods=["PUT"])
+@api.route("/<imgname>/pack_adfs", methods=["PUT"])
 def mount_pack_flash_drive_image(imgname):
     '''Creates a new mount image with specified ADFs.
 

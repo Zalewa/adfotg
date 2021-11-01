@@ -55,7 +55,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 				showSize={false} onHeaderClick={this.onHeaderClick}
 				selected={this.state.selection}
 				onSelected={this.onImagesSelected}
-				sort={this.state.sort} fileLinkPrefix="/adf/"
+				sort={this.state.sort} fileLinkPrefix="/api/adf/image"
 				renderFileActions={this.renderFileActions} />
 			<Pager page={this.state.page} total={this.state.listingTotal}
 				onPageChanged={page => this.refresh({page})} />
@@ -114,7 +114,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 
 	@boundMethod
 	private quickMount(file: string): void {
-		request.post('/adf/' + file + '/quickmount').end((err, res) => {
+		request.post("/api/quickmount/adf/" + file).end((err, res) => {
 			dispatchRequestError(err);
 			if (!err && this.props.onMountedImage) {
 				this.props.onMountedImage();
@@ -145,7 +145,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 
 	@boundMethod
 	private deleteSelected() {
-		request.delete("/adf")
+		request.delete("/api/adf/image")
 			.send({names: this.state.selection.map(e => e.name)})
 			.end((err, res) => {
 				dispatchRequestError(err);
@@ -162,7 +162,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 		const page = args.page || this.state.page;
 		const search = (args.search !== undefined && args.search !== null)
 					 ? args.search : this.props.search;
-		request.get("/adf").query({
+		request.get("/api/adf/image").query({
 			filter: search,
 			sort: sort.field,
 			dir: sort.ascending ? 'asc' : 'desc',

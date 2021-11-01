@@ -1,9 +1,12 @@
-from flask import jsonify
+from flask import jsonify, Blueprint
 
-from adfotg import app, selfcheck
+from adfotg import selfcheck
 
 
-@app.route("/check")
+api = Blueprint("selfcheck", __name__, url_prefix="/selfcheck")
+
+
+@api.route("")
 def self_check():
     '''Returns PASS/FAIL status for various features.
 

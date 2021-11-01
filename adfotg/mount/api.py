@@ -1,8 +1,7 @@
 import traceback
 
-from flask import jsonify, safe_join
+from flask import jsonify, safe_join, Blueprint
 
-from adfotg import app
 from adfotg.apiutil import apierr
 from adfotg.config import config
 from adfotg.error import AdfotgError
@@ -10,7 +9,10 @@ from adfotg.mount import Mount, MountStatus
 from adfotg.mountimg import MountImage
 
 
-@app.route("/mount", methods=["GET"])
+api = Blueprint('mount', __name__, url_prefix='/mount')
+
+
+@api.route("", methods=["GET"])
 def get_mounted_flash_drive():
     '''Obtain mount state and info on the currently mounted image if any.
 
@@ -67,7 +69,7 @@ def get_mounted_flash_drive():
                        listing=listing)
 
 
-@app.route("/mount/<imgname>", methods=["POST"])
+@api.route("/<imgname>", methods=["POST"])
 def mount_flash_drive(imgname):
     '''Request to mount a mount image specified by the imgname.
 
@@ -97,7 +99,7 @@ def mount_flash_drive(imgname):
     return ""
 
 
-@app.route("/unmount", methods=["POST"])
+@api.route("", methods=["DELETE"])
 def unmount_flash_drive():
     '''Unmount the currently mounted image.
 

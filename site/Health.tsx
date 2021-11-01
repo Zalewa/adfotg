@@ -68,7 +68,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 	}
 
 	private refresh(): void {
-		request.get("/check").end((err, res) => {
+		request.get("/api/selfcheck").end((err, res) => {
 			dispatchRequestError(err);
 			if (!err) {
 				let { health } = this.state;

@@ -1,15 +1,18 @@
 import os
 
-from flask import safe_join
+from flask import safe_join, Blueprint
 
-from adfotg import app
+from adfotg import adf
 from adfotg.apiutil import apierr
 from adfotg.config import config
 from adfotg.mount import Mount, MountStatus
 from adfotg.mountimg import MountImage
 
 
-@app.route("/adf/<name>/quickmount", methods=["POST"])
+api = Blueprint("quickmount", __name__, url_prefix="/quickmount")
+
+
+@api.route("/adf/<name>", methods=["POST"])
 def quickmount_adf(name):
     '''Just mount a specified, single ADF.
 
@@ -42,7 +45,7 @@ def quickmount_adf(name):
         img.delete()
     os.makedirs(os.path.dirname(img.imagefile), exist_ok=True)
     img.pack(
-        [safe_join(config.adf_dir, n) for n in _list_standard_adfs()]
+        [safe_join(config.adf_dir, n) for n in adf.list_standard_adfs()]
         + [adf_path])
     img_mount = Mount(img.imagefile)
     img_mount.mount()

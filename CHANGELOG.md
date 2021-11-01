@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- Restructure the API URLs. All API URLs are now prefixed with /api.
+  Some URLs have been changed.
+
 ## [0.3.0] - 2021-08-08
 ### Changed
 - Use amitools 0.6.0 which support Python 3. Python 2 no longer necessary.

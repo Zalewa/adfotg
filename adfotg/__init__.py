@@ -6,4 +6,7 @@ import flask
 __version__ = version.VERSION
 app = flask.Flask(__name__)
 
-from . import api, server  # noqa
+from .api import api as _api  # noqa
+from . import server  # noqa
+
+app.register_blueprint(_api)

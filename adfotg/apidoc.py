@@ -1,8 +1,6 @@
+from collections import OrderedDict
+
 from . import app, api, version
-
-from flask import url_for
-
-import urllib
 
 
 class _Spec:
@@ -10,17 +8,23 @@ class _Spec:
         self._routes = self._get_routes()
 
     def to_text(self):
-        lines = []
+        endpoints = OrderedDict()
         for url in self._api_urls:
             for route in self._apis_for_url(url):
-                lines.append("{} -- {}".format(url, ",".join(route.methods)))
-                if route.doc:
-                    lines.append(route.doc)
-            lines.append("")
+                if route.endpoint not in endpoints:
+                    lines = []
+                    lines.append('{} -- {}'.format(url, ','.join(route.methods)))
+                    if route.doc:
+                        lines.append(route.doc.strip())
+                    endpoints[route.endpoint] = lines
+                else:
+                    lines = endpoints[route.endpoint]
+                    lines.append('Alias: {}'.format(url))
         doc = '\n\n'.join([_preamble(), api.__doc__, '== Endpoints =='])
         doc += '\n\n'
-        doc += '\n'.join(lines)
-        return doc
+        for lines in endpoints.values():
+            doc += '\n'.join(lines) + '\n\n'
+        return doc.strip() + '\n'
 
     def _get_routes(self):
         return [_Route(rule) for rule in app.url_map.iter_rules()]
@@ -52,8 +56,7 @@ class _Route:
         self.endpoint = rule.endpoint
         self.methods = [m for m in rule.methods
                         if m not in ['OPTIONS', 'HEAD']]
-        self.url = urllib.parse.unquote(url_for(
-            rule.endpoint, **self._format_args(self.args)))
+        self.url = rule.rule
         try:
             self.api_func = app.view_functions[rule.endpoint]
         except KeyError:

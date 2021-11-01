@@ -1,14 +1,17 @@
 import os
 
-from flask import jsonify, request, safe_join, send_from_directory
+from flask import jsonify, request, safe_join, send_from_directory, Blueprint
 
-from adfotg import adf, app, storage
+from adfotg import adf, storage
 from adfotg.apiutil import Listing, del_files
 from adfotg.config import config
 from adfotg.error import ActionError
 
 
-@app.route("/adf", methods=["GET"])
+api = Blueprint("adf", __name__, url_prefix="/adf")
+
+
+@api.route("/image", methods=["GET"])
 def list_adfs():
     '''Get a list of ADFs.
 
@@ -41,38 +44,15 @@ def list_adfs():
         total=len(full_list))
 
 
-@app.route("/adf_std", methods=["GET"])
+@api.route("/std", methods=["GET"])
 def list_standard_adfs():
-    return jsonify(_list_standard_adfs())
+    return jsonify(adf.list_standard_adfs())
 
 
-def _list_standard_adfs():
-    '''Returns a list of standard ADFs that may be used in specialized
-    cases. These ADFs have known names and when placed on the USB drive
-    will be used in special ways.
-
-    The ADFs are returned only if they exist in the ADF library.
-
-    Currently, the only recognized standard ADF is "SELECTOR.ADF" for
-    Cortex firmware. Gotek with Cortex will not work without
-    the selector.
-
-    Returns: a list of ADF names with case adjusted to the actual
-    case of the filename. If multiple files have the same but
-    differently cased filename, then a single but undefined name
-    is returned. If there are no matches, the returned list is empty.
-    '''
-    STANDARD_ADFS = ["selector.adf"]
-    matches = []
-    for adf_name in STANDARD_ADFS:
-        found = storage.find(config.adf_dir, adf_name,
-                             case_sensitive=False)
-        if found:
-            matches.append(found[0])
-    return matches
+list_standard_adfs.__doc__ = adf.list_standard_adfs.__doc__
 
 
-@app.route("/adf", methods=["DELETE"])
+@api.route("/image", methods=["DELETE"])
 def del_adfs():
     '''Bulk delete of ADFs.
 
@@ -87,7 +67,7 @@ def del_adfs():
     return jsonify(del_files(config.adf_dir, filenames))
 
 
-@app.route("/adf/<name>", methods=["GET"])
+@api.route("/image/<name>", methods=["GET"])
 def get_adf(name):
     '''Retrieve an ADF.
 
@@ -99,7 +79,7 @@ def get_adf(name):
     return send_from_directory(config.adf_dir, name)
 
 
-@app.route("/adf/<name>", methods=["DELETE"])
+@api.route("/image/<name>", methods=["DELETE"])
 def del_adf(name):
     '''Delete an ADF from the ADF library; returns nothing on success.
 
@@ -109,7 +89,7 @@ def del_adf(name):
     os.unlink(safe_join(config.adf_dir, name))
 
 
-@app.route("/adf/<name>", methods=["POST"])
+@api.route("/image/<name>", methods=["POST"])
 def create_adf(name):
     '''Create ADF with contents from the upload zone.
 

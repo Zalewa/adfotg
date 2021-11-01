@@ -46,7 +46,7 @@ export default class Title extends Component<TitleProps, TitleState> {
 					<SpaceInfo refresh={this.props.refresh} />
 					<HealthBar />
 					<div className={style.titleRow}>
-						<a className={style.link} href="/help">API Help</a>
+						<a className={style.link} href="/api/help">API Help</a>
 						<VersionInfo />
 					</div>
 				</div>
@@ -128,7 +128,7 @@ class VersionInfo extends Component<{}, VersionInfoState> {
 	}
 
 	componentDidMount() {
-		request.get("/version").end((err, res) => {
+		request.get("/api/version").end((err, res) => {
 			dispatchRequestError(err);
 			if (!err) {
 				this.setState(res.body);
@@ -192,7 +192,7 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	}
 
 	private refresh(): void {
-		request.get("/filesystem").end((err, res) => {
+		request.get("/api/filesystem").end((err, res) => {
 			dispatchRequestError(err);
 			if (!err) {
 				this.setState({fsStats: res.body});
