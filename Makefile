@@ -12,7 +12,7 @@ server:
 	python3 ./setup.py sdist
 
 clean-server:
-	rm -rf adfotg/__pycache__
+	find adfotg -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 	rm -rf adfotg.egg-info build dist
 
 site:
