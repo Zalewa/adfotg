@@ -78,7 +78,7 @@ export default class Mount extends Component<MountProps, MountState> {
 			<FileTable listing={this.state.imagesListing}
 				onHeaderClick={this.onImagesHeaderClick}
 				sort={this.state.sortImages}
-				fileLinkPrefix="/mount_image/"
+				fileLinkPrefix="/api/mountimg"
 				selected={this.state.imagesSelection}
 				onSelected={this.onImagesSelected}
 				renderFileActions={(name) => this.renderFileActions(name)}
@@ -158,7 +158,7 @@ export default class Mount extends Component<MountProps, MountState> {
 
 	private refresh(args?: RefreshParams): void {
 		this.setState({})
-		request.get("/mount").end((err, res) => {
+		request.get("/api/mount").end((err, res) => {
 			dispatchRequestError(err);
 			let mountStatus: MountStatus = null;
 			if (!err) {
@@ -179,7 +179,7 @@ export default class Mount extends Component<MountProps, MountState> {
 		const page = args.page || this.state.page;
 		const search = (args.search !== undefined && args.search !== null)
 					 ? args.search : this.props.search;
-		request.get("/mount_image").query({
+		request.get("/api/mountimg").query({
 			filter: search,
 			sort: sort.field,
 			dir: sort.ascending ? "asc" : "desc",
@@ -206,7 +206,7 @@ export default class Mount extends Component<MountProps, MountState> {
 
 	@boundMethod
 	private mount(image: string): void {
-		request.post("/mount/" + image).end((err, res) => {
+		request.post("/api/mount/" + image).end((err, res) => {
 			dispatchRequestError(err);
 			this.refresh();
 		});
@@ -214,7 +214,7 @@ export default class Mount extends Component<MountProps, MountState> {
 
 	@boundMethod
 	private unmount(): void {
-		request.post("/unmount").end((err, res) => {
+		request.delete("/api/mount").end((err, res) => {
 			dispatchRequestError(err);
 			this.refresh();
 		});
@@ -242,7 +242,7 @@ export default class Mount extends Component<MountProps, MountState> {
 
 	@boundMethod
 	private deleteSelected() {
-		request.delete("/mount_image")
+		request.delete("/api/mountimg")
 			.send({names: this.state.imagesSelection.map(e => e.name)})
 			.end((err, res) => {
 				dispatchRequestError(err);
@@ -328,7 +328,7 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 	}
 
 	componentDidMount() {
-		request.get("/adf_std").end((err, res) => {
+		request.get("/api/adf/std").end((err, res) => {
 			if (err) {
 				this.setState({error: err})
 			} else {
@@ -346,7 +346,7 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 	private create(): void {
 		if (!this.state.imageName)
 			return;
-		request.put("/mount_image/" + this.state.imageName + "/pack_adfs")
+		request.put("/api/mountimg/" + this.state.imageName + "/pack_adfs")
 			.send({adfs: this.state.sortedAdfs})
 			.end((err, res) => {
 				if (err) {
@@ -475,7 +475,7 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 			{showName &&
 				<Labelled label="Image:" contents={this.props.name} />}
 			<FileTable listing={this.state.listing}
-				fileLinkPrefix={this.contentsApi() + "/"} />
+				fileLinkPrefix={this.contentsApi()} />
 		</div>);
 	}
 
@@ -505,6 +505,6 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 
 	private contentsApi(name?: string): string {
 		name = name || this.props.name;
-		return "/mount_image/" + name + "/contents";
+		return "/api/mountimg/" + name + "/contents";
 	}
 }

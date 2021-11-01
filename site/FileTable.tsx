@@ -72,12 +72,9 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 		let rows: JSX.Element[] = [];
 		if (this.props.listing) {
 			this.props.listing.forEach((e: FileTableEntry) => {
-				const url = this.props.fileLinkPrefix ?
-					this.props.fileLinkPrefix + e.name :
-					null;
 				rows.push(<FileTableRow
 					entry={e} key={e.name} showSize={this.props.showSize}
-					url={url} renderFileActions={this.props.renderFileActions}
+					url={this.entryUrl(e)} renderFileActions={this.props.renderFileActions}
 					selected={this.isSelected(e.name)}
 					onSelected={this.props.onSelected && this.onSelect || null}
 				/>);
@@ -92,6 +89,17 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 				</tbody>
 			</table>
 		);
+	}
+
+	private entryUrl(entry: FileTableEntry) {
+		let url = null;
+		if (this.props.fileLinkPrefix) {
+			url = this.props.fileLinkPrefix;
+			if (!url.endsWith("/"))
+				url += "/";
+			url += entry.name;
+		}
+		return url;
 	}
 
 	private isSelected(name: string): boolean {

@@ -43,7 +43,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 				<UploadZone onUpload={this.onUpload} />
 				{this.renderActions()}
 				<FileTable listing={this.state.listing}
-					fileLinkPrefix="/upload/"
+					fileLinkPrefix="/api/upload"
 					onHeaderClick={this.onHeaderClick}
 					sort={this.state.sort}
 					selected={this.state.selection}
@@ -107,7 +107,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 
 	@boundMethod
 	private deleteSelected() {
-		request.delete("/upload")
+		request.delete("/api/upload")
 			.send({names: this.state.selection.map(e => e.name)})
 			.end((err, res) => {
 				dispatchRequestError(err);
@@ -119,7 +119,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 	}
 
 	private refreshUploads(sort: Sort) {
-		request.get('/upload').query({
+		request.get("/api/upload").query({
 			sort: sort.field,
 			dir: sort.ascending ? "asc" : "desc"
 		}).end((err, res) => {
@@ -194,7 +194,7 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 	@boundMethod
 	onDrop(accepted: File[]): void {
 		this.setState({uploading: true, uploadSuccess: null});
-		const req = request.post('/upload');
+		const req = request.post("/api/upload");
 		accepted.forEach(file => {
 			req.attach(file.name, file);
 		});

@@ -139,7 +139,7 @@ export default class AdfWizard extends Component {
 	private async submitAsync(): Promise<void> {
 		const disks = this.disks.slice();
 		let requests = disks.map(disk => {
-			return request.post("/adf/" + disk.name + ".adf")
+			return request.post("/api/adf/image/" + disk.name + ".adf")
 				.send({label: disk.label, contents: disk.contents});
 		});
 		for (let i = 0; i < requests.length; ++i) {
@@ -293,7 +293,7 @@ class DiskForm extends Component<DiskFormProps, DiskFormState> {
 	}
 
 	private validateDiskName(name: string): void {
-		request.head("/adf/" + name + ".adf").end((err, res) => {
+		request.head("/api/adf/image/" + name + ".adf").end((err, res) => {
 			if (res.status == 404) {
 				// This is good! Stop processing.
 				this.setState({nameError: ""});
