@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import style from '../style.less';
+import style from './Actions.less';
 
 interface ActionsProps {
 	fullrow?: boolean

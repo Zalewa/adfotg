@@ -10,6 +10,8 @@ import { Notification, NoteType, errorToString } from '../component/Notifier';
 import Uploader from './Uploader';
 import { LineInput } from '../component/ui';
 import * as Strings from '../strings';
+
+import actionsStyle from "../component/Actions.less";
 import style from '../style.less';
 
 
@@ -49,7 +51,7 @@ export default class AdfWizard extends Component {
 				disabled={this.state.selection.length == 0 || this.state.submitting}
 				onClick={this.distributeDisks}>Distribute ADFs</button>,
 			<label key="basenamelabel"
-				className={style.actionsElementCenter}>Base name:</label>,
+				className={actionsStyle.actionsElementCenter}>Base name:</label>,
 			<LineInput key="basenamevalue" value={this.state.basename}
 				type="text"
 				onChange={e => this.setState({basename: e.target.value})} />

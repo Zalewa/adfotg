@@ -14,8 +14,10 @@ import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
 import Pager, { Page } from '../component/Pager';
 import * as res from '../res';
 import Section from '../component/Section';
-import style from '../style.less';
 import { DeleteButton, Icon } from '../component/ui';
+
+import uiStyle from '../style.less';
+import style from './ImageLibrary.less';
 
 interface ImageLibraryProps {
 	onCreatedImage: ()=>void
@@ -75,7 +77,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	private renderActions(): JSX.Element {
 		return (<Actions>
 			<ActionSet>
-				<button onClick={this.showCreateImage} className={style.button}
+				<button onClick={this.showCreateImage} className={uiStyle.button}
 					disabled={this.state.selection.length == 0}>Create Mount Image</button>
 			</ActionSet>
 			<ActionSet right={true}>
@@ -97,7 +99,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 					onAccept={this.deleteSelected}
 					onCancel={() => this.setState({deleteSelected: false})}
 					acceptText="Delete"
-					acceptClass={style.buttonDelete}>
+					acceptClass={uiStyle.buttonDelete}>
 				<Listing listing={this.state.selection.map(e => e.name)} />
 			</ConfirmModal>)
 		}
@@ -106,7 +108,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 
 	@boundMethod
 	private renderFileActions(file: FileTableEntry): JSX.Element {
-		return (<button className={`${style.button} ${style.buttonTable} ${style.buttonIconTable}`}
+		return (<button className={`${uiStyle.button} ${uiStyle.buttonTable} ${uiStyle.buttonIconTable}`}
 					onClick={() => this.quickMount(file.name)}>
 			<Icon table button title="Quick Mount" src={res.usb_icon_horz} />
 		</button>);

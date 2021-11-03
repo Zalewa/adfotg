@@ -1,0 +1,33 @@
+.actions {
+	display: flex;
+	align-items: baseline;
+
+	&__set {
+		display: flex;
+		align-items: stretch;
+
+		&--baseline {
+			align-items: baseline;
+		}
+
+		&--even {
+			justify-content: space-between;
+		}
+
+		&--right {
+			margin-left: auto;
+		}
+	}
+
+	&__element--center {
+		align-self: center;
+	}
+
+	&--fullrow {
+		align-items: stretch;
+	}
+
+	&--submit {
+		margin-top: 1em;
+	}
+}

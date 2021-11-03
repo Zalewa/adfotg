@@ -2,8 +2,9 @@ import * as React from 'react';
 import { Component } from 'react';
 import { boundMethod } from 'autobind-decorator';
 
-import style from '../style.less';
 import { LinkText } from './ui';
+
+import style from './Pager.less';
 
 export class Page {
 	public readonly start: number = 0
