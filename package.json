@@ -5,6 +5,7 @@
   "main": "site/index.tsx",
   "dependencies": {
     "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.3.0",
     "@types/react": "^17.0.15",
     "@types/react-dom": "^17.0.9",
     "@types/superagent": "^4.1.12",

@@ -1,9 +1,9 @@
-import * as React from 'react';
 import { Component } from 'react';
+import { css } from '@emotion/react';
+import styled from '@emotion/styled';
 import { boundMethod } from 'autobind-decorator';
 
-import style from '../style.less';
-import { LinkText } from './ui';
+import { LinkText, LinkTextProps } from './ui';
 
 export class Page {
 	public readonly start: number = 0
@@ -23,11 +23,45 @@ interface PagerProps {
 	onPageChanged: (page: Page)=>void
 }
 
+const PagerLeft = styled.div({
+	minWidth: "64px",
+});
+
+const PagerRight = styled.div({
+	minWidth: "64px",
+	textAlign: "right"
+});
+
+interface PagerPageLinkProps extends LinkTextProps {
+	selected: boolean;
+};
+
+const PageLink = (props: PagerPageLinkProps) => (
+	<LinkText css={[
+		{
+			margin: "0 0.125em",
+			fontSize: "1.5em"
+		},
+		props.selected ? {
+			fontWeight: "bold",
+			textDecoration: "underline"
+		} : {}
+	]}
+	{...props}
+	/>
+);
+
+PageLink.defaultProps = {selected: false};
+
 export default class Pager extends Component<PagerProps> {
 	render() {
 		if (!this.hasPages())
 			return null;
-		return (<div className={style.pager}>
+		return (<div css={css({
+			display: "flex",
+			flexWrap: "wrap",
+			justifyContent: "space-evenly",
+		})}>
 			{this.renderLeft()}
 			{this.renderNumbers()}
 			{this.renderRight()}
@@ -36,36 +70,34 @@ export default class Pager extends Component<PagerProps> {
 
 	private renderLeft(): JSX.Element {
 		if (this.hasLeft()) {
-			return (<div className={style.pagerLeft}>
-				<LinkText className={style.pagerPage} onClick={() => this.change(0)}>&lt;&lt;</LinkText>
-				<LinkText className={style.pagerPage} onClick={() => this.change(this.page() - 1)}>&lt;</LinkText>
-			</div>);
+			return (<PagerLeft>
+				<PageLink onClick={() => this.change(0)}>&lt;&lt;</PageLink>
+				<PageLink onClick={() => this.change(this.page() - 1)}>&lt;</PageLink>
+			</PagerLeft>);
 		} else {
-			return <div className={style.pagerLeft} />
+			return <PagerLeft />
 		}
 	}
 
 	private renderRight(): JSX.Element {
 		if (this.hasRight()) {
-			return (<div className={style.pagerRight}>
-				<LinkText className={style.pagerPage} onClick={() => this.change(this.page() + 1)}>&gt;</LinkText>
-				<LinkText className={style.pagerPage} onClick={() => this.change(this.lastPage())}>&gt;&gt;</LinkText>
-			</div>);
+			return (<PagerRight>
+				<PageLink onClick={() => this.change(this.page() + 1)}>&gt;</PageLink>
+				<PageLink onClick={() => this.change(this.lastPage())}>&gt;&gt;</PageLink>
+			</PagerRight>);
 		} else {
-			return <div className={style.pagerRight} />
+			return <PagerRight />
 		}
 	}
 
 	private renderNumbers(): JSX.Element[] {
 		let links: JSX.Element[] = [];
 		for (let page = 0; page < this.numPages(); ++page) {
-			let klass = style.pagerPage;
-			if (page == this.page())
-				klass += ` ${style.pagerPageSelected}`;
-			links.push(<LinkText key={page} className={klass}
+			links.push(<PageLink key={page}
+					selected={page == this.page()}
 					onClick={() => this.change(page)}>
 				{page + 1}
-			</LinkText>);
+			</PageLink>);
 		}
 		return links;
 	}

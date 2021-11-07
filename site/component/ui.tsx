@@ -78,9 +78,16 @@ export const LineInput = (props: LineInputProps) => {
 	</div>);
 }
 
-export const LinkText = (props: any) => {
+export interface LinkTextProps {
+	className?: string,
+	onClick?: React.MouseEventHandler,
+	children?: React.ReactNode,
+	key?: any
+};
+
+export const LinkText = (props: LinkTextProps) => {
 	return (<span className={style.link + " " + (props.className ? props.className : "")}
-		onClick={() => {props.onClick(); return false;}}>{props.children}</span>)
+		onClick={(e) => {props.onClick(e); return false;}}>{props.children}</span>)
 }
 
 export const Loader = (props: {classMod?: string}) => {

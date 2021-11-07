@@ -108,11 +108,6 @@ interface CssExports {
   'notifier': string;
   'page': string;
   'pageMain': string;
-  'pager': string;
-  'pagerLeft': string;
-  'pagerPage': string;
-  'pagerPageSelected': string;
-  'pagerRight': string;
   'paneMixin': string;
   'searchBar': string;
   'searchBarInput': string;
