@@ -12,7 +12,6 @@ interface CssExports {
   'appLink': string;
   'appLinkSelected': string;
   'appLinkTable': string;
-  'blink': string;
   'button': string;
   'buttonBig': string;
   'buttonCheckbox': string;
@@ -47,11 +46,6 @@ interface CssExports {
   'formWidget': string;
   'formWidgetFull': string;
   'fullpageMixin': string;
-  'guruMeditation': string;
-  'guruMeditationFrame': string;
-  'guruMeditationInnerFrame': string;
-  'guruMeditationSection': string;
-  'guruMeditationSectionError': string;
   'icon': string;
   'iconButton': string;
   'iconTableButton': string;

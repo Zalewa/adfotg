@@ -308,46 +308,6 @@
 	}
 }
 
-@keyframes blink {
-	50% { border-color: @guruMeditationColor; }
-}
-
-
-
-.guru-meditation {
-	.fullpage--mixin();
-	background-color: @guruMeditationBackground;
-	color: @guruMeditationColor;
-	overflow: auto;
-
-	&__frame {
-		max-width: 800px;
-		margin: 0 auto;
-	}
-
-	&__inner-frame {
-		border: 8px solid transparent;
-		padding: 16px 50px;
-		margin: 30px;
-		animation-name: blink;
-		animation-duration: 1.0s;
-		animation-timing-function: step-end;
-		animation-iteration-count: infinite;
-		animation-direction: alternate;
-	}
-
-	&__section {
-		/**/
-		&--error {
-			margin-left: 32px;
-		}
-	}
-
-	&__section:not(:last-child) {
-		margin-bottom: 16px;
-	}
-}
-
 
 .icon {
 	/**/

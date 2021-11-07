@@ -39,6 +39,16 @@ export const Pane = css({
 	position: "relative",
 });
 
+export const fullpage = css({
+	position: "fixed", /* Sit on top of the page content */
+	width: "100%", /* Full width (cover the whole page) */
+	height: "100%", /* Full height (cover the whole page) */
+	top: 0,
+	left: 0,
+	right: 0,
+	bottom: 0,
+});
+
 export const workbenchBorderLightDark = css({
 	borderLeft: workbench.borderLight,
 	borderTop: workbench.borderLight,
