@@ -13,7 +13,7 @@ import { CreateMountImage } from './Mount';
 import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
 import Pager, { Page } from '../component/Pager';
 import * as res from '../res';
-import Section from '../component/Section';
+import { Section } from '../component/Section';
 import style from '../style.less';
 import { DeleteButton, Icon } from '../component/ui';
 
@@ -48,7 +48,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	}
 
 	render() {
-		return (<Section title="ADFs" className={style.imageLibrary}>
+		return (<Section title="ADFs">
 			{this.renderModal()}
 			{this.renderActions()}
 			<FileTable listing={this.state.listing}

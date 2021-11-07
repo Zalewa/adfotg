@@ -11,7 +11,7 @@ import Listing from '../component/Listing';
 import { ConfirmModal } from '../component/Modal';
 import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
 import Pager, { Page } from '../component/Pager';
-import Section from '../component/Section';
+import { Section, Subsection } from '../component/Section';
 import * as resrc from '../res';
 import style from '../style.less';
 import { sorted } from '../strings';
@@ -63,7 +63,7 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	render() {
-		return (<Section title="Mounting" className={style.mount}>
+		return (<Section title="Mounting">
 			{this.state.deleteSelected && this.renderDeleteSelected()}
 			{this.renderMountStatus()}
 			{this.renderImageInspection()}
@@ -129,7 +129,7 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	private renderMountStatus(): JSX.Element {
-		return (<Section subsection title="Mounted Image" className={style.mountedImage}>
+		return (<Subsection title="Mounted Image">
 			<MountStatusDisplay {...this.state} />
 			{this.state.mountedImageName && (
 				<MountImageDetails showName={false} name={this.state.mountedImageName}
@@ -140,17 +140,17 @@ export default class Mount extends Component<MountProps, MountState> {
 				onMount={this.mount}
 				onUnmount={this.unmount}
 				/>
-		</Section>);
+		</Subsection>);
 	}
 
 	private renderImageInspection(): JSX.Element {
 		if (this.state.inspectedImage) {
-			return (<Section subsection title="Inspect Image" className={style.inspectedImage}>
+			return (<Subsection title="Inspect Image">
 				<button className={`${style.button} ${style.buttonSectionClose}`}
 					onClick={() => this.setState({inspectedImage: null})}>Close</button>
 				<MountImageDetails name={this.state.inspectedImage}
 					refreshCounter={this.state.refreshCounter} />
-			</Section>);
+			</Subsection>);
 		} else {
 			return null;
 		}

@@ -64,8 +64,6 @@ interface CssExports {
   'iconTableButton': string;
   'imageDetails': string;
   'imageDetailsName': string;
-  'imageLibrary': string;
-  'inspectedImage': string;
   'labelMixin': string;
   'labelled': string;
   'labelledContent': string;
@@ -100,7 +98,6 @@ interface CssExports {
   'mountStatusLabelNoimage': string;
   'mountStatusLabelUnknown': string;
   'mountStatusLabelUnmounted': string;
-  'mountedImage': string;
   'notification': string;
   'notificationError': string;
   'notificationSuccess': string;
@@ -109,11 +106,7 @@ interface CssExports {
   'page': string;
   'pageMain': string;
   'paneMixin': string;
-  'section': string;
-  'sectionTitle': string;
   'spaceInfo': string;
-  'subsection': string;
-  'subsectionTitle': string;
   'table': string;
   'tableCellContents': string;
   'tableDataCell': string;

@@ -10,7 +10,7 @@ import Listing from '../component/Listing';
 import { ConfirmModal } from '../component/Modal';
 import { Notification, Note, NoteType, dispatchApiErrors,
 	dispatchRequestError } from '../component/Notifier';
-import Section from '../component/Section';
+import { Section } from '../component/Section';
 import style from '../style.less';
 import { DeleteButton, Loader } from '../component/ui';
 
@@ -38,7 +38,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 
 	render() {
 		return (
-			<Section title="Upload Zone" className={style.uploadzone}>
+			<Section title="Upload Zone" css={{padding: "0 2em 1em 2em"}}>
 				{this.state.deleteSelected && this.renderDeleteSelected()}
 				<UploadZone onUpload={this.onUpload} />
 				{this.renderActions()}

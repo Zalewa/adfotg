@@ -9,6 +9,8 @@ export const pane = {
 };
 export const fontFamily = "Amiga Topaz"
 
+export const titleShadow = "2px 2px rgba(0, 0, 0, 64)";
+
 export const guruMeditation = {
 	background: "#000",
 	color: "#f20",
@@ -26,6 +28,14 @@ export const workbench = {
 	borderLight: "2px solid #fff",
 	borderDark: "2px solid #000",
 }
+
+export const Pane = css({
+	backgroundColor: pane.background,
+	border: pane.border,
+	margin: "1em",
+	padding: "4px",
+	position: "relative",
+});
 
 export const workbenchBorderLightDark = css({
 	borderLeft: workbench.borderLight,

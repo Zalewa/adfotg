@@ -1,20 +1,34 @@
-import * as React from 'react';
-import { Component } from 'react';
-
-import style from '../style.less';
+import { ReactNode } from 'react';
+import * as skin from '../skin';
 
 interface SectionProps {
 	title: string,
-	className: string
-	subsection?: boolean
+	children: ReactNode,
+	className?: string,
 }
 
-export default class Section extends Component<SectionProps> {
-	render() {
-		const className = !this.props.subsection ? style.section : style.subsection;
-		return (<div className={className + " " + this.props.className}>
-			<h1 className={!this.props.subsection ? style.sectionTitle : style.subsectionTitle}>{this.props.title}</h1>
-			{this.props.children}
-		</div>);
-	}
-}
+export const Section = (props: SectionProps) => (
+	<div css={{
+		marginTop: "2px",
+		marginBottom: "16px",
+		position: "relative",
+	}}>
+		<h1 css={{
+			fontSize: "2em",
+			margin: "0",
+			marginBottom: "0.25em",
+			textShadow: skin.titleShadow,
+		}}>{props.title}</h1>
+		{props.children}
+	</div>
+);
+
+export const Subsection = (props: SectionProps) => (
+	<div css={skin.Pane}>
+		<h1 css={{
+			textShadow: skin.titleShadow,
+			fontSize: "1.5em",
+		}}>{props.title}</h1>
+		{props.children}
+	</div>
+);
