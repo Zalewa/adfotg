@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
@@ -12,7 +11,8 @@ import { Notification, Note, NoteType, dispatchApiErrors,
 	dispatchRequestError } from '../component/Notifier';
 import { Section } from '../component/Section';
 import style from '../style.less';
-import { DeleteButton, Loader } from '../component/ui';
+import { Button, Loader } from '../component/ui';
+import * as skin from '../skin';
 
 
 interface UploaderProps {
@@ -56,7 +56,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 		return (<Actions>
 			{this.renderLeftActions()}
 			<ActionSet right={true}>
-				<DeleteButton
+				<Button purpose="delete"
 					disabled={this.state.selection.length == 0}
 					onClick={() => this.setState({deleteSelected: true})} />
 			</ActionSet>
@@ -155,8 +155,8 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 
 	render() {
 		return (
-			<div className={style.uploadzone}>
-				<div className={style.uploadzonePane}>
+			<div css={{padding: "0 2em 1em 2em"}}>
+				<div css={{width: "100%"}}>
 					{!this.state.uploading && this.state.uploadSuccess === null && this.renderDropZone()}
 					{this.state.uploading && <Loader classMod={style.loaderUpload} />}
 					{this.state.uploadSuccess !== null && this.renderUploadDoneNotifier()}
@@ -168,15 +168,24 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 	private renderDropZone(): JSX.Element {
 		return (<Dropzone onDropAccepted={this.onDrop}>
 			{({getRootProps, getInputProps, isDragAccept, isDragReject}) => {
-				const css = (
-					style.uploadzoneUploadarea
-					+ (isDragAccept ? ` ${style.uploadzoneUploadareaAccept}` : "")
-					+ (isDragReject ? ` ${style.uploadzoneUploadareaReject}` : "")
-				);
-
 				return (<div {...getRootProps()}>
 					<input {...getInputProps()} />
-					<p className={css}>
+					<p css={[
+						{
+							cursor: "pointer",
+							padding: "1em 4em",
+							border: `0.25em dashed ${skin.page.color}`,
+							borderRadius: "0.5em",
+							margin: "auto",
+							textAlign: "center",
+							verticalAlign: "middle",
+							"&:hover": {
+								backgroundColor: skin.workbench.titleColor,
+							}
+						},
+						isDragAccept && {backgroundColor: skin.workbench.titleColor},
+						isDragReject && {backgroundColor: skin.dangerColor},
+					]}>
 						Drag & drop or click to select files to upload.
 					</p>
 				</div>);

@@ -133,11 +133,6 @@ interface CssExports {
   'titleSection': string;
   'titleSectionFill': string;
   'titleShadowMixin': string;
-  'uploadzone': string;
-  'uploadzonePane': string;
-  'uploadzoneUploadarea': string;
-  'uploadzoneUploadareaAccept': string;
-  'uploadzoneUploadareaReject': string;
   'versionInfo': string;
   'verticalMixin': string;
   'workbenchBorderDarkLightMixin': string;

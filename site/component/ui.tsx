@@ -8,12 +8,18 @@ import style from '../style.less';
 import * as skin from '../skin';
 
 export const Button = (props: {
+	disabled?: boolean,
 	icon?: string,
 	title?: string,
 	purpose?: "submit" | "delete",
 	onClick?: React.MouseEventHandler,
-}) => (
-	<button
+}) => {
+	let title = props.title;
+	if (title === undefined && props.purpose) {
+		const p = props.purpose;
+		title = p[0].toUpperCase() + p.slice(1);
+	}
+	return <button
 		css={[
 			skin.workbenchBorderLightDark,
 			{
@@ -46,9 +52,9 @@ export const Button = (props: {
 		]}
 		{...props}
 	>
-		{props.icon ? <Icon button title={props.title} src={props.icon} /> : props.title }
+		{props.icon ? <Icon button title={title} src={props.icon} /> : title }
 	</button>
-);
+};
 
 export const CheckBox = (props: {
 	checked?: boolean,

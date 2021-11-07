@@ -29,6 +29,8 @@ export const workbench = {
 	borderDark: "2px solid #000",
 }
 
+export const page = kickstart;
+
 export const Pane = css({
 	backgroundColor: pane.background,
 	border: pane.border,
