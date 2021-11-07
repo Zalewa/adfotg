@@ -40,7 +40,7 @@ module.exports = {
 			},
 			{
 				test: /\.tsx?$/,
-				loader: "ts-loader"
+				use: ["babel-loader", "ts-loader"]
 			},
 			{
 				enforce: "pre",

@@ -16,8 +16,17 @@
     "superagent": "^6.1.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/plugin-proposal-class-properties": "^7.16.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/preset-react": "^7.16.0",
+    "@babel/preset-typescript": "^7.16.0",
+    "@emotion/babel-plugin": "^11.3.0",
+    "@emotion/babel-preset-css-prop": "^11.2.0",
     "@types/react-router-dom": "^5.1.8",
     "autobind-decorator": "^2.4.0",
+    "babel-loader": "^8.2.3",
     "css-loader": "^6.2.0",
     "css-modules-typescript-loader": "^4.0.1",
     "file-loader": "^6.2.0",
