@@ -109,8 +109,6 @@ interface CssExports {
   'page': string;
   'pageMain': string;
   'paneMixin': string;
-  'searchBar': string;
-  'searchBarInput': string;
   'section': string;
   'sectionTitle': string;
   'spaceInfo': string;

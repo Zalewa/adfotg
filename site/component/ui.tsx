@@ -1,8 +1,54 @@
 import * as React from 'react';
+import styled from '@emotion/styled';
+import { lighten } from 'polished';
 
 import { errorToString } from './Notifier';
 import * as res from '../res';
 import style from '../style.less';
+import * as skin from '../skin';
+
+export const Button = (props: {
+	icon?: string,
+	title?: string,
+	purpose?: "submit" | "delete",
+	onClick?: React.MouseEventHandler,
+}) => (
+	<button
+		css={[
+			skin.workbenchBorderLightDark,
+			{
+				backgroundColor: skin.workbench.background,
+				color: skin.workbench.color,
+				height: "28px",
+				padding: "4px 4px",
+				textAlign: "center",
+				textDecoration: "none",
+				display: "inline-block",
+				fontSize: "1em",
+				fontFamily: skin.fontFamily,
+				position: "relative",
+				'&:active': [
+					{
+						backgroundColor: skin.workbench.titleColor,
+					},
+					skin.workbenchBorderDarkLight,
+				],
+				'&:disabled': {
+					backgroundColor: lighten(0.2, skin.workbench.background),
+					color: lighten(0.5, skin.workbench.color),
+				},
+			},
+			(props.purpose == "delete" ? { backgroundColor: skin.dangerColor } : {}),
+			props.icon ? {
+				padding: "0px 8px",
+				width: "52px",
+			} : {},
+		]}
+		{...props}
+	>
+		{props.icon ? <Icon button title={props.title} src={props.icon} /> : props.title }
+	</button>
+);
 
 export const CheckBox = (props: {
 	checked?: boolean,
@@ -94,6 +140,8 @@ export const Loader = (props: {classMod?: string}) => {
 	return (<img src={res.loader}
 		className={style.loader + " " + (props.classMod || "")} />);
 }
+
+export const TextInput = styled.input({borderRadius: 0});
 
 
 /**
