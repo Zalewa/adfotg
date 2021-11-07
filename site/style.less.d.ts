@@ -52,13 +52,6 @@ interface CssExports {
   'guruMeditationInnerFrame': string;
   'guruMeditationSection': string;
   'guruMeditationSectionError': string;
-  'healthbar': string;
-  'healthbarHasErrors': string;
-  'healthbarPoint': string;
-  'healthbarPointBad': string;
-  'healthbarPointGood': string;
-  'healthbarPointUnknown': string;
-  'healthbarRow': string;
   'icon': string;
   'iconButton': string;
   'iconTableButton': string;
