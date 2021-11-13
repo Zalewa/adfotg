@@ -235,7 +235,7 @@ export default class Mount extends Component<MountProps, MountState> {
 				onAccept={this.deleteSelected}
 				onCancel={() => this.setState({deleteSelected: false})}
 				acceptText="Delete"
-				acceptClass={style.buttonDelete}>
+				acceptPurpose="delete">
 			<Listing listing={this.state.imagesSelection.map(e => e.name)} />
 		</ConfirmModal>)
 	}

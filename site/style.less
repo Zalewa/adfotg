@@ -203,10 +203,6 @@
 		padding: 0 0.75em;
 	}
 
-	&--modal-close {
-		/**/
-	}
-
 	&--notification-close {
 		margin-right: 5px;
 	}
@@ -410,73 +406,6 @@
 	/**/
 	&--upload {
 		width: 100%;
-	}
-}
-
-
-.modal {
-	.fullpage--mixin();
-	background-color: rgba(0,0,0,0.5); /* Black background with opacity */
-	z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
-
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
-	&__buttons {
-		display: flex;
-		align-items: center;
-		justify-content: space-evenly;
-		margin-top: 5px;
-	}
-
-	&__contents {
-		display: table-cell;
-		padding: 5px;
-		.workbench-border-dark-light--mixin();
-	}
-
-	&__display {
-		color: @workbenchTextColor;
-		background-color: @workbenchBackground;
-		min-width: 300px;
-		.workbench-border-light-dark--mixin();
-	}
-
-	&__frame {
-		@breadth: 2px;
-		background-color: @workbenchTitleColor;
-
-		.vertical--mixin {
-			width: @breadth;
-			height: 100%;
-			display: table-cell;
-		}
-
-		&--left {
-			.vertical--mixin();
-		}
-		&--right {
-			.vertical--mixin();
-		}
-		&--bottom {
-			width: 100%;
-			height: @breadth;
-		}
-	}
-
-	&__middle {
-		display: table;
-		width: 100%;
-	}
-
-	&__text {
-		margin-bottom: 16px;
-	}
-
-	&__titlebar {
-		background-color: @workbenchTitleColor;
-		min-height: 28px;
 	}
 }
 

@@ -7,11 +7,13 @@ import * as res from '../res';
 import style from '../style.less';
 import * as skin from '../skin';
 
+export type ButtonPurpose = "submit" | "delete";
+
 export const Button = (props: {
 	disabled?: boolean,
 	icon?: string,
 	title?: string,
-	purpose?: "submit" | "delete",
+	purpose?: ButtonPurpose,
 	onClick?: React.MouseEventHandler,
 }) => {
 	let title = props.title;
@@ -26,7 +28,7 @@ export const Button = (props: {
 				backgroundColor: skin.workbench.background,
 				color: skin.workbench.color,
 				height: "28px",
-				padding: "4px 4px",
+				padding: "4px 8px",
 				textAlign: "center",
 				textDecoration: "none",
 				display: "inline-block",

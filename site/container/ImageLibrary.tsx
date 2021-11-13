@@ -97,7 +97,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 					onAccept={this.deleteSelected}
 					onCancel={() => this.setState({deleteSelected: false})}
 					acceptText="Delete"
-					acceptClass={style.buttonDelete}>
+					acceptPurpose="delete">
 				<Listing listing={this.state.selection.map(e => e.name)} />
 			</ConfirmModal>)
 		}

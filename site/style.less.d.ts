@@ -22,7 +22,6 @@ interface CssExports {
   'buttonIcon': string;
   'buttonIconTable': string;
   'buttonListing': string;
-  'buttonModalClose': string;
   'buttonNotificationClose': string;
   'buttonSectionClose': string;
   'buttonSubmit': string;
@@ -63,17 +62,6 @@ interface CssExports {
   'listingEntry': string;
   'loader': string;
   'loaderUpload': string;
-  'modal': string;
-  'modalButtons': string;
-  'modalContents': string;
-  'modalDisplay': string;
-  'modalFrame': string;
-  'modalFrameBottom': string;
-  'modalFrameLeft': string;
-  'modalFrameRight': string;
-  'modalMiddle': string;
-  'modalText': string;
-  'modalTitlebar': string;
   'mount': string;
   'mountActions': string;
   'mountActionsEmpty': string;
@@ -121,7 +109,6 @@ interface CssExports {
   'titleSectionFill': string;
   'titleShadowMixin': string;
   'versionInfo': string;
-  'verticalMixin': string;
   'workbenchBorderDarkLightMixin': string;
   'workbenchBorderLightDarkMixin': string;
 }
