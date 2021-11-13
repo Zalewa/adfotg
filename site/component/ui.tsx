@@ -13,6 +13,7 @@ export const Button = (props: {
 	disabled?: boolean,
 	icon?: string,
 	title?: string,
+	table?: boolean,
 	purpose?: ButtonPurpose,
 	onClick?: React.MouseEventHandler,
 }) => {
@@ -32,7 +33,7 @@ export const Button = (props: {
 				textAlign: "center",
 				textDecoration: "none",
 				display: "inline-block",
-				fontSize: "1em",
+				fontSize: (props.icon || !props.table) ? "1em" : "0.75em",
 				fontFamily: skin.fontFamily,
 				position: "relative",
 				'&:active': [
@@ -51,10 +52,17 @@ export const Button = (props: {
 				padding: "0px 8px",
 				width: "52px",
 			} : {},
+			(props.icon && props.table) ? {
+				boxSizing: "content-box",
+				padding: "2px",
+				width: "28px",
+				height: "14px",
+				lineHeight: "14px",
+			} : {},
 		]}
 		{...props}
 	>
-		{props.icon ? <Icon button title={title} src={props.icon} /> : title }
+		{props.icon ? <Icon button table={props.table} title={title} src={props.icon} /> : title }
 	</button>
 };
 

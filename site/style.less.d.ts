@@ -58,8 +58,6 @@ interface CssExports {
   'lineInputInput': string;
   'link': string;
   'linkTable': string;
-  'listing': string;
-  'listingEntry': string;
   'loader': string;
   'loaderUpload': string;
   'mount': string;
