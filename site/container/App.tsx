@@ -9,8 +9,8 @@ import styled from '@emotion/styled';
 import AdfWizard from './AdfWizard';
 import Home from './Home';
 import Notifier from '../component/Notifier';
+import { Link } from '../component/ui';
 import { HOME_LINK, ADFWIZARD_LINK } from '../routes';
-import style from '../style.less';
 import Title from './Title';
 import * as skin from '../skin';
 
@@ -133,7 +133,7 @@ class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
 					<GuruSection>
 						If you think this was caused by a bug, please
 						write down steps to reproduce it and report it
-						at<br/><a className={style.link} href="https://github.com/Zalewa/adfotg">https://github.com/Zalewa/adfotg</a>
+						at<br/><Link href="https://github.com/Zalewa/adfotg">https://github.com/Zalewa/adfotg</Link>
 					</GuruSection>
 					<GuruSection>Browser's console may contain more detailed information.</GuruSection>
 				</InnerFrame></OuterFrame>

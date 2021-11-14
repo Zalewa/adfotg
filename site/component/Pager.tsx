@@ -42,10 +42,10 @@ const PageLink = (props: PagerPageLinkProps) => (
 			margin: "0 0.125em",
 			fontSize: "1.5em"
 		},
-		props.selected ? {
+		props.selected && {
 			fontWeight: "bold",
 			textDecoration: "underline"
-		} : {}
+		}
 	]}
 	{...props}
 	/>

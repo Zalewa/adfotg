@@ -10,7 +10,6 @@ import { ConfirmModal } from '../component/Modal';
 import { Notification, Note, NoteType, dispatchApiErrors,
 	dispatchRequestError } from '../component/Notifier';
 import { Section } from '../component/Section';
-import style from '../style.less';
 import { Button, Loader } from '../component/ui';
 import * as skin from '../skin';
 
@@ -158,7 +157,7 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 			<div css={{padding: "0 2em 1em 2em"}}>
 				<div css={{width: "100%"}}>
 					{!this.state.uploading && this.state.uploadSuccess === null && this.renderDropZone()}
-					{this.state.uploading && <Loader classMod={style.loaderUpload} />}
+					{this.state.uploading && <Loader css={{width: "100%"}} />}
 					{this.state.uploadSuccess !== null && this.renderUploadDoneNotifier()}
 				</div>
 			</div>

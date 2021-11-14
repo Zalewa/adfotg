@@ -5,10 +5,34 @@ import { lighten } from 'polished';
 
 import { errorToString } from './Notifier';
 import * as res from '../res';
-import style from '../style.less';
 import * as skin from '../skin';
 
 export type ButtonPurpose = "submit" | "delete";
+
+const ButtonMixin = css(
+	skin.workbenchBorderLightDark,
+	{
+		backgroundColor: skin.workbench.background,
+		color: skin.workbench.color,
+		height: "28px",
+		padding: "4px 8px",
+		textAlign: "center",
+		textDecoration: "none",
+		display: "inline-block",
+		fontFamily: skin.fontFamily,
+		position: "relative",
+		'&:active': [
+			{
+				backgroundColor: skin.workbench.titleColor,
+			},
+			skin.workbenchBorderDarkLight,
+		],
+		'&:disabled': {
+			backgroundColor: lighten(0.2, skin.workbench.background),
+			color: lighten(0.5, skin.workbench.color),
+		},
+	}
+);
 
 export const Button = (props: {
 	disabled?: boolean,
@@ -25,28 +49,9 @@ export const Button = (props: {
 	}
 	return <button
 		css={[
-			skin.workbenchBorderLightDark,
+			ButtonMixin,
 			{
-				backgroundColor: skin.workbench.background,
-				color: skin.workbench.color,
-				height: "28px",
-				padding: "4px 8px",
-				textAlign: "center",
-				textDecoration: "none",
-				display: "inline-block",
 				fontSize: (props.icon || !props.table) ? "1em" : "0.75em",
-				fontFamily: skin.fontFamily,
-				position: "relative",
-				'&:active': [
-					{
-						backgroundColor: skin.workbench.titleColor,
-					},
-					skin.workbenchBorderDarkLight,
-				],
-				'&:disabled': {
-					backgroundColor: lighten(0.2, skin.workbench.background),
-					color: lighten(0.5, skin.workbench.color),
-				},
 			},
 			props.purpose == "delete" && { backgroundColor: skin.dangerColor },
 			props.icon && {
@@ -72,30 +77,40 @@ export const CheckBox = (props: {
 	checked?: boolean,
 	name?: string,
 	onClick?: (name?: string)=>void
-}) => {
-	let klass: string = style.buttonCheckmark;
-	if (props.checked)
-		klass += ` ${style.buttonCheckmarkChecked}`;
-	return <button className={`${style.button} ${style.buttonCheckbox}`}
-			name={props.name}
-			onClick={() => props.onClick && props.onClick(props.name)}>
-		<span className={klass} />
+}) => (
+	<button css={[
+		ButtonMixin,
+		{
+			width: "21px",
+			height: "21px",
+			lineHeight: "21px",
+			padding: "0px",
+		}
+	]}
+		name={props.name}
+		onClick={() => props.onClick && props.onClick(props.name)}>
+		<span css={[
+			{
+				content: '""',
+				display: "none",
+				position: "absolute",
+			},
+			props.checked && {
+				display: "block",
+				left: "6px",
+				top: "1px",
+				width: "4px",
+				height: "11px",
+				border: `solid ${skin.workbench.color}`,
+				borderWidth: "0 2px 2px 0",
+			transform: "rotate(45deg)",
+			}
+		]} />
 	</button>
-}
+);
 
-export const DeleteButton = (props: any) => {
-	let klass: string = `${style.button} ${style.buttonDelete}`
-	if (props.className) {
-		klass += " " + props.className;
-	}
-	return <button {...props} className={klass}>Delete</button>
-}
-
-export const ErrorLabel = (props: {error: Error}) => {
-	return <div className={style.errorLabel}>
-		{errorToString(props.error)}
-	</div>
-}
+export const ErrorLabel = (props: {error: Error}) =>
+	<div>{errorToString(props.error)}</div>;
 
 interface IconProps {
 	button?: boolean
@@ -106,16 +121,9 @@ interface IconProps {
 }
 
 export const Icon = (props: IconProps) => {
-	let klass = style.icon;
-	if (props.button) {
-		if (props.table) {
-			klass += ` ${style.iconTableButton}`;
-		} else {
-			klass += ` ${style.iconButton}`;
-		}
-	}
 	const alt = props.alt || props.title;
-	return <img className={klass} src={props.src} alt={alt}
+	return <img css={props.table && props.button && {height: "14px"}}
+		src={props.src} alt={alt}
 		title={props.title} />
 }
 
@@ -125,22 +133,28 @@ interface LabelledProps {
 	title?: string
 }
 
-export const Labelled = (props: LabelledProps) => {
-	return <div className={style.labelled} title={props.title}>
-			<span className={style.labelledLabel}>{props.label}</span>
-			<span className={style.labelledContent}>{props.contents}</span>
-	</div>
-}
+export const Labelled = (props: LabelledProps) =>
+	<div title={props.title}>
+		<span css={{color: skin.labelColor, paddingRight: "5px"}}>
+			{props.label}
+		</span>
+		<span>{props.contents}</span>
+	</div>;
 
 type LineInputProps = React.DetailedHTMLProps<
 	React.InputHTMLAttributes<HTMLInputElement>,
 	HTMLInputElement>;
 
-export const LineInput = (props: LineInputProps) => {
-	return (<div className={style.lineInput}>
-		<input className={style.lineInputInput} {...props} />
-	</div>);
-}
+export const LineInput = (props: LineInputProps) =>
+	<div css={{width: "auto"}}>
+		<input css={{
+			borderRadius: 0,
+			boxSizing: "border-box",
+			minWidth: "10px",
+			height: "100%",
+			width: "100%",
+		}} {...props} />
+	</div>;
 
 interface LinkProps {
 	href: string,
@@ -173,15 +187,15 @@ export interface LinkTextProps {
 	key?: any
 };
 
-export const LinkText = (props: LinkTextProps) => {
-	return (<span className={style.link + " " + (props.className ? props.className : "")}
-		onClick={(e) => {props.onClick(e); return false;}}>{props.children}</span>)
-}
+export const LinkText = (props: LinkTextProps) =>
+	<span css={LinkMixin}
+		className={props.className}
+		onClick={(e) => {props.onClick(e); return false;}}>
+		{props.children}
+	</span>;
 
-export const Loader = (props: {classMod?: string}) => {
-	return (<img src={res.loader}
-		className={style.loader + " " + (props.classMod || "")} />);
-}
+export const Loader = (props: {className?: string}) =>
+	<img src={res.loader} className={props.className} />;
 
 export const TextInput = styled.input({borderRadius: 0});
 
