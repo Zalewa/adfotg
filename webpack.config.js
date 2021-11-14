@@ -48,13 +48,6 @@ module.exports = {
 				loader: "source-map-loader"
 			},
 			{
-				test: /\.less$/,
-				use: [
-					...cssLoaders,
-					"less-loader",
-				]
-			},
-			{
 				test: /\.css$/,
 				use: cssLoaders,
 				exclude: [

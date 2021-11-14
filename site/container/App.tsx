@@ -3,8 +3,9 @@ import { Component } from 'react';
 import { BrowserRouter as Router, Route, RouteComponentProps, Switch,
 	withRouter }
 	from 'react-router-dom';
-import { keyframes } from '@emotion/react';
+import { Global, css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
+import { darken } from 'polished';
 
 import AdfWizard from './AdfWizard';
 import Home from './Home';
@@ -18,6 +19,27 @@ export default class App extends Component {
 	render() {
 		return (
 			<ErrorBoundary>
+				<Global styles={css`
+					@font-face {
+						font-family: Amiga Topaz;
+						src: url(/res/font/amiga-topaz/Amiga%20Topaz.ttf) format('truetype');
+					}
+				`} />
+				<Global styles={css({
+					".page": {
+						backgroundColor: darken(0.05, skin.page.background),
+						color: skin.page.color,
+						fontFamily: `${skin.fontFamily},Roboto,Helvetice Neue,Helvetica,Arial,sans-serif`,
+						fontSize: "1em",
+						margin: "0px auto",
+						maxWidth: "800px",
+					},
+
+					".page__main": {
+						backgroundColor: skin.page.background,
+						margin: "auto 0",
+					},
+				})} />
 				<Router>
 					<AppRoute />
 				</Router>
