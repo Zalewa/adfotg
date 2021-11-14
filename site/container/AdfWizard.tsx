@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Component } from 'react';
 import { boundMethod } from 'autobind-decorator';
 import * as request from 'superagent';
@@ -8,9 +7,10 @@ import Form, { FormItem } from '../component/Form';
 import Listing from '../component/Listing';
 import { Notification, NoteType, errorToString } from '../component/Notifier';
 import Uploader from './Uploader';
-import { LineInput } from '../component/ui';
+import { Button, LineInput } from '../component/ui';
 import * as Strings from '../strings';
-import style from '../style.less';
+
+import * as skin from '../skin';
 
 
 interface AdfWizardState {
@@ -37,7 +37,7 @@ export default class AdfWizard extends Component {
 		return (<div>
 			<Uploader actions={this.actions()}
 				onSelected={selection => this.setState({selection})} />
-			<button className={style.button} onClick={this.addEmptyDisk}>Add Empty ADF</button>
+			<Button onClick={this.addEmptyDisk} title="Add Empty ADF" />
 			{this.state.submitted && this.renderSubmitted()}
 			{this.state.disks.length > 0 && this.renderComposition()}
 		</div>);
@@ -45,9 +45,10 @@ export default class AdfWizard extends Component {
 
 	private actions(): JSX.Element[] {
 		return [
-			<button key="distribute" className={style.button}
+			<Button key="distribute"
 				disabled={this.state.selection.length == 0 || this.state.submitting}
-				onClick={this.distributeDisks}>Distribute ADFs</button>,
+				onClick={this.distributeDisks}
+				title="Distribute ADFs" />,
 			<label key="basenamelabel"
 				css={{alignSelf: "center"}}>Base name:</label>,
 			<LineInput key="basenamevalue" value={this.state.basename}
@@ -192,12 +193,11 @@ interface DiskCompositionProps {
 class DiskComposition extends Component<DiskCompositionProps> {
 	render() {
 		const { parent } = this.props;
-		return (<div className={style.diskComposition}>
-			<button className={`${style.button} ${style.buttonSubmit}`} onClick={parent.submit}
-				disabled={!this.props.allowSubmit}>
-				Submit</button>
-			<button className={`${style.button} ${style.buttonBig}`} onClick={parent.clearDisks}>
-				Discard All</button>
+		return (<div>
+			<Button purpose="submit" onClick={parent.submit}
+				disabled={!this.props.allowSubmit}
+				title="Submit" />
+			<Button onClick={parent.clearDisks} title="Discard All" />
 			{this.renderDisks()}
 		</div>);
 	}
@@ -257,9 +257,13 @@ class DiskForm extends Component<DiskFormProps, DiskFormState> {
 
 	render() {
 		const props = this.props;
-		const { name, label, contents, error } = this.props;
-		return (<div className={style.diskForm}>
-			<button className={`${style.button} ${style.buttonFormClose}`} onClick={props.onDiscard}>X</button>
+		const { name, label, error } = this.props;
+		return (<div css={[skin.Pane, {
+			margin: "1em",
+		}]}>
+			<div css={{position: "absolute", right: 0, top: 0}} >
+				<Button onClick={props.onDiscard} title="X" />
+			</div>
 			{error && error.length > 0 && (
 				<Notification note={{type: NoteType.Error, message: error}} />)}
 			<Form>
@@ -275,7 +279,8 @@ class DiskForm extends Component<DiskFormProps, DiskFormState> {
 						onChange={e => props.onLabelEdited(e.target.value)} />
 				</FormItem>
 				<FormItem label="Contents">
-					<Listing className={style.diskFormListing} listing={this.items()}></Listing>
+					<Listing css={{outline: "unset", maxHeight: "800px"}}
+						listing={this.items()}></Listing>
 				</FormItem>
 			</Form>
 		</div>)

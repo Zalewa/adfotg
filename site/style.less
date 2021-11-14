@@ -35,29 +35,9 @@
 @normalScreen: ~"min-width:600px";
 
 /* Mixins */
-
-/** Covers the whole browser viewport. */
-.fullpage--mixin {
-	position: fixed; /* Sit on top of the page content */
-	width: 100%; /* Full width (cover the whole page) */
-	height: 100%; /* Full height (cover the whole page) */
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-}
-
 .label--mixin {
 	color: @labelColor;
 	padding-right: 5px;
-}
-
-.pane--mixin {
-	background-color: @paneBackground;
-	border: @paneBorder;
-	margin: 1em;
-	padding: 4px;
-	position: relative;
 }
 
 .title--mixin {
@@ -193,29 +173,6 @@
 		width: 28px;
 		height: 14px;
 		line-height: 14px;
-	}
-}
-
-.disk-composition {
-	/**/
-}
-
-
-.disk-form {
-	.pane--mixin();
-	margin: 1em;
-
-	&__close {
-		position: absolute;
-		right: 0;
-		top: 0;
-	}
-
-	/* Double & is not a mistake. It forces this style to be
-	   more important than the default. */
-	& &__listing {
-		outline: unset;
-		max-height: 800px;
 	}
 }
 

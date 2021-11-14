@@ -19,13 +19,8 @@ interface CssExports {
   'buttonTable': string;
   'cellSelectMixin': string;
   'createMountImage': string;
-  'diskComposition': string;
-  'diskForm': string;
-  'diskFormClose': string;
-  'diskFormListing': string;
   'errorLabel': string;
   'flexFiller': string;
-  'fullpageMixin': string;
   'icon': string;
   'iconButton': string;
   'iconTableButton': string;
@@ -53,7 +48,6 @@ interface CssExports {
   'mountStatusLabelUnmounted': string;
   'page': string;
   'pageMain': string;
-  'paneMixin': string;
   'spaceInfo': string;
   'textInput': string;
   'title': string;
