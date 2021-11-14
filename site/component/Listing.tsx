@@ -18,7 +18,7 @@ const Record = styled.li({
 	paddingTop: "2px",
 	paddingLeft: "2px",
 	wordBreak: "break-word",
-	"&:nth-child(even)": {
+	"&:nth-of-type(even)": {
 		backgroundColor: "#fff2",
 	},
 })

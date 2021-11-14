@@ -27,7 +27,7 @@ export const Table = styled.table({
 });
 
 export const TableRecord = styled.tr({
-	"&:nth-child(even)": {
+	"&:nth-of-type(even)": {
 		background: rgba(skin.page.background, 0.1),
 	}
 });

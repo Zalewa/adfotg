@@ -78,7 +78,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 				minHeight: "4px",
 				height: "4px",
 				backgroundColor: modifier,
-				"&:nth-child(last)": {
+				"&:nth-of-type(last)": {
 					marginRight: "2px",
 				},
 			}}
