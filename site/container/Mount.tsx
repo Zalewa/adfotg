@@ -13,9 +13,9 @@ import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
 import Pager, { Page } from '../component/Pager';
 import { Section, Subsection } from '../component/Section';
 import * as resrc from '../res';
-import style from '../style.less';
 import { sorted } from '../strings';
-import { DeleteButton, ErrorLabel, Icon, Labelled, LineInput } from '../component/ui';
+import { Button, ErrorLabel, Labelled, LineInput } from '../component/ui';
+import * as skin from '../skin';
 
 
 const enum MountStatus {
@@ -69,7 +69,7 @@ export default class Mount extends Component<MountProps, MountState> {
 			{this.renderImageInspection()}
 			<Actions>
 				<ActionSet right={true}>
-					<DeleteButton
+					<Button purpose="delete"
 						disabled={this.state.imagesSelection.length == 0}
 						onClick={() => this.setState({deleteSelected: true})}
 					/>
@@ -116,15 +116,11 @@ export default class Mount extends Component<MountProps, MountState> {
 		const mountTitle = canMount() ? "Mount this image" : cannotMountReason();
 
 		return (<ActionSet>
-			<button className={`${style.button} ${style.buttonTable} ${style.buttonIconTable}`}
-					onClick={() => this.setState({inspectedImage: file.name})}>
-				<Icon table button title="Inspect" src={resrc.looking_glass} />
-			</button>
-			<button className={`${style.button} ${style.buttonTable} ${style.buttonIconTable}`}
+			<Button table title="Inspect" icon={resrc.looking_glass}
+					onClick={() => this.setState({inspectedImage: file.name})} />
+			<Button table title={mountTitle} icon={resrc.usb_icon_horz}
 					disabled={!canMount()}
-					onClick={() => this.mount(file.name)}>
-				<Icon table button title={mountTitle} src={resrc.usb_icon_horz} />
-			</button>
+					onClick={() => this.mount(file.name)} />
 		</ActionSet>);
 	}
 
@@ -146,8 +142,10 @@ export default class Mount extends Component<MountProps, MountState> {
 	private renderImageInspection(): JSX.Element {
 		if (this.state.inspectedImage) {
 			return (<Subsection title="Inspect Image">
-				<button className={`${style.button} ${style.buttonSectionClose}`}
-					onClick={() => this.setState({inspectedImage: null})}>Close</button>
+				<div css={{position: "absolute", right: 0, top: 0}}>
+					<Button title="Close"
+						onClick={() => this.setState({inspectedImage: null})} />
+				</div>
 				<MountImageDetails name={this.state.inspectedImage}
 					refreshCounter={this.state.refreshCounter} />
 			</Subsection>);
@@ -278,7 +276,7 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 	}
 
 	render() {
-		return (<div className={style.createMountImage}>
+		return (<div>
 			{this.state.refreshing ?
 				this.renderRefreshing() : this.renderWorkspace()}
 			{this.renderErrorWidget()}
@@ -302,8 +300,9 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 					}} />
 			</ActionSet>
 			<ActionSet right>
-				<button className={`${style.button} ${style.buttonSubmit}`} onClick={this.create}
-					disabled={this.state.imageName.length == 0}>Create</button>
+				<Button purpose="submit" onClick={this.create}
+					disabled={this.state.imageName.length == 0}
+					title="Create" />
 			</ActionSet>
 			</Actions>
 		</div>);
@@ -368,35 +367,35 @@ interface MountStatusProps extends MountState {}
 
 type Display = {
 	text: string;
-	className: string;
+	color: string;
 }
 
 class MountStatusDisplay extends Component<MountStatusProps> {
 	render() {
 		const display: Display = this.statusDisplay()
-		return <div className={style.mountStatus}>
-			<span className={`${style.mountStatusLabel} ${display.className}`}>{display.text}</span>
+		return <div>
+			<span css={{color: display.color}}>{display.text}</span>
 			{this.props.mountedImageName &&
-				<span className={style.mountImageName}>{this.props.mountedImageName}</span>}
+				<span>{this.props.mountedImageName}</span>}
 		</div>
 	}
 
 	private statusDisplay(): Display {
 		switch (this.props.mountStatus) {
 			case MountStatus.Mounted:
-				return {text: "Mounted: ", className: style.mountStatusLabelMounted};
+				return {text: "Mounted: ", color: "lime"};
 			case MountStatus.Unmounted:
-				return {text: "Not mounted", className: style.mountStatusLabelUnmounted};
+				return {text: "Not mounted", color: "gray"};
 			case MountStatus.NoImage:
-				return {text: "Image is missing", className: style.mountStatusLabelBadstatus};
+				return {text: "Image is missing", color: skin.dangerColor};
 			case MountStatus.BadImage:
 				return {text: "Image error: " + this.props.error,
-						className: style.mountStatusLabelBadstatus};
+						color: skin.dangerColor};
 			case MountStatus.OtherImageMounted:
 				return {text: "An image outside the app is mounted.",
-						className: style.mountStatusLabelBadstatus}
+						color: skin.dangerColor}
 			default:
-				return {text: "Unknown State", className: style.mountStatusLabelUnknown};
+				return {text: "Unknown State", color: "gray"};
 		}
 	}
 }
@@ -411,8 +410,9 @@ interface MountActionsProps {
 class MountActions extends React.Component<MountActionsProps> {
 	render() {
 		const actions = this.actions();
-		const mod = actions.length == 0 ? " mount__actions--empty" : "";
-		return (<div className={`${style.mountActions} ${mod}`}>
+		return (<div css={{
+			marginRight: (actions.length == 0) ? "0em" : "0.25em",
+		}}>
 			{actions}
 		</div>);
 	}
@@ -434,8 +434,8 @@ class MountActions extends React.Component<MountActionsProps> {
 
 	private mountedActions(): JSX.Element[] {
 		return [
-			<button className={style.button} key="unmount"
-				onClick={this.props.onUnmount}>Unmount</button>,
+			<Button key="unmount" title="Unmount"
+				onClick={this.props.onUnmount} />,
 		];
 	}
 
@@ -445,8 +445,8 @@ class MountActions extends React.Component<MountActionsProps> {
 
 	private rescueActions(): JSX.Element[] {
 		return [
-			<button className={style.button} key="unmount"
-				onClick={this.props.onUnmount}>Force Unmount</button>
+			<Button key="unmount" title="Force unmount"
+				onClick={this.props.onUnmount} />,
 		]
 	}
 }
@@ -471,7 +471,7 @@ class MountImageDetails extends Component<MountImageDetailsProps, MountImageDeta
 		let { showName } = this.props;
 		if (showName === undefined)
 			showName = true;
-		return (<div className={style.imageDetails}>
+		return (<div>
 			{showName &&
 				<Labelled label="Image:" contents={this.props.name} />}
 			<FileTable listing={this.state.listing}
