@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { lighten } from 'polished';
 
@@ -140,6 +141,30 @@ export const LineInput = (props: LineInputProps) => {
 		<input className={style.lineInputInput} {...props} />
 	</div>);
 }
+
+interface LinkProps {
+	href: string,
+	className?: string,
+	children?: React.ReactNode,
+}
+
+export const LinkMixin = css({
+	color: "cyan",
+	cursor: "pointer",
+	textDecoration: "none",
+	"&:focus": {
+		outline: "none",
+	},
+	"&:hover": {
+		color: "gold !important",
+	},
+	"&:visited": {
+		color: "cyan",
+	}
+})
+
+export const Link = (props: LinkProps) =>
+	<a css={LinkMixin} {...props} />
 
 export interface LinkTextProps {
 	className?: string,
