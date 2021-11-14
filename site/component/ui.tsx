@@ -47,18 +47,18 @@ export const Button = (props: {
 					color: lighten(0.5, skin.workbench.color),
 				},
 			},
-			(props.purpose == "delete" ? { backgroundColor: skin.dangerColor } : {}),
-			props.icon ? {
+			props.purpose == "delete" && { backgroundColor: skin.dangerColor },
+			props.icon && {
 				padding: "0px 8px",
 				width: "52px",
-			} : {},
-			(props.icon && props.table) ? {
+			},
+			(props.icon && props.table) && {
 				boxSizing: "content-box",
 				padding: "2px",
 				width: "28px",
 				height: "14px",
 				lineHeight: "14px",
-			} : {},
+			},
 		]}
 		{...props}
 	>
