@@ -51,11 +51,6 @@ interface CssExports {
   'mountStatusLabelNoimage': string;
   'mountStatusLabelUnknown': string;
   'mountStatusLabelUnmounted': string;
-  'notification': string;
-  'notificationError': string;
-  'notificationSuccess': string;
-  'notificationUploader': string;
-  'notifier': string;
   'page': string;
   'pageMain': string;
   'paneMixin': string;

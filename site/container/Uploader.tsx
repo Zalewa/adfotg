@@ -197,7 +197,7 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 		const note: Note = this.state.uploadSuccess ?
 			{type: NoteType.Success, message: "UPLOAD DONE !"} :
 			{type: NoteType.Error, message: "UPLOAD FAILED !"};
-		return <Notification note={note} classMod={style.notificationUploader} />;
+		return <Notification note={note} css={{fontSize: "2em", textAlign: "center"}} />;
 	}
 
 	@boundMethod
