@@ -25,16 +25,6 @@ interface CssExports {
   'diskFormListing': string;
   'errorLabel': string;
   'flexFiller': string;
-  'form': string;
-  'formCell': string;
-  'formCellHint': string;
-  'formCellLabel': string;
-  'formCellWidget': string;
-  'formItem': string;
-  'formItemNote': string;
-  'formRow': string;
-  'formWidget': string;
-  'formWidgetFull': string;
   'fullpageMixin': string;
   'icon': string;
   'iconButton': string;

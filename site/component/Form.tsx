@@ -1,42 +1,52 @@
 import * as React from 'react';
-import { Component } from 'react';
+import styled from '@emotion/styled';
 
 import { Notification, Note } from './Notifier';
-import style from '../style.less';
+
+import * as skin from '../skin';
 
 
-export default class Form extends Component {
-	render() {
-		return (<table className={style.form}>{this.props.children}</table>);
-	}
-}
+const Form = styled.table({
+	borderCollapse: "separate",
+	borderSpacing: "0.25em",
+});
+
+export default Form;
 
 interface FormItemProps {
 	label: string
 	hint?: string
 	note?: Note
+	children?: React.ReactNode
 }
 
-export class FormItem extends Component<FormItemProps> {
-	render() {
-		const { label, hint, children, note } = this.props;
-		return (<tbody className={style.formItem}>
-			<tr className={style.formRow}>
-				<td className={`${style.formCell} ${style.formCellLabel}`}>{label + ":"}</td>
-				<td className={`${style.formCell} ${style.formCellWidget}`}>
-					{children}
-				</td>
-				<td className={`${style.formCell} ${style.formCellHint}`}>{hint ? hint : ""}</td>
-			</tr>
-			{note && this.renderNote() || null}
-		</tbody>);
-	}
+const FormItemLabel = styled.td({
+	color: skin.labelColor,
+	paddingRight: "5px",
+	textAlign: "right",
+});
 
-	private renderNote(): JSX.Element {
-		return (<tr>
-			<td colSpan={3} className={style.formItemNote}>
-				<Notification note={this.props.note} />
-			</td>
-		</tr>);
-	}
-}
+const FormItemValue = styled.td({
+	paddingRight: "2px",
+});
+
+const FormItemHint = styled.td();
+
+const FormItemNote = (props: {note: Note}) => (
+	<tr>
+		<td colSpan={3} css={{display: "table-cell"}}>
+			<Notification note={props.note} />
+		</td>
+	</tr>
+);
+
+export const FormItem = (props: FormItemProps) => (
+	<tbody>
+		<tr>
+			<FormItemLabel>{props.label}:</FormItemLabel>
+			<FormItemValue>{props.children}</FormItemValue>
+			<FormItemHint>{props.hint}</FormItemHint>
+		</tr>
+		{props.note && <FormItemNote note={props.note} /> || null}
+	</tbody>
+)
