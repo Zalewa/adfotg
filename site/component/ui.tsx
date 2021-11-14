@@ -60,7 +60,8 @@ export const Button = (props: {
 				lineHeight: "14px",
 			},
 		]}
-		{...props}
+		disabled={props.disabled}
+		onClick={props.onClick}
 	>
 		{props.icon ? <Icon button table={props.table} title={title} src={props.icon} /> : title }
 	</button>

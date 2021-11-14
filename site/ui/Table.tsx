@@ -38,13 +38,13 @@ interface HeaderCellProps {
 	className?: string,
 }
 
-export const HeaderCell = (props: HeaderCellProps) =>
+export const HeaderCell = ({rightmost, ...otherProps}: HeaderCellProps) =>
 	<th css={{
 		borderBottom: tableHeaderBorder,
-		borderRight: props.rightmost ? "none" : tableHeaderBorder,
+		borderRight: rightmost ? "none" : tableHeaderBorder,
 		padding: "0px 10px",
 		paddingTop: "2px",
-	}} {...props} />;
+	}} {...otherProps} />;
 
 export const LabelCell = styled.th({
 	fontWeight: "normal",

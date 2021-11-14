@@ -32,7 +32,7 @@ export default class Listing extends Component<ListingProps> {
 				outline: "1px dashed black",
 				paddingRight: "5px",
 				maxHeight: "200px"
-			}} {...props}>
+			}} className={props.className}>
 				{this.renderRecords()}
 			</ul>);
 		} else {

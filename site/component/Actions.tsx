@@ -11,7 +11,7 @@ export const Actions = (props: ActionsProps) => {
 			alignItems: props.fullrow ? "stretch" : "baseline",
 		},
 		props.submit && { marginTop: "1em" },
-	]} {...props} />;
+	]}>{props.children}</div>;
 };
 
 interface ActionSetProps {
@@ -22,13 +22,13 @@ interface ActionSetProps {
 	children?: React.ReactNode
 }
 
-export const ActionSet = (props: ActionSetProps) => {
+export const ActionSet = ({baseline, even, right, ...otherProps}: ActionSetProps) => {
 	return <div css={[
 		{
 			display: "flex",
-			alignItems: props.baseline ? "baseline" : "stretch",
+			alignItems: baseline ? "baseline" : "stretch",
 		},
-		props.even && { justifyContent: "space-between" },
-		props.right && { marginLeft: "auto" },
-	]} {...props} />;
+		even && { justifyContent: "space-between" },
+		right && { marginLeft: "auto" },
+	]} {...otherProps} />;
 }
