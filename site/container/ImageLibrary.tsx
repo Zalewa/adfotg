@@ -13,9 +13,8 @@ import { CreateMountImage } from './Mount';
 import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
 import Pager, { Page } from '../component/Pager';
 import * as res from '../res';
-import Section from '../component/Section';
-import style from '../style.less';
-import { DeleteButton, Icon } from '../component/ui';
+import { Section } from '../component/Section';
+import { Button } from '../component/ui';
 
 interface ImageLibraryProps {
 	onCreatedImage: ()=>void
@@ -48,7 +47,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	}
 
 	render() {
-		return (<Section title="ADFs" className={style.imageLibrary}>
+		return (<Section title="ADFs">
 			{this.renderModal()}
 			{this.renderActions()}
 			<FileTable listing={this.state.listing}
@@ -75,11 +74,12 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	private renderActions(): JSX.Element {
 		return (<Actions>
 			<ActionSet>
-				<button onClick={this.showCreateImage} className={style.button}
-					disabled={this.state.selection.length == 0}>Create Mount Image</button>
+				<Button onClick={this.showCreateImage}
+					disabled={this.state.selection.length == 0}
+					title="Create Mount Image" />
 			</ActionSet>
 			<ActionSet right={true}>
-				<DeleteButton
+				<Button purpose="delete"
 					disabled={this.state.selection.length == 0}
 					onClick={() => this.setState({deleteSelected: true})} />
 			</ActionSet>
@@ -97,7 +97,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 					onAccept={this.deleteSelected}
 					onCancel={() => this.setState({deleteSelected: false})}
 					acceptText="Delete"
-					acceptClass={style.buttonDelete}>
+					acceptPurpose="delete">
 				<Listing listing={this.state.selection.map(e => e.name)} />
 			</ConfirmModal>)
 		}
@@ -106,10 +106,8 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 
 	@boundMethod
 	private renderFileActions(file: FileTableEntry): JSX.Element {
-		return (<button className={`${style.button} ${style.buttonTable} ${style.buttonIconTable}`}
-					onClick={() => this.quickMount(file.name)}>
-			<Icon table button title="Quick Mount" src={res.usb_icon_horz} />
-		</button>);
+		return (<Button table title="Quick mount" icon={res.usb_icon_horz}
+			onClick={() => this.quickMount(file.name)} />)
 	}
 
 	@boundMethod

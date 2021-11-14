@@ -1,9 +1,12 @@
-import * as React from 'react';
 import { Component } from 'react';
+import { css } from '@emotion/react';
+import { rgba } from 'polished';
 import { Response, HTTPError } from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-import style from '../style.less';
+import { Button } from './ui';
+
+import * as skin from '../skin';
 
 export enum NoteType {
 	Error = "error",
@@ -95,7 +98,7 @@ export default class Notifier extends Component<{}, NotifierState> {
 			notifications.push(<Notification key={note.key} note={note}
 				onClose={this.onClose} />)
 		});
-		return (<div className={style.notifier}>
+		return (<div>
 			{notifications}
 		</div>);
 	}
@@ -116,33 +119,48 @@ export default class Notifier extends Component<{}, NotifierState> {
 }
 
 interface NotificationProps {
-	classMod?: string
 	onClose?: (key: number) => void
 	note: Note
+	className?: string
 }
+
+const NotificationError = css({
+	borderColor: skin.dangerColor,
+	background: rgba(skin.dangerColor, 0.2),
+});
+
+const NotificationSuccess = css({
+	borderColor: skin.successColor,
+	background: rgba(skin.successColor, 0.4),
+});
 
 export class Notification extends Component<NotificationProps> {
 	render() {
-		const { note, classMod } = this.props;
-		const klass = `${style.notification} ${this.noteClassName(note)}` + " "
-			+ (classMod ? ("notification--" + classMod) :  "");
-		return (<div className={klass}>
+		const { note, className } = this.props;
+		return (<div css={[
+			{
+				border: "1px dashed",
+				padding: "0.25em",
+				margin: "0.25em",
+			},
+			this.noteClass(note),
+		]} className={className}>
 			{this.props.onClose &&
-			<button className={`${style.button} ${style.buttonNotificationClose}`}
-				onClick={() => this.props.onClose(note.key)}>X</button>
-			}
+			 <span css={{marginRight: "5px"}}>
+				<Button onClick={() => this.props.onClose(note.key)} title="X" />
+			 </span>}
 			<span>{note.message}</span>
 		</div>);
 	}
 
-	private noteClassName(note: Note) {
+	private noteClass(note: Note) {
 		switch (note.type) {
 		case NoteType.Error:
-			return style.notificationError;
+			return NotificationError;
 		case NoteType.Success:
-			return style.notificationSuccess;
+			return NotificationSuccess;
 		default:
-			return "";
+			return null;
 		}
 	}
 }

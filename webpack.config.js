@@ -40,19 +40,12 @@ module.exports = {
 			},
 			{
 				test: /\.tsx?$/,
-				loader: "ts-loader"
+				use: ["babel-loader", "ts-loader"]
 			},
 			{
 				enforce: "pre",
 				test: "/\.js$/",
 				loader: "source-map-loader"
-			},
-			{
-				test: /\.less$/,
-				use: [
-					...cssLoaders,
-					"less-loader",
-				]
 			},
 			{
 				test: /\.css$/,

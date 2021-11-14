@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Component } from 'react';
+import styled from '@emotion/styled';
 
 import { ActionSet } from './Actions';
 import * as res from '../res';
-import style from '../style.less';
-import { Icon } from './ui';
+import { Button } from './ui';
 
 interface ListingProps {
 	listing: string[]
@@ -12,11 +12,27 @@ interface ListingProps {
 	onOrderChange?: (listing: string[]) => void
 }
 
+const Record = styled.li({
+	display: "flex",
+	alignItems: "baseline",
+	paddingTop: "2px",
+	paddingLeft: "2px",
+	wordBreak: "break-word",
+	"&:nth-of-type(even)": {
+		backgroundColor: "#fff2",
+	},
+})
+
 export default class Listing extends Component<ListingProps> {
 	render() {
 		const { props } = this;
 		if (props.listing.length > 0) {
-			return (<ul className={`${style.listing} ${props.className ? props.className : ""}`}>
+			return (<ul css={{
+				overflow: "auto",
+				outline: "1px dashed black",
+				paddingRight: "5px",
+				maxHeight: "200px"
+			}} className={props.className}>
 				{this.renderRecords()}
 			</ul>);
 		} else {
@@ -27,22 +43,17 @@ export default class Listing extends Component<ListingProps> {
 	private renderRecords(): JSX.Element[] {
 		const { props } = this;
 		return props.listing.map((entry: string, idx: number) => {
-			return <li className={style.listingEntry}
-				key={entry}>{entry}{this.renderActions(idx)}</li>;
+			return <Record key={entry}>{entry}{this.renderActions(idx)}</Record>;
 		});
 	}
 
 	private renderActions(entry_idx: number): JSX.Element {
 		if (this.props.onOrderChange) {
 			return (<ActionSet right>
-				<button className={`${style.button} ${style.buttonTable} ${style.buttonIconTable}`}
-					onClick={() => this.moveUp(entry_idx)}>
-					<Icon table button src={res.arrow_up} />
-				</button>
-				<button className={`${style.button} ${style.buttonTable} ${style.buttonIconTable}`}
-					onClick={() => this.moveDown(entry_idx)}>
-					<Icon table button src={res.arrow_down} />
-				</button>
+				<Button table icon={res.arrow_up} title="Move up"
+					onClick={() => this.moveUp(entry_idx)} />
+				<Button table icon={res.arrow_down} title="Move down"
+					onClick={() => this.moveDown(entry_idx)} />
 			</ActionSet>);
 		}
 		return null;

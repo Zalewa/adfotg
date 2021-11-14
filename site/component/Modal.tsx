@@ -1,8 +1,64 @@
 import * as React from 'react';
 import { Component } from 'react';
+import styled from '@emotion/styled';
 import { boundMethod } from 'autobind-decorator';
 
-import style from '../style.less';
+import { Button, ButtonPurpose } from './ui';
+
+import * as skin from '../skin';
+
+const Outside = styled.div([skin.fullpage, {
+	backgroundColor: "rgba(0,0,0,0.5);",
+	zIndex: 2,
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+}]);
+
+const Box = styled.div([
+	{
+		color: skin.workbench.color,
+		backgroundColor: skin.workbench.background,
+		minWidth: "300px",
+	},
+	skin.workbenchBorderLightDark,
+]);
+
+const Frame = styled.div({
+	backgroundColor: skin.workbench.titleColor,
+});
+
+const frameBreadth = "2px";
+
+const VerticalFrame = styled(Frame)({
+	width: frameBreadth,
+	height: "100%",
+	display: "table-cell",
+});
+
+const HorizontalFrame = styled(Frame)({
+	width: "100%",
+	height: frameBreadth,
+});
+
+const TitleBar = styled.div({
+	backgroundColor: skin.workbench.titleColor,
+	minHeight: "28px",
+});
+
+const Body = styled.div({
+	display: "table",
+	width: "100%",
+});
+
+const Pane = styled.div([
+	{
+		display: "table-cell",
+		padding: "5px",
+	},
+	skin.workbenchBorderDarkLight,
+]);
+
 
 interface ModalProps {
 	onClose: ()=>void
@@ -10,21 +66,19 @@ interface ModalProps {
 
 export default class Modal extends Component<ModalProps> {
 	render() {
-		return <div className={style.modal} onClick={this.handleOutsideClick}>
-			<div className={style.modalDisplay} onClick={this.handleInsideClick}>
-				<div className={style.modalTitlebar}>
-					<button className={`${style.button} ${style.buttonModalClose}`} onClick={this.props.onClose}>X</button>
-				</div>
-				<div className={style.modalMiddle}>
-					<div className={`${style.modalFrame} ${style.modalFrameLeft}`} />
-					<div className={style.modalContents}>
-						{this.props.children}
-					</div>
-					<div className={`${style.modalFrame} ${style.modalFrameRight}`} />
-				</div>
-				<div className={`${style.modalFrame} ${style.modalFrameBottom}`} />
-			</div>
-		</div>;
+		return <Outside onClick={this.handleOutsideClick}>
+			<Box onClick={this.handleInsideClick}>
+				<TitleBar>
+					<Button onClick={this.props.onClose} title="X" />
+				</TitleBar>
+				<Body>
+					<VerticalFrame />
+					<Pane>{this.props.children}</Pane>
+					<VerticalFrame />
+				</Body>
+				<HorizontalFrame />
+			</Box>
+		</Outside>;
 	}
 
 	componentDidMount() {
@@ -56,34 +110,49 @@ export default class Modal extends Component<ModalProps> {
 }
 
 
+const ModalText = styled.p({
+	marginBottom: "16px",
+});
+
+const ModalButtons = styled.div({
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "space-evenly",
+	marginTop: "5px",
+});
+
+
 interface ConfirmModalProps {
 	text: string
 	onAccept?: ()=>void
 	onCancel?: ()=>void
 	acceptText?: string
 	cancelText?: string
-	acceptClass?: string
+	acceptPurpose?: ButtonPurpose
 }
 
 export class ConfirmModal extends Component<ConfirmModalProps> {
-	private static readonly defaultProps: Partial<ConfirmModalProps> = {
+	public static readonly defaultProps: Partial<ConfirmModalProps> = {
 		onAccept: ()=>{},
 		onCancel: ()=>{},
 		acceptText: "OK",
 		cancelText: "Cancel",
-		acceptClass: style.buttonSubmit,
+		acceptPurpose: "submit",
 	}
 
 	render() {
 		return (<Modal onClose={() => this.props.onCancel()}>
-			<p className={style.modalText}>{this.props.text}</p>
+			<ModalText>{this.props.text}</ModalText>
 			{this.props.children}
-			<div className={style.modalButtons}>
-				<button className={`${style.button} ${this.props.acceptClass}`}
-					onClick={this.props.onAccept}>
-					{this.props.acceptText}</button>
-				<button className={style.button} onClick={this.props.onCancel}>{this.props.cancelText}</button>
-			</div>
+			<ModalButtons>
+				<Button purpose={this.props.acceptPurpose}
+					onClick={this.props.onAccept}
+					title={this.props.acceptText}
+					/>
+				<Button onClick={this.props.onCancel}
+					title={this.props.cancelText}
+					/>
+			</ModalButtons>
 		</Modal>);
 	}
 }

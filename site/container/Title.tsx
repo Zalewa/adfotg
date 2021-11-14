@@ -1,6 +1,8 @@
-import * as React from 'react';
 import { Component } from 'react';
 import { NavLink, NavLinkProps } from 'react-router-dom';
+import { ClassNames, css } from '@emotion/react';
+import styled from '@emotion/styled';
+import { rgba } from 'polished';
 import { boundMethod } from 'autobind-decorator';
 import * as request from 'superagent';
 
@@ -9,8 +11,11 @@ import { dispatchRequestError } from '../component/Notifier';
 import * as responsive from '../responsive';
 import { ADFWIZARD_LINK, HOME_LINK } from '../routes';
 import Search from '../component/Search';
-import style from '../style.less';
-import { Labelled, formatSize } from '../component/ui';
+import { Table, TableRecord, HeaderCell, LabelCell, DataCell } from '../ui/Table';
+import { Labelled, Link, LinkMixin, formatSize } from '../component/ui';
+
+import * as res from '../responsive';
+import * as skin from '../skin';
 
 interface TitleProps {
 	refresh: boolean
@@ -23,6 +28,27 @@ interface TitleState {
 	title: string
 	searchPrompt: string
 }
+
+const TitleRow = styled.div({display: "flex"});
+const TitleSection = (props: {fill?: boolean, children?: React.ReactNode}) =>
+	<div css={[{display: "block"}, props.fill && {flexGrow: 1}]} >{props.children}</div>;
+
+const AppTitle = css({
+	display: "block",
+	fontStyle: "italic",
+	fontSize: "2em",
+	textShadow: `2px 2px ${rgba(0, 0, 0, 64)}`,
+	margin: 0,
+	marginBottom: "10px",
+	padding: 0,
+	width: "100%",
+	[`@media (${res.tightScreen})`]: {
+		fontSize: "3em",
+	},
+	[`@media (${res.normalScreen})`]: {
+		fontSize: "4em",
+	},
+});
 
 export default class Title extends Component<TitleProps, TitleState> {
 	constructor(props: TitleProps) {
@@ -37,37 +63,43 @@ export default class Title extends Component<TitleProps, TitleState> {
 
 	render() {
 		return (
-			<div className={style.title}>
-				<div className={style.titleRow}>
-				<div className={`${style.titleSection} ${style.titleSectionFill}`}>
-					<AppLink className={style.titleMain} exact to={HOME_LINK}>{this.state.title}</AppLink>
-				</div>
-				<div className={style.titleSection}>
+			<div css={{
+				borderBottom: `1px solid ${skin.page.color}`,
+				display: "block",
+				marginBottom: "16px",
+				minHeight: "105px",
+				paddingBottom: "1px",
+			}}>
+				<TitleRow>
+				<TitleSection fill>
+					<AppLink css={AppTitle} exact to={HOME_LINK}>{this.state.title}</AppLink>
+				</TitleSection>
+				<TitleSection>
 					<SpaceInfo refresh={this.props.refresh} />
 					<HealthBar />
-					<div className={style.titleRow}>
-						<a className={style.link} href="/api/help">API Help</a>
+					<TitleRow>
+						<Link href="/api/help">API Help</Link>
 						<VersionInfo />
-					</div>
-				</div>
-				</div>
-				<div className={style.titleRow}>
-					<div className={`${style.titleSection} ${style.titleSectionFill}`}>
+					</TitleRow>
+				</TitleSection>
+				</TitleRow>
+				<TitleRow>
+					<TitleSection fill>
 						<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
-					</div>
+					</TitleSection>
 					{this.renderSearch()}
-				</div>
+				</TitleRow>
 			</div>
 		);
 	}
 
 	private renderSearch(): JSX.Element {
 		if (this.props.canSearch) {
-			return (<div className={style.titleSection}>
+			return (<TitleSection>
 				<Search text={this.state.searchPrompt}
 					onEdit={this.onSearchEdited}
 					onSubmit={this.onSearchSubmitted} />
-			</div>);
+			</TitleSection>);
 		} else {
 			return null;
 		}
@@ -121,7 +153,7 @@ class VersionInfo extends Component<{}, VersionInfoState> {
 	}
 
 	render() {
-		return (<div className={style.versionInfo}>
+		return (<div css={{marginLeft: "auto", textAlign: "right"}}>
 			<Labelled label="Version:" title={this.state.yearspan}
 				contents={this.state.version + " (" + this.state.lastyear + ")"} />
 		</div>);
@@ -153,19 +185,19 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	}
 
 	render() {
-		return (<div className={style.spaceInfo}>
-			<table className={`${style.table} ${style.tableNoMargin}`}>
+		return (<div>
+			<Table css={{margin: "0px"}}>
 				<thead>
-					<tr className={style.tableHeader}>
-						<th className={`${style.tableHeaderCell} ${style.tableHeaderCellLeft}`}>Mount Point</th>
-						<th className={style.tableHeaderCell}>Available</th>
-						<th className={`${style.tableHeaderCell} ${style.tableHeaderCellRight}`}>Total Space</th>
+					<tr>
+						<HeaderCell>Mount Point</HeaderCell>
+						<HeaderCell>Available</HeaderCell>
+						<HeaderCell rightmost>Total Space</HeaderCell>
 					</tr>
 				</thead>
 				<tbody>
 					{this.renderStats()}
 				</tbody>
-			</table>
+			</Table>
 			</div>);
 	}
 
@@ -182,11 +214,11 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	private renderStats(): JSX.Element[] {
 		let el: JSX.Element[] = [];
 		this.state.fsStats.forEach((stat: FsStats) => {
-			el.push(<tr className={style.tableRecord} key={stat.name}>
-				<th className={style.tableLabelCell}>{stat.name}</th>
-				<td className={style.tableDataCell}>{formatSize(stat.avail)}</td>
-				<td className={style.tableDataCell}>{formatSize(stat.total)}</td>
-			</tr>)
+			el.push(<TableRecord key={stat.name}>
+				<LabelCell>{stat.name}</LabelCell>
+				<DataCell>{formatSize(stat.avail)}</DataCell>
+				<DataCell>{formatSize(stat.total)}</DataCell>
+			</TableRecord>)
 		});
 		return el;
 	}
@@ -201,11 +233,22 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	}
 }
 
-const AppLink = (props: NavLinkProps & {children: string | JSX.Element[] | JSX.Element, className?: string}) => {
-	return <NavLink exact={props.exact}
-		className={props.className ? props.className : style.appLink}
-		activeClassName={style.appLinkSelected}
-		to={props.to}>
-		{props.children}
-	</NavLink>
+const AppLink = (props: NavLinkProps & {children?: React.ReactNode, className?: string}) => {
+	return (<ClassNames>
+		{ ({ css }) => (
+			<NavLink exact={props.exact}
+				css={[
+					LinkMixin,
+					{
+						fontSize: "1.5em",
+						textDecoration: "none",
+					}
+				]}
+				className={props.className}
+				activeClassName={css({textDecoration: "underline !important"})}
+				to={props.to}>
+				{props.children}
+			</NavLink>
+		)}
+	</ClassNames>)
 }

@@ -1,11 +1,10 @@
-import * as React from 'react';
 import { Component } from 'react';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 import { enumKeys } from '../enum';
 import { dispatchRequestError, dispatchError } from '../component/Notifier';
-import style from '../style.less';
+import * as skin from '../skin';
 
 
 enum HealthPoint {
@@ -28,12 +27,24 @@ export class HealthBar extends Component<{}, HealthBarState> {
 	};
 
 	render() {
-		let className = style.healthbar;
-		if (this.hasErrors())
-			className += ` ${style.healthbarHasErrors}`;
-		return (<table className={className} onClick={this.showErrors}>
+		const border = "2px solid gray";
+		return (<table
+			css={[
+				{
+					backgroundColor: skin.workbench.background,
+					borderCollapse: "separate",
+					borderLeft: border,
+					borderRight: border,
+					borderBottom: border,
+					borderSpacing: "2px 0",
+					padding: "1px",
+					marginBottom: "1px",
+					width: "100%",
+				},
+				this.hasErrors() && {cursor: "pointer"},
+			]} onClick={this.showErrors}>
 			<tbody>
-				<tr className={style.healthbarRow}>
+				<tr css={{justifyItems: "stretch"}}>
 					{this.renderPoints()}
 				</tr>
 			</tbody>
@@ -53,18 +64,27 @@ export class HealthBar extends Component<{}, HealthBarState> {
 	}
 
 	private renderPoint(healthPoint: string): JSX.Element {
-		let modifier;
+		let modifier: string;
 		let message: string = "";
 		if (this.state.health.has(healthPoint)) {
 			message = this.state.health.get(healthPoint);
-			modifier = !message ? style.healthbarPointGood : style.healthbarPointBad;
+			modifier = !message ? skin.successColor : skin.dangerColor;
 		} else {
-			modifier = style.healthbarPointUnknown;
+			modifier = skin.pane.background;
 		}
-		const className = `${style.healthbarPoint} ${modifier}`;
-		return (<td key={healthPoint} className={className}
+		return (<td
+			key={healthPoint}
+			css={{
+				minHeight: "4px",
+				height: "4px",
+				backgroundColor: modifier,
+				"&:nth-of-type(last)": {
+					marginRight: "2px",
+				},
+			}}
 			id={"healthbar__" + healthPoint}
-			title={message} />);
+			title={message}
+		/>);
 	}
 
 	private refresh(): void {
