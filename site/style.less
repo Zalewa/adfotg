@@ -332,18 +332,6 @@
 	&:visited {
 		color: cyan;
 	}
-
-	&--table {
-		color: blue;
-
-		&:hover {
-			color: dodgerblue !important;
-		}
-
-		&:visited {
-			color: blue;
-		}
-	}
 }
 
 
@@ -455,106 +443,6 @@
 	text-align: center;
 	width: 21px;
 	border-right: 0px;
-}
-
-.table {
-	color: @pageBackground;
-	background: white;
-	border: 3px solid gray;
-	border-spacing: 0px;
-	padding: 0px;
-	margin-bottom: 4px;
-
-	@media (@tightScreen) {
-		font-size: 0.9em;
-	}
-
-	@media (@tighterScreen) {
-		font-size: 0.75em;
-	}
-
-	&__header {
-		background: fade(@pageBackground, 25%);
-
-		&-cell {
-			border-bottom: @tableHeaderBorder;
-			border-right: @tableHeaderBorder;
-			padding: 0px 10px;
-			padding-top: 2px;
-
-			&--fixed {
-				@media (@normalScreen) {
-					width: 9em;
-				}
-				@media (@tightScreen) {
-					width: 4em;
-				}
-			}
-
-			&--fixed-short {
-				width: 4em;
-			}
-
-			&--select {
-				.cell--select--mixin();
-				vertical-align: middle;
-			}
-
-			&--sorted-asc {
-				/**/
-			}
-
-			&--sorted-desc {
-				/**/
-			}
-
-			&--left {
-				/**/
-			}
-
-			&--right {
-				border-right: none;
-			}
-		}
-	}
-
-	&__record {
-		/**/
-		&:nth-child(even) {
-			background: fade(@pageBackground, 10%);
-		}
-	}
-
-	&__label-cell {
-		font-weight: normal;
-		text-align: center;
-		padding: 4px 10px;
-	}
-
-	&__data-cell {
-		padding: 4px 2px;
-		vertical-align: middle;
-
-		&--select {
-			/**/
-			.cell--select--mixin();
-		}
-	}
-
-	&__cell-contents {
-		display: flex;
-		align-items: center;
-		padding-right: 0.25em;
-		word-break: break-word;
-	}
-
-	&--full-page {
-		width: 100%
-	}
-
-	&--no-margin {
-		margin: 0px;
-	}
 }
 
 .text-input {

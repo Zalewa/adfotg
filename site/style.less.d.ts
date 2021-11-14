@@ -3,7 +3,6 @@
 interface CssExports {
   'appLink': string;
   'appLinkSelected': string;
-  'appLinkTable': string;
   'button': string;
   'buttonBig': string;
   'buttonCheckbox': string;
@@ -49,7 +48,6 @@ interface CssExports {
   'lineInput': string;
   'lineInputInput': string;
   'link': string;
-  'linkTable': string;
   'loader': string;
   'loaderUpload': string;
   'mount': string;
@@ -72,27 +70,9 @@ interface CssExports {
   'pageMain': string;
   'paneMixin': string;
   'spaceInfo': string;
-  'table': string;
-  'tableCellContents': string;
-  'tableDataCell': string;
-  'tableDataCellSelect': string;
-  'tableFullPage': string;
-  'tableHeader': string;
-  'tableHeaderCell': string;
-  'tableHeaderCellFixed': string;
-  'tableHeaderCellFixedShort': string;
-  'tableHeaderCellLeft': string;
-  'tableHeaderCellRight': string;
-  'tableHeaderCellSelect': string;
-  'tableHeaderCellSortedAsc': string;
-  'tableHeaderCellSortedDesc': string;
-  'tableLabelCell': string;
-  'tableNoMargin': string;
-  'tableRecord': string;
   'textInput': string;
   'title': string;
   'titleMain': string;
-  'titleMainTable': string;
   'titleMixin': string;
   'titleRow': string;
   'titleSection': string;

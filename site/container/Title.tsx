@@ -9,6 +9,7 @@ import { dispatchRequestError } from '../component/Notifier';
 import * as responsive from '../responsive';
 import { ADFWIZARD_LINK, HOME_LINK } from '../routes';
 import Search from '../component/Search';
+import { Table, TableRecord, HeaderCell, LabelCell, DataCell } from '../ui/Table';
 import style from '../style.less';
 import { Labelled, formatSize } from '../component/ui';
 
@@ -154,18 +155,18 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 
 	render() {
 		return (<div className={style.spaceInfo}>
-			<table className={`${style.table} ${style.tableNoMargin}`}>
+			<Table css={{margin: "0px"}}>
 				<thead>
-					<tr className={style.tableHeader}>
-						<th className={`${style.tableHeaderCell} ${style.tableHeaderCellLeft}`}>Mount Point</th>
-						<th className={style.tableHeaderCell}>Available</th>
-						<th className={`${style.tableHeaderCell} ${style.tableHeaderCellRight}`}>Total Space</th>
+					<tr>
+						<HeaderCell>Mount Point</HeaderCell>
+						<HeaderCell>Available</HeaderCell>
+						<HeaderCell rightmost>Total Space</HeaderCell>
 					</tr>
 				</thead>
 				<tbody>
 					{this.renderStats()}
 				</tbody>
-			</table>
+			</Table>
 			</div>);
 	}
 
@@ -182,11 +183,11 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	private renderStats(): JSX.Element[] {
 		let el: JSX.Element[] = [];
 		this.state.fsStats.forEach((stat: FsStats) => {
-			el.push(<tr className={style.tableRecord} key={stat.name}>
-				<th className={style.tableLabelCell}>{stat.name}</th>
-				<td className={style.tableDataCell}>{formatSize(stat.avail)}</td>
-				<td className={style.tableDataCell}>{formatSize(stat.total)}</td>
-			</tr>)
+			el.push(<TableRecord key={stat.name}>
+				<LabelCell>{stat.name}</LabelCell>
+				<DataCell>{formatSize(stat.avail)}</DataCell>
+				<DataCell>{formatSize(stat.total)}</DataCell>
+			</TableRecord>)
 		});
 		return el;
 	}

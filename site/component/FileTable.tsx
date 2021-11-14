@@ -1,11 +1,13 @@
-import * as React from 'react';
 import { Component, PureComponent } from 'react';
 import { boundMethod } from 'autobind-decorator';
+import { css } from '@emotion/react';
 
 import { ActionSet } from './Actions';
 import { CheckBox, LinkText, formatDate, formatSize } from './ui';
+import { Table, TableRecord, SelectCell, TableLink, CellPane, DataCell, HeaderCell as THeaderCell, HeaderSelectCell } from '../ui/Table';
 import { Page } from './Pager';
-import style from '../style.less';
+
+import * as responsive from '../responsive';
 
 export const enum Field {
 	Name = "name",
@@ -81,13 +83,13 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 			});
 		}
 		return (
-			<table className={`${style.table} ${style.tableFullPage}`}>
+			<Table css={{width: "100%"}}>
 				<Header {...this.props} selectedAll={this.state.selectedAll}
 					onSelected={this.props.onSelected && this.onSelectAll || null} />
 				<tbody>
 					{rows}
 				</tbody>
-			</table>
+			</Table>
 		);
 	}
 
@@ -148,19 +150,27 @@ class Header extends Component<HeaderProps> {
 	render() {
 		let sizeTd = null;
 		if (this.props.showSize)
-			sizeTd = (<HeaderCell {...this.props} field={Field.Size} label="Size" modifier={style.tableHeaderCellFixedShort} />);
+			sizeTd = (<HeaderCell {...this.props} field={Field.Size} label="Size" css={{width: "4em"}} />);
 		return (<thead>
-			<tr className={style.tableHeader}>
+			<tr>
 				{this.props.onSelected &&
-				<th className={`${style.tableHeaderCell} ${style.tableHeaderCellSelect}`}>
-					<div className={style.tableCellContents}>
+				<HeaderSelectCell>
+					<CellPane>
 						<CheckBox checked={this.props.selectedAll}
 							onClick={this.props.onSelected} />
-					</div>
-				</th>}
+					</CellPane>
+				</HeaderSelectCell>}
 				<HeaderCell {...this.props} field={Field.Name} label="Name" />
 				{sizeTd}
-				<HeaderCell {...this.props} field={Field.Mtime} label="Modified Date" rightmost modifier={style.tableHeaderCellFixed} />
+				<HeaderCell {...this.props} field={Field.Mtime} label="Modified Date" rightmost
+					css={{
+						[`@media (${responsive.normalScreen})`]: {
+							width: "9em",
+						},
+						[`@media (${responsive.tightScreen})`]: {
+							width: "4em",
+						},
+					}} />
 			</tr>
 		</thead>);
 	}
@@ -171,31 +181,27 @@ class Header extends Component<HeaderProps> {
 interface HeaderCellProps extends FileTableProps {
 	field: Field,
 	label: string,
-	onHeaderClick?: (field: Field) => void
-	rightmost?: boolean
-	modifier?: string
+	onHeaderClick?: (field: Field) => void,
+	rightmost?: boolean,
+	className?: string,
 }
 
 const HeaderCell = (props: HeaderCellProps) => {
-	let klass = style.tableHeaderCell;
-	if (props.rightmost)
-		klass += ` ${style.tableHeaderCellRight}`;
-	if (props.modifier)
-		klass += ` ${props.modifier}`;
 	const sortedBy: boolean = props.sort && props.sort.field == props.field;
+	let sort = null;
 	if (sortedBy) {
 		if (props.sort.ascending)
-			klass += ` ${style.tableHeaderCellSortedAsc}`;
+			sort = css({});
 		else
-			klass += ` ${style.tableHeaderCellSortedDesc}`;
+			sort = css({});
 	}
 	let label: JSX.Element;
 	if (props.onHeaderClick) {
-		label = <LinkText className={style.linkTable} onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>;
+		label = <LinkText css={TableLink} onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>;
 	} else {
 		label = <span>{props.label}</span>
 	}
-	return <th className={klass}>{label}</th>
+	return <THeaderCell css={sort} className={props.className} rightmost={props.rightmost}>{label}</THeaderCell>;
 }
 
 interface FileTableRowProps {
@@ -209,42 +215,41 @@ interface FileTableRowProps {
 
 class FileTableRow extends PureComponent<FileTableRowProps> {
 	render() {
-		const props = this.props;
-		return (<tr className={style.tableRecord}>
+		return (<TableRecord>
 			{this.renderSelectCell()}
 			{this.renderNameCell()}
 			{this.renderSizeCell()}
 			{this.renderDateCell()}
-		</tr>);
+		</TableRecord>);
 	}
 
 	private renderSelectCell(): JSX.Element {
 		const { props } = this;
 		if (props.onSelected) {
-			return (<td className={`${style.tableDataCell} ${style.tableDataCellSelect}`}>
-				<div className={style.tableCellContents}>
+			return (<td css={SelectCell}>
+				<CellPane>
 					<CheckBox name={props.entry.name}
 						checked={props.selected}
 						onClick={props.onSelected} />
-				</div>
+				</CellPane>
 			</td>);
 		}
 		return null;
 	}
 
 	private renderNameCell(): JSX.Element {
-		return (<td className={style.tableDataCell}>
-			<div className={style.tableCellContents}>
+		return (<DataCell>
+			<CellPane>
 				{this.renderName()}
 				{this.renderActions()}
-			</div>
-		</td>)
+			</CellPane>
+		</DataCell>)
 	}
 
 	private renderName(): JSX.Element {
 		const { props } = this;
 		if (props.url != null) {
-			return <a className={`${style.link} ${style.linkTable}`}
+			return <a css={TableLink}
 				href={props.url}>{props.entry.name}</a>;
 		} else {
 			return <span>{props.entry.name}</span>;
@@ -253,13 +258,13 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 
 	private renderSizeCell(): JSX.Element {
 		if (this.props.showSize)
-			return <td className={`${style.tableDataCell}`}>{formatSize(this.props.entry.size)}</td>;
+			return <DataCell>{formatSize(this.props.entry.size)}</DataCell>;
 		return null;
 	}
 
 	private renderDateCell(): JSX.Element {
 		const date = new Date(this.props.entry.mtime * 1000);
-		return <td className={`${style.tableDataCell}`}>{formatDate(date)}</td>
+		return <DataCell>{formatDate(date)}</DataCell>
 	}
 
 	private renderActions(): JSX.Element {
