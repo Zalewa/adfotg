@@ -14,7 +14,6 @@ import './res/font/amiga-topaz/readme.txt';
 import './res/font/amiga-topaz/smartfonts.com.txt';
 import './res/favicon_16.png';
 import './res/favicon_64.png';
-import './index.html';
 
 ReactDOM.render(
 	<App />,

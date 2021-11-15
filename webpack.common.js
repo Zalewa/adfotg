@@ -1,5 +1,6 @@
 var webpack = require('webpack');
 var path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isRelease = process.env.NODE_ENV === 'production';
@@ -25,7 +26,11 @@ module.exports = {
 	entry: [
 		path.resolve(__dirname, 'site/index.tsx')
 	],
-	plugins: [].concat(
+	plugins: [
+		new HtmlWebpackPlugin({
+			template: 'index.html',
+		}),
+	].concat(
 		isRelease ? [
 			new MiniCssExtractPlugin({
 				filename: "[name].css",
@@ -35,20 +40,24 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.(gif|html|jpeg|jpg|png|svg|ttf|txt)$/,
-				type: 'asset/resource',
+				test: /\.(gif|html|jpeg|jpg|png|svg|ttf|txt)$/i,
+				type: "asset/resource",
+				exclude: [
+					path.resolve(__dirname, "site/index.html"),
+				],
 			},
 			{
 				test: /\.tsx?$/,
-				use: ["babel-loader", "ts-loader"]
+				use: ["babel-loader", "ts-loader"],
+				exclude: /node_modules/,
 			},
 			{
 				enforce: "pre",
-				test: "/\.js$/",
+				test: "/\.js$/i",
 				loader: "source-map-loader"
 			},
 			{
-				test: /\.css$/,
+				test: /\.css$/i,
 				use: cssLoaders,
 				exclude: [
 					path.resolve(__dirname, "site/reset.css"),
@@ -65,11 +74,21 @@ module.exports = {
 	},
 	output: {
 		path: path.resolve(__dirname, 'site/dist'),
-		filename: 'bundle.js',
+		filename: '[name].[contenthash].js',
 		assetModuleFilename: '[path][name][ext]',
+		clean: true,
 	},
-	devServer: {
-		contentBase: path.resolve(__dirname, 'site/dist'),
-		historyApiFallback: true
-	}
+	optimization: {
+		moduleIds: 'deterministic',
+		runtimeChunk: 'single',
+		splitChunks: {
+			cacheGroups: {
+				vendor: {
+					test: /[\\/]node_modules[\\/]/,
+					name: 'vendors',
+					chunks: 'all',
+				},
+			},
+		},
+	},
 };
