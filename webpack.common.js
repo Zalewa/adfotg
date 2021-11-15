@@ -60,7 +60,6 @@ module.exports = {
 			}
 		]
 	},
-	devtool: "source-map",
 	resolve: {
 		extensions: [".ts", ".tsx", ".js", ".json"]
 	},
@@ -73,4 +72,4 @@ module.exports = {
 		contentBase: path.resolve(__dirname, 'site/dist'),
 		historyApiFallback: true
 	}
-}
+};
