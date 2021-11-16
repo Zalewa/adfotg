@@ -3,13 +3,14 @@ import { boundMethod } from 'autobind-decorator';
 import * as request from 'superagent';
 
 import { FileTableEntry } from '../component/FileTable';
-import Form, { FormItem } from '../component/Form';
 import Listing from '../component/Listing';
-import { Notification, NoteType, errorToString } from '../component/Notifier';
+import { Notification, NoteType } from '../component/Notifier';
 import Uploader from './Uploader';
-import { Button, LineInput } from '../component/ui';
+import { Button } from '../ui/Button';
+import { Form, FormItem } from '../ui/Form';
+import { LineInput } from '../ui/Input';
+import { errorToString } from '../ui/ui';
 import * as Strings from '../strings';
-
 import * as skin from '../skin';
 
 

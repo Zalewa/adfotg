@@ -3,7 +3,7 @@ import { Component } from 'react';
 import styled from '@emotion/styled';
 import { boundMethod } from 'autobind-decorator';
 
-import { Button, ButtonPurpose } from './ui';
+import { Button, ButtonPurpose } from './Button';
 
 import * as skin from '../skin';
 

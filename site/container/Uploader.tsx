@@ -6,11 +6,12 @@ import { boundMethod } from 'autobind-decorator';
 import { Actions, ActionSet } from '../component/Actions';
 import FileTable, { FileTableEntry, Field, Sort, createSort } from '../component/FileTable';
 import Listing from '../component/Listing';
-import { ConfirmModal } from '../component/Modal';
 import { Notification, Note, NoteType, dispatchApiErrors,
 	dispatchRequestError } from '../component/Notifier';
-import { Section } from '../component/Section';
-import { Button, Loader } from '../component/ui';
+import { Button } from '../ui/Button';
+import { ConfirmModal } from '../ui/Modal';
+import { Section } from '../ui/Section';
+import { Loader } from '../ui/ui';
 import * as skin from '../skin';
 
 

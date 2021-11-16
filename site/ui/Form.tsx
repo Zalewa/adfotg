@@ -1,12 +1,13 @@
 import * as React from 'react';
 import styled from '@emotion/styled';
 
-import { Notification, Note } from './Notifier';
+// ui imports from component - not great, not terrible
+import { Notification, Note } from '../component/Notifier';
 
 import * as skin from '../skin';
 
 
-const Form = styled.table({
+export const Form = styled.table({
 	borderCollapse: "separate",
 	borderSpacing: "0.25em",
 });

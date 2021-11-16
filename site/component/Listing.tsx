@@ -1,10 +1,9 @@
-import * as React from 'react';
 import { Component } from 'react';
 import styled from '@emotion/styled';
 
 import { ActionSet } from './Actions';
 import * as res from '../res';
-import { Button } from './ui';
+import { Button } from '../ui/Button';
 
 interface ListingProps {
 	listing: string[]

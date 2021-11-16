@@ -8,13 +8,15 @@ import FileTable, { FileTableEntry, Field, Sort, createSort,
 	RefreshParams}
 	from '../component/FileTable';
 import Listing from '../component/Listing';
-import { ConfirmModal } from '../component/Modal';
 import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
 import Pager, { Page } from '../component/Pager';
-import { Section, Subsection } from '../component/Section';
+import { Button } from '../ui/Button';
+import { LineInput } from '../ui/Input';
+import { ErrorLabel, Labelled } from '../ui/Label';
+import { ConfirmModal } from '../ui/Modal';
+import { Section, Subsection } from '../ui/Section';
 import * as resrc from '../res';
 import { sorted } from '../strings';
-import { Button, ErrorLabel, Labelled, LineInput } from '../component/ui';
 import * as skin from '../skin';
 
 

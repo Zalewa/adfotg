@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Component } from 'react';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
@@ -8,13 +7,13 @@ import FileTable, { FileTableEntry, Field, Sort, createSort,
 	RefreshParams }
 	from '../component/FileTable';
 import Listing from '../component/Listing';
-import Modal, { ConfirmModal } from '../component/Modal';
 import { CreateMountImage } from './Mount';
 import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
 import Pager, { Page } from '../component/Pager';
 import * as res from '../res';
-import { Section } from '../component/Section';
-import { Button } from '../component/ui';
+import { Button } from '../ui/Button';
+import Modal, { ConfirmModal } from '../ui/Modal';
+import { Section } from '../ui/Section';
 
 interface ImageLibraryProps {
 	onCreatedImage: ()=>void

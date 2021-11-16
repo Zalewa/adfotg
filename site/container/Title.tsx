@@ -8,13 +8,13 @@ import * as request from 'superagent';
 
 import { HealthBar } from './Health';
 import { dispatchRequestError } from '../component/Notifier';
-import * as responsive from '../responsive';
 import { ADFWIZARD_LINK, HOME_LINK } from '../routes';
 import Search from '../component/Search';
+import { Labelled } from '../ui/Label';
+import { Link, LinkMixin } from '../ui/Link';
 import { Table, TableRecord, HeaderCell, LabelCell, DataCell } from '../ui/Table';
-import { Labelled, Link, LinkMixin, formatSize } from '../component/ui';
-
-import * as res from '../responsive';
+import { formatSize } from '../ui/ui';
+import * as responsive from '../responsive';
 import * as skin from '../skin';
 
 interface TitleProps {
@@ -42,10 +42,10 @@ const AppTitle = css({
 	marginBottom: "10px",
 	padding: 0,
 	width: "100%",
-	[`@media (${res.tightScreen})`]: {
+	[`@media (${responsive.tightScreen})`]: {
 		fontSize: "3em",
 	},
-	[`@media (${res.normalScreen})`]: {
+	[`@media (${responsive.normalScreen})`]: {
 		fontSize: "4em",
 	},
 });

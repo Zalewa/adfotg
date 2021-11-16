@@ -3,7 +3,9 @@ import { boundMethod } from 'autobind-decorator';
 import { css } from '@emotion/react';
 
 import { ActionSet } from './Actions';
-import { CheckBox, LinkText, formatDate, formatSize } from './ui';
+import { CheckBox } from '../ui/CheckBox';
+import { LinkText } from '../ui/Link';
+import { formatDate, formatSize } from '../ui/ui';
 import { Table, TableRecord, SelectCell, TableLink, CellPane, DataCell, HeaderCell as THeaderCell, HeaderSelectCell } from '../ui/Table';
 import { Page } from './Pager';
 

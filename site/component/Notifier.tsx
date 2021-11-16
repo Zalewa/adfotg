@@ -1,10 +1,10 @@
 import { Component } from 'react';
 import { css } from '@emotion/react';
 import { rgba } from 'polished';
-import { Response, HTTPError } from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-import { Button } from './ui';
+import { Button } from '../ui/Button';
+import { errorToString } from '../ui/ui';
 
 import * as skin from '../skin';
 
@@ -32,21 +32,6 @@ export function dispatchRequestError(err: Error) {
 			type: NoteType.Error,
 			message: errorToString(err)
 		});
-	}
-}
-
-export function errorToString(err: Error): string {
-	let res: Response = (err as any).response;
-	let message: string;
-	if (res && res.body && res.body.error) {
-		message = res.body.error;
-	} else {
-		message = err.toString();
-	}
-	if (res && res.error) {
-		return (res.error as HTTPError).text + " -- " + message;
-	} else {
-		return message;
 	}
 }
 

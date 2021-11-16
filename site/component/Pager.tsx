@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { boundMethod } from 'autobind-decorator';
 
-import { LinkText, LinkTextProps } from './ui';
+import { LinkText, LinkTextProps } from '../ui/Link';
 
 export class Page {
 	public readonly start: number = 0

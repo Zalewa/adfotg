@@ -10,7 +10,7 @@ import { darken } from 'polished';
 import AdfWizard from './AdfWizard';
 import Home from './Home';
 import Notifier from '../component/Notifier';
-import { Link } from '../component/ui';
+import { Link } from '../ui/Link';
 import { HOME_LINK, ADFWIZARD_LINK } from '../routes';
 import Title from './Title';
 import * as skin from '../skin';
