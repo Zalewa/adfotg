@@ -1,8 +1,6 @@
 import * as React from 'react';
-import { Component } from 'react';
-import { BrowserRouter as Router, Route, RouteComponentProps, Switch,
-	withRouter }
-	from 'react-router-dom';
+import { Component, useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Location, useLocation } from 'react-router-dom';
 import { Global, css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import { darken } from 'polished';
@@ -47,57 +45,36 @@ export default class App extends Component {
 	}
 }
 
-type AppProps = RouteComponentProps<{}>;
+const AppRoute = () => {
+	const [ refreshSwitch, setRefreshSwitch ] = useState(false);
+	const [ search, setSearch ] = useState("");
+	const location = useLocation();
+	const [ prevLocation, setPrevLocation ] = useState(location);
 
-interface AppState {
-	refreshSwitch: boolean
-	search: string
-}
-
-const AppRoute = withRouter(
-class AppRoute extends Component<AppProps, AppState> {
-	readonly state: AppState = {
-		refreshSwitch: false,
-		search: ""
-	}
-
-	private unlisten: ()=>void;
-
-	render() {
-		return <div>
-			<Title refresh={this.state.refreshSwitch}
-				canSearch={this.canSearch()}
-				search={this.state.search}
-				onSearch={(search) => this.setState({search})} />
-			<Notifier />
-			<Switch>
-				<Route exact path={HOME_LINK} render={
-					(props) => <Home {...props} search={this.state.search} />} />
-				<Route path={ADFWIZARD_LINK} component={AdfWizard} />
-			</Switch>
-		</div>
-	}
-
-	componentDidMount() {
-		this.unlisten = this.props.history.listen((location, action) => {
-			this.setState({refreshSwitch: !this.state.refreshSwitch});
-		})
-	}
-
-	componentDidUpdate(props: AppProps) {
-		if (this.props.location.pathname !== props.location.pathname) {
-			this.setState({search: ""});
+	useEffect(() => {
+		if (prevLocation.pathname != location.pathname) {
+			setPrevLocation(location);
+			setSearch("");
 		}
+		setRefreshSwitch(!refreshSwitch);
+	}, [location]);
+
+	function canSearch(): boolean {
+		return location.pathname === HOME_LINK;
 	}
 
-	componentWillUnmount() {
-		this.unlisten();
-	}
-
-	private canSearch(): boolean {
-		return this.props.location.pathname === HOME_LINK;
-	}
-});
+	return <div>
+		<Title refresh={refreshSwitch}
+			canSearch={canSearch()}
+			search={search}
+			onSearch={(search) => setSearch(search)} />
+		<Notifier />
+		<Routes>
+			<Route index element={<Home search={search} />} />
+			<Route path={ADFWIZARD_LINK} element={<AdfWizard />} />
+		</Routes>
+	</div>
+}
 
 interface ErrorBoundaryState {
 	error: Error | null,

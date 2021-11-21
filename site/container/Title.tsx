@@ -72,7 +72,7 @@ export default class Title extends Component<TitleProps, TitleState> {
 			}}>
 				<TitleRow>
 				<TitleSection fill>
-					<AppLink css={AppTitle} exact to={HOME_LINK}>{this.state.title}</AppLink>
+					<AppLink css={AppTitle} to={HOME_LINK}>{this.state.title}</AppLink>
 				</TitleSection>
 				<TitleSection>
 					<SpaceInfo refresh={this.props.refresh} />
@@ -236,16 +236,16 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 const AppLink = (props: NavLinkProps & {children?: React.ReactNode, className?: string}) => {
 	return (<ClassNames>
 		{ ({ css }) => (
-			<NavLink exact={props.exact}
+			<NavLink
 				css={[
 					LinkMixin,
 					{
 						fontSize: "1.5em",
-						textDecoration: "none",
+						//textDecoration: "none",
 					}
 				]}
 				className={props.className}
-				activeClassName={css({textDecoration: "underline !important"})}
+				style={({ isActive }) => isActive ? {textDecoration: "underline"} : undefined }
 				to={props.to}>
 				{props.children}
 			</NavLink>
