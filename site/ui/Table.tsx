@@ -75,14 +75,14 @@ export const CellPane = (props: object) =>
 		wordBreak: "break-word",
 	}} {...props} />
 
-export const TableLink = css({
-	cursor: "pointer",
-	textDecoration: "none",
-	color: "blue",
-	"&:hover": {
-		color: "dodgerblue",
-	},
-	"&:visited": {
-		color: "blue",
-	},
-});
+export const TableLink = css`
+	color: blue;
+	cursor: pointer;
+	text-decoration: none;
+	&:visited {
+		color: blue;
+	}
+	&:hover {
+		color: dodgerblue;
+	}
+`;

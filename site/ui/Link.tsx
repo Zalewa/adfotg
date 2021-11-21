@@ -8,20 +8,20 @@ interface LinkProps {
 	children?: React.ReactNode,
 }
 
-export const LinkMixin = css({
-	color: "cyan",
-	cursor: "pointer",
-	textDecoration: "none",
-	"&:focus": {
-		outline: "none",
-	},
-	"&:hover": {
-		color: "gold !important",
-	},
-	"&:visited": {
-		color: "cyan",
+export const LinkMixin = css`
+	color: cyan;
+	cursor: pointer;
+	text-decoration: none;
+	&:focus {
+		outline: none;
 	}
-})
+	&:visited {
+		color: cyan;
+	}
+	&:hover {
+		color: gold;
+	}
+`;
 
 export const Link = (props: LinkProps) =>
 	<a css={LinkMixin} {...props} />
