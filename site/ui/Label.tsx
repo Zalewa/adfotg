@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 import { errorToString } from './ui';
 import * as skin from '../skin';
 
@@ -9,7 +11,7 @@ export const ErrorLabel = (props: {error: Error}) =>
 
 interface LabelledProps {
 	label: string,
-	contents: string|number,
+	contents: ReactNode
 	title?: string
 }
 
