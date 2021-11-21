@@ -1,6 +1,5 @@
 import { Component } from 'react';
-import { NavLink, NavLinkProps } from 'react-router-dom';
-import { ClassNames, css } from '@emotion/react';
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { rgba } from 'polished';
 import { boundMethod } from 'autobind-decorator';
@@ -11,7 +10,7 @@ import { dispatchRequestError } from '../component/Notifier';
 import { ADFWIZARD_LINK, HOME_LINK } from '../routes';
 import Search from '../component/Search';
 import { Labelled } from '../ui/Label';
-import { Link, LinkMixin } from '../ui/Link';
+import { AppLink, AppLinkProps, Link } from '../ui/Link';
 import { Table, TableRecord, HeaderCell, LabelCell, DataCell } from '../ui/Table';
 import { formatSize } from '../ui/ui';
 import * as responsive from '../responsive';
@@ -72,7 +71,7 @@ export default class Title extends Component<TitleProps, TitleState> {
 			}}>
 				<TitleRow>
 				<TitleSection fill>
-					<AppLink css={AppTitle} to={HOME_LINK}>{this.state.title}</AppLink>
+					<TitleAppLink css={AppTitle} to={HOME_LINK}>{this.state.title}</TitleAppLink>
 				</TitleSection>
 				<TitleSection>
 					<SpaceInfo refresh={this.props.refresh} />
@@ -85,7 +84,7 @@ export default class Title extends Component<TitleProps, TitleState> {
 				</TitleRow>
 				<TitleRow>
 					<TitleSection fill>
-						<AppLink to={ADFWIZARD_LINK}>Create ADFs</AppLink>
+						<TitleAppLink to={ADFWIZARD_LINK}>Create ADFs</TitleAppLink>
 					</TitleSection>
 					{this.renderSearch()}
 				</TitleRow>
@@ -233,22 +232,8 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	}
 }
 
-const AppLink = (props: NavLinkProps & {children?: React.ReactNode, className?: string}) => {
-	return (<ClassNames>
-		{ ({ css }) => (
-			<NavLink
-				css={[
-					LinkMixin,
-					{
-						fontSize: "1.5em",
-						//textDecoration: "none",
-					}
-				]}
-				className={props.className}
-				style={({ isActive }) => isActive ? {textDecoration: "underline"} : undefined }
-				to={props.to}>
-				{props.children}
-			</NavLink>
-		)}
-	</ClassNames>)
-}
+const TitleAppLink = (props: AppLinkProps) =>
+	<AppLink
+		css={{
+			fontSize: "1.5em",
+		}} {...props} />;

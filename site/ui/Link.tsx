@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { NavLink, NavLinkProps } from 'react-router-dom';
 import { css } from '@emotion/react';
 
 interface LinkProps {
@@ -38,3 +39,16 @@ export const LinkText = (props: LinkTextProps) =>
 		onClick={(e) => {props.onClick(e); return false;}}>
 		{props.children}
 	</span>;
+
+
+export interface AppLinkProps extends NavLinkProps {
+	children?: React.ReactNode
+	className?: string
+}
+
+export const AppLink = (props: AppLinkProps) =>
+	<NavLink
+		css={LinkMixin}
+		className={props.className}
+		style={({ isActive }) => isActive ? {textDecoration: "underline"} : undefined }
+		to={props.to} children={props.children} />;
