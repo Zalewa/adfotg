@@ -2,7 +2,10 @@ import { errorToString } from './ui';
 import * as skin from '../skin';
 
 export const ErrorLabel = (props: {error: Error}) =>
-	<div>{errorToString(props.error)}</div>;
+	<div>
+		<span css={{color: skin.dangerColor}}>Error: </span>
+		{errorToString(props.error)}
+	</div>;
 
 interface LabelledProps {
 	label: string,

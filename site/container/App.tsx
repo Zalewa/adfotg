@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { Component, useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Location, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Global, css, keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import { darken } from 'polished';
 
 import AdfWizard from './AdfWizard';
 import Home from './Home';
+import InspectMountImage from './InspectMountImage';
 import Notifier from '../component/Notifier';
 import { Link } from '../ui/Link';
 import { HOME_LINK, ADFWIZARD_LINK } from '../routes';
@@ -72,6 +73,9 @@ const AppRoute = () => {
 		<Routes>
 			<Route index element={<Home search={search} />} />
 			<Route path={ADFWIZARD_LINK} element={<AdfWizard />} />
+			<Route path="inspect">
+				<Route path="mountimg/*" element={<InspectMountImage />} />
+			</Route>
 		</Routes>
 	</div>
 }
