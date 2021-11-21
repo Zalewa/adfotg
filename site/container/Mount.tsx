@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Component } from 'react';
+import { Component, ReactNode } from 'react';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
@@ -14,8 +14,10 @@ import Pager, { Page } from '../component/Pager';
 import { Button } from '../ui/Button';
 import { LineInput } from '../ui/Input';
 import { ErrorLabel } from '../ui/Label';
+import { AppLink } from '../ui/Link';
 import { ConfirmModal } from '../ui/Modal';
 import { Section, Subsection } from '../ui/Section';
+import { TableLink } from '../ui/Table';
 import * as resrc from '../res';
 import { sorted } from '../strings';
 import * as skin from '../skin';
@@ -41,7 +43,6 @@ interface MountState {
 	imagesListing: FileTableEntry[]
 	imagesListingTotal: number
 	imagesSelection: FileTableEntry[]
-	inspectedImage: string
 	sortImages: Sort
 	deleteSelected: boolean
 	refreshCounter: number
@@ -58,7 +59,6 @@ export default class Mount extends Component<MountProps, MountState> {
 		imagesListing: [],
 		imagesListingTotal: 0,
 		imagesSelection: [],
-		inspectedImage: null,
 		sortImages: createSort(Field.Name),
 		deleteSelected: false,
 		refreshCounter: 0,
@@ -69,7 +69,6 @@ export default class Mount extends Component<MountProps, MountState> {
 		return (<Section title="Mounting">
 			{this.state.deleteSelected && this.renderDeleteSelected()}
 			{this.renderMountStatus()}
-			{this.renderImageInspection()}
 			<Actions>
 				<ActionSet right={true}>
 					<Button purpose="delete"
@@ -84,7 +83,8 @@ export default class Mount extends Component<MountProps, MountState> {
 				fileLinkPrefix="/api/mountimg"
 				selected={this.state.imagesSelection}
 				onSelected={this.onImagesSelected}
-				renderFileActions={(name) => this.renderFileActions(name)}
+				renderName={(entry) => this.renderName(entry)}
+				renderFileActions={(entry) => this.renderFileActions(entry)}
 				/>
 			<Pager page={this.state.page} total={this.state.imagesListingTotal}
 				onPageChanged={page => this.refreshImages({page})} />
@@ -103,6 +103,10 @@ export default class Mount extends Component<MountProps, MountState> {
 		}
 	}
 
+	private renderName(file: FileTableEntry): ReactNode {
+		return <AppLink css={TableLink} to={`/inspect/mountimg/${file.name}`}>{file.name}</AppLink>;
+	}
+
 	private renderFileActions(file: FileTableEntry): JSX.Element {
 		const self = this;
 		function canMount() {
@@ -119,8 +123,6 @@ export default class Mount extends Component<MountProps, MountState> {
 		const mountTitle = canMount() ? "Mount this image" : cannotMountReason();
 
 		return (<ActionSet>
-			<Button table title="Inspect" icon={resrc.looking_glass}
-					onClick={() => this.setState({inspectedImage: file.name})} />
 			<Button table title={mountTitle} icon={resrc.usb_icon_horz}
 					disabled={!canMount()}
 					onClick={() => this.mount(file.name)} />
@@ -140,21 +142,6 @@ export default class Mount extends Component<MountProps, MountState> {
 				onUnmount={this.unmount}
 				/>
 		</Subsection>);
-	}
-
-	private renderImageInspection(): JSX.Element {
-		if (this.state.inspectedImage) {
-			return (<Subsection title="Inspect Image">
-				<div css={{position: "absolute", right: 0, top: 0}}>
-					<Button title="Close"
-						onClick={() => this.setState({inspectedImage: null})} />
-				</div>
-				<MountImage name={this.state.inspectedImage}
-					refreshCounter={this.state.refreshCounter} />
-			</Subsection>);
-		} else {
-			return null;
-		}
 	}
 
 	private refresh(args?: RefreshParams): void {
