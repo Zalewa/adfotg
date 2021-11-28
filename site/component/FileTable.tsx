@@ -1,4 +1,4 @@
-import { Component, PureComponent } from 'react';
+import { Component, PureComponent, ReactNode } from 'react';
 import { boundMethod } from 'autobind-decorator';
 import { css } from '@emotion/react';
 
@@ -45,7 +45,7 @@ export function createSort(field: Field, oldSort?: Sort): Sort {
 	return {field: field, ascending: ascending}
 }
 
-type FileRenderFunc = (file: FileTableEntry) => JSX.Element;
+type FileRenderFunc = (file: FileTableEntry) => ReactNode;
 
 interface FileTableProps {
 	listing: FileTableEntry[]
@@ -55,6 +55,7 @@ interface FileTableProps {
 	selected: FileTableEntry[],
 	sort: Sort,
 	fileLinkPrefix?: string
+	renderName?: FileRenderFunc
 	renderFileActions?: FileRenderFunc
 }
 
@@ -75,10 +76,12 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 	render() {
 		let rows: JSX.Element[] = [];
 		if (this.props.listing) {
+			const renderName = this.props.renderName || this.renderEntryUrl;
 			this.props.listing.forEach((e: FileTableEntry) => {
 				rows.push(<FileTableRow
 					entry={e} key={e.name} showSize={this.props.showSize}
-					url={this.entryUrl(e)} renderFileActions={this.props.renderFileActions}
+					renderName={renderName}
+					renderFileActions={this.props.renderFileActions}
 					selected={this.isSelected(e.name)}
 					onSelected={this.props.onSelected && this.onSelect || null}
 				/>);
@@ -93,6 +96,16 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 				</tbody>
 			</Table>
 		);
+	}
+
+	@boundMethod
+	private renderEntryUrl(entry: FileTableEntry) {
+		const url = this.entryUrl(entry);
+		if (url != null) {
+			return <a css={TableLink} href={url}>{entry.name}</a>;
+		} else {
+			return <span>{entry.name}</span>;
+		}
 	}
 
 	private entryUrl(entry: FileTableEntry) {
@@ -212,6 +225,7 @@ interface FileTableRowProps {
 	selected: boolean,
 	onSelected: (name: string) => void,
 	url?: string
+	renderName: FileRenderFunc
 	renderFileActions: FileRenderFunc
 }
 
@@ -248,14 +262,8 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 		</DataCell>)
 	}
 
-	private renderName(): JSX.Element {
-		const { props } = this;
-		if (props.url != null) {
-			return <a css={TableLink}
-				href={props.url}>{props.entry.name}</a>;
-		} else {
-			return <span>{props.entry.name}</span>;
-		}
+	private renderName(): ReactNode {
+		return this.props.renderName(this.props.entry);
 	}
 
 	private renderSizeCell(): JSX.Element {

@@ -84,6 +84,25 @@ def get_mount_image_contents(imgname):
     return jsonify(img.list())
 
 
+@api.route("/<imgname>/stat", methods=["GET"])
+def get_mount_image_stat(imgname):
+    '''Gets the file stat entry of the mount image.
+
+    Returns: A FileEntry object.
+
+    Errors:
+    - 404 -- if the mount image is not found
+    '''
+    listing = Listing(request)
+    if os.path.exists(config.mount_images_dir):
+        full_list = storage.listdir(config.mount_images_dir,
+                                    name_filter=lambda name: name == imgname)
+        for entry in full_list:
+            if entry["name"] == imgname:
+                return jsonify(entry)
+    return apierr(404, "image not found")
+
+
 @api.route("/<imgname>/contents/<filename>", methods=["GET"])
 def get_file_from_mount_image(imgname, filename):
     '''

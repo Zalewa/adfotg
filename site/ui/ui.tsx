@@ -14,10 +14,12 @@ export function errorToString(err: Error): string {
 		message = err.toString();
 	}
 	if (res && res.error) {
-		return (res.error as HTTPError).text + " -- " + message;
-	} else {
-		return message;
+		const text = (res.error as HTTPError).text;
+		if (text) {
+			message = text + " -- " + message;
+		}
 	}
+	return message;
 }
 
 /**
