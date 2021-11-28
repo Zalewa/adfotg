@@ -5,7 +5,10 @@ export const Loader = (props: {className?: string}) =>
 	<img src={res.loader} className={props.className} />;
 
 
-export function errorToString(err: Error): string {
+export function errorToString(err: Error | string): string {
+	if (typeof(err) === "string")
+		return err;
+
 	let res: Response = (err as any).response;
 	let message: string;
 	if (res && res.body && res.body.error) {

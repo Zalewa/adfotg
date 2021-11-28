@@ -31,15 +31,19 @@ const enum MountStatus {
 	OtherImageMounted = "other_image_mounted"
 }
 
+interface MountInfo {
+	error?: string
+	mountStatus: MountStatus
+	mountedImageName: string
+}
+
 interface MountProps {
 	refresh: boolean
 	search: string
 }
 
 interface MountState {
-	mountStatus: MountStatus
-	error?: string
-	mountedImageName: string
+	mountInfo: MountInfo
 	imagesListing: FileTableEntry[]
 	imagesListingTotal: number
 	imagesSelection: FileTableEntry[]
@@ -53,9 +57,7 @@ const PAGE_SIZE = 50;
 
 export default class Mount extends Component<MountProps, MountState> {
 	readonly state: MountState = {
-		mountStatus: null,
-		error: null,
-		mountedImageName: "",
+		mountInfo: null,
 		imagesListing: [],
 		imagesListingTotal: 0,
 		imagesSelection: [],
@@ -68,7 +70,8 @@ export default class Mount extends Component<MountProps, MountState> {
 	render() {
 		return (<Section title="Mounting">
 			{this.state.deleteSelected && this.renderDeleteSelected()}
-			{this.renderMountStatus()}
+			<MountArea mountInfo={this.state.mountInfo} onUnmount={this.unmount}
+				refreshCounter={this.state.refreshCounter} />
 			<Actions>
 				<ActionSet right={true}>
 					<Button purpose="delete"
@@ -108,14 +111,14 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	private renderFileActions(file: FileTableEntry): JSX.Element {
-		const self = this;
+		const mountStatus = this.state.mountInfo && this.state.mountInfo.mountStatus
 		function canMount() {
-			return self.state.mountStatus === MountStatus.Unmounted;
+			return mountStatus === MountStatus.Unmounted;
 		}
 		function cannotMountReason() {
-			if (self.state.mountStatus === MountStatus.Mounted)
+			if (mountStatus === MountStatus.Mounted)
 				return "Currently mounted image must be unmounted first.";
-			else if (self.state.mountStatus == null)
+			else if (mountStatus == null)
 				return "Cannot mount as current mount status is unknown.";
 			else
 				return "Current mount status forbids mounting an image.";
@@ -129,34 +132,19 @@ export default class Mount extends Component<MountProps, MountState> {
 		</ActionSet>);
 	}
 
-	private renderMountStatus(): JSX.Element {
-		return (<Subsection title="Mounted Image">
-			<MountStatusDisplay {...this.state} />
-			{this.state.mountedImageName && (
-				<MountImage showName={false} name={this.state.mountedImageName}
-					refreshCounter={this.state.refreshCounter} />)
-			}
-			<MountActions mountStatus={this.state.mountStatus}
-				images={this.state.imagesSelection.map(e => e.name)}
-				onMount={this.mount}
-				onUnmount={this.unmount}
-				/>
-		</Subsection>);
-	}
-
 	private refresh(args?: RefreshParams): void {
-		this.setState({})
+		this.setState({});
 		request.get("/api/mount").end((err, res) => {
 			dispatchRequestError(err);
 			let mountStatus: MountStatus = null;
 			if (!err) {
 				mountStatus = res.body.status;
 			}
-			this.setState({
+			this.setState({mountInfo: {
 				mountStatus: mountStatus,
 				error: err ? err.toString() : res.body.error,
 				mountedImageName: res.body.file
-			});
+			}});
 		})
 		this.refreshImages(args);
 	}
@@ -241,6 +229,27 @@ export default class Mount extends Component<MountProps, MountState> {
 			});
 	}
 }
+
+interface MountAreaProps {
+	refreshCounter: number
+	mountInfo: MountInfo
+	onUnmount: () => void
+}
+
+const MountArea = (props: MountAreaProps) => {
+	return (<Subsection title="Mounted Image">
+		{props.mountInfo && (<>
+			<MountStatusDisplay {...props.mountInfo} />
+			{props.mountInfo.mountedImageName &&
+				<MountImage showName={false} name={props.mountInfo.mountedImageName}
+					refreshCounter={props.refreshCounter} />
+			}
+			<MountActions mountStatus={props.mountInfo.mountStatus}
+				onUnmount={props.onUnmount}
+			/>
+		</>)}
+	</Subsection>);
+};
 
 export interface CreateMountImageProps {
 	adfs: string[]
@@ -353,7 +362,11 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 	}
 }
 
-interface MountStatusProps extends MountState {}
+interface MountStatusProps {
+	error?: string
+	mountStatus: MountStatus
+	mountedImageName: string
+}
 
 type Display = {
 	text: string;
@@ -367,6 +380,7 @@ class MountStatusDisplay extends Component<MountStatusProps> {
 			<span css={{color: display.color}}>{display.text}</span>
 			{this.props.mountedImageName &&
 				<span>{this.props.mountedImageName}</span>}
+			{this.props.error && <ErrorLabel error={this.props.error} />}
 		</div>
 	}
 
@@ -391,9 +405,7 @@ class MountStatusDisplay extends Component<MountStatusProps> {
 }
 
 interface MountActionsProps {
-	images: string[],
 	mountStatus: MountStatus,
-	onMount: (image: string)=>void,
 	onUnmount: ()=>void,
 }
 
