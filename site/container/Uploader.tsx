@@ -5,7 +5,7 @@ import { boundMethod } from 'autobind-decorator';
 
 import { Actions, ActionSet } from '../component/Actions';
 import FileTable, { FileTableEntry, Field, Sort, createSort } from '../component/FileTable';
-import Listing from '../component/Listing';
+import List from '../ui/List';
 import { Notification, Note, NoteType, dispatchApiErrors,
 	dispatchRequestError } from '../component/Notifier';
 import { Button } from '../ui/Button';
@@ -78,7 +78,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 				onCancel={() => this.setState({deleteSelected: false})}
 				acceptText="Delete"
 				acceptPurpose="delete">
-			<Listing listing={this.state.selection.map(e => e.name)} />
+			<List listing={this.state.selection.map(e => e.name)} />
 		</ConfirmModal>)
 	}
 

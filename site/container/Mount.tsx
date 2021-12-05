@@ -7,7 +7,7 @@ import { Actions, ActionSet } from '../component/Actions';
 import FileTable, { FileTableEntry, Field, Sort, createSort,
 	RefreshParams}
 	from '../component/FileTable';
-import Listing from '../component/Listing';
+import List from '../ui/List';
 import { MountImage } from '../component/MountImage';
 import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
 import Pager, { Page } from '../component/Pager';
@@ -212,7 +212,7 @@ export default class Mount extends Component<MountProps, MountState> {
 				onCancel={() => this.setState({deleteSelected: false})}
 				acceptText="Delete"
 				acceptPurpose="delete">
-			<Listing listing={this.state.imagesSelection.map(e => e.name)} />
+			<List listing={this.state.imagesSelection.map(e => e.name)} />
 		</ConfirmModal>)
 	}
 
@@ -285,7 +285,7 @@ export class CreateMountImage extends React.Component<CreateMountImageProps, Cre
 	private renderWorkspace(): JSX.Element {
 		return (<div>
 			<span>Create Mount Image with following ADFs:</span>
-			<Listing listing={this.state.sortedAdfs}
+			<List listing={this.state.sortedAdfs}
 				onOrderChange={(sortedAdfs) => this.setState({sortedAdfs})} />
 			<Actions submit fullrow>
 			<ActionSet>

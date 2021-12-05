@@ -6,7 +6,7 @@ import { Actions, ActionSet } from '../component/Actions';
 import FileTable, { FileTableEntry, Field, Sort, createSort,
 	RefreshParams }
 	from '../component/FileTable';
-import Listing from '../component/Listing';
+import List from '../ui/List';
 import { CreateMountImage } from './Mount';
 import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
 import Pager, { Page } from '../component/Pager';
@@ -97,7 +97,7 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 					onCancel={() => this.setState({deleteSelected: false})}
 					acceptText="Delete"
 					acceptPurpose="delete">
-				<Listing listing={this.state.selection.map(e => e.name)} />
+				<List listing={this.state.selection.map(e => e.name)} />
 			</ConfirmModal>)
 		}
 		return null;

@@ -1,11 +1,11 @@
 import { Component } from 'react';
 import styled from '@emotion/styled';
 
-import { ActionSet } from './Actions';
+import { ActionSet } from '../component/Actions';
 import * as res from '../res';
-import { Button } from '../ui/Button';
+import { Button } from './Button';
 
-interface ListingProps {
+interface ListProps {
 	listing: string[]
 	className?: string
 	onOrderChange?: (listing: string[]) => void
@@ -22,7 +22,7 @@ const Record = styled.li({
 	},
 })
 
-export default class Listing extends Component<ListingProps> {
+export default class List extends Component<ListProps> {
 	render() {
 		const { props } = this;
 		if (props.listing.length > 0) {
@@ -60,26 +60,26 @@ export default class Listing extends Component<ListingProps> {
 
 	private moveUp(entry_idx: number): void {
 		if (entry_idx > 0) {
-			this.swapListing(entry_idx, entry_idx - 1);
+			this.swapRecord(entry_idx, entry_idx - 1);
 		}
 	}
 
 	private moveDown(entry_idx: number): void {
 		if (entry_idx < this.props.listing.length - 1) {
-			this.swapListing(entry_idx, entry_idx + 1);
+			this.swapRecord(entry_idx, entry_idx + 1);
 		}
 	}
 
-	private swapListing(idx_a: number, idx_b: number): void {
+	private swapRecord(idx_a: number, idx_b: number): void {
 		let listing = this.props.listing.slice();
 		listing = this.swap(listing, idx_a, idx_b);
 		this.props.onOrderChange(listing);
 	}
 
-	private swap<T>(listing: T[], a: number, b: number): T[] {
-		let elem = listing[a];
-		listing[a] = listing[b];
-		listing[b] = elem;
-		return listing
+	private swap<T>(records: T[], a: number, b: number): T[] {
+		let elem = records[a];
+		records[a] = records[b];
+		records[b] = elem;
+		return records
 	}
 }

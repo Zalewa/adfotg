@@ -3,7 +3,7 @@ import { boundMethod } from 'autobind-decorator';
 import * as request from 'superagent';
 
 import { FileTableEntry } from '../component/FileTable';
-import Listing from '../component/Listing';
+import List from '../ui/List';
 import { Notification, NoteType } from '../component/Notifier';
 import Uploader from './Uploader';
 import { Button } from '../ui/Button';
@@ -280,8 +280,8 @@ class DiskForm extends Component<DiskFormProps, DiskFormState> {
 						onChange={e => props.onLabelEdited(e.target.value)} />
 				</FormItem>
 				<FormItem label="Contents">
-					<Listing css={{outline: "unset", maxHeight: "800px"}}
-						listing={this.items()}></Listing>
+					<List css={{outline: "unset", maxHeight: "800px"}}
+						listing={this.items()}></List>
 				</FormItem>
 			</Form>
 		</div>)
