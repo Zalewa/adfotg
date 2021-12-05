@@ -4,7 +4,8 @@ import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 import { Actions, ActionSet } from '../component/Actions';
-import FileTable, { FileTableEntry, Field, Sort, createSort,
+import { Sort, createSort } from '../app/Storage';
+import FileTable, { FileTableEntry, Field,
 	RefreshParams}
 	from '../component/FileTable';
 import List from '../ui/List';
@@ -157,8 +158,8 @@ export default class Mount extends Component<MountProps, MountState> {
 					 ? args.search : this.props.search;
 		request.get("/api/mountimg").query({
 			filter: search,
-			sort: sort.field,
-			dir: sort.ascending ? "asc" : "desc",
+			sort: sort.attr,
+			dir: sort.dir,
 			start: page.start,
 			limit: page.limit
 		}).end((err, res) => {

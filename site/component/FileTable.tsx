@@ -1,8 +1,9 @@
 import { Component, PureComponent, ReactNode } from 'react';
 import { boundMethod } from 'autobind-decorator';
-import { css } from '@emotion/react';
 
 import { ActionSet } from './Actions';
+import { FileRecord, FileAttr, Sort } from '../app/Storage';
+
 import { CheckBox } from '../ui/CheckBox';
 import { LinkText } from '../ui/Link';
 import { formatDate, formatSize } from '../ui/ui';
@@ -11,39 +12,8 @@ import { Page } from './Pager';
 
 import * as responsive from '../responsive';
 
-export const enum Field {
-	Name = "name",
-	Size = "size",
-	Mtime = "mtime"
-}
-
-/// true - ascending, false - descending
-const DEFAULT_SORTING: Map<Field, boolean> = new Map<Field, boolean>([
-	[Field.Name, true],
-	[Field.Size, false],
-	[Field.Mtime, false]
-]);
-
-export interface FileTableEntry {
-	name: string,
-	mtime: number,
-	size: number;
-}
-
-export interface Sort {
-	field: Field,
-	ascending: boolean
-}
-
-export function createSort(field: Field, oldSort?: Sort): Sort {
-	let ascending: boolean = DEFAULT_SORTING.get(field);
-	if (oldSort) {
-		if (field == oldSort.field) {
-			ascending = !oldSort.ascending;
-		}
-	}
-	return {field: field, ascending: ascending}
-}
+export import Field = FileAttr;
+export type FileTableEntry = FileRecord;
 
 type FileRenderFunc = (file: FileTableEntry) => ReactNode;
 
@@ -202,21 +172,13 @@ interface HeaderCellProps extends FileTableProps {
 }
 
 const HeaderCell = (props: HeaderCellProps) => {
-	const sortedBy: boolean = props.sort && props.sort.field == props.field;
-	let sort = null;
-	if (sortedBy) {
-		if (props.sort.ascending)
-			sort = css({});
-		else
-			sort = css({});
-	}
 	let label: JSX.Element;
 	if (props.onHeaderClick) {
 		label = <LinkText css={TableLink} onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>;
 	} else {
 		label = <span>{props.label}</span>
 	}
-	return <THeaderCell css={sort} className={props.className} rightmost={props.rightmost}>{label}</THeaderCell>;
+	return <THeaderCell className={props.className} rightmost={props.rightmost}>{label}</THeaderCell>;
 }
 
 interface FileTableRowProps {

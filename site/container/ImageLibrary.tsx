@@ -3,13 +3,11 @@ import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 import { Actions, ActionSet } from '../component/Actions';
-import FileTable, { FileTableEntry, Field, Sort, createSort,
-	RefreshParams }
-	from '../component/FileTable';
+import { FileTableEntry, } from '../component/FileTable';
+import { AdfTable } from '../component/FileTables';
 import List from '../ui/List';
 import { CreateMountImage } from './Mount';
 import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
-import Pager, { Page } from '../component/Pager';
 import * as res from '../res';
 import { Button } from '../ui/Button';
 import Modal, { ConfirmModal } from '../ui/Modal';
@@ -24,12 +22,9 @@ interface ImageLibraryProps {
 
 interface ImageLibraryState {
 	createImage: boolean
-	listing: FileTableEntry[]
-	listingTotal: number
-	sort: Sort
 	selection: FileTableEntry[]
 	deleteSelected: boolean
-	page: Page
+	refresh: number
 }
 
 const PAGE_SIZE = 50;
@@ -37,37 +32,24 @@ const PAGE_SIZE = 50;
 export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibraryState> {
 	state: Readonly<ImageLibraryState> = {
 		createImage: false,
-		listing: [],
-		listingTotal: 0,
-		sort: createSort(Field.Name),
 		selection: [],
 		deleteSelected: false,
-		page: new Page(0, PAGE_SIZE),
+		refresh: 0,
 	}
 
 	render() {
 		return (<Section title="ADFs">
 			{this.renderModal()}
 			{this.renderActions()}
-			<FileTable listing={this.state.listing}
-				showSize={false} onHeaderClick={this.onHeaderClick}
+			<AdfTable
+				search={this.props.search}
+				refresh={this.state.refresh}
+				pageSize={PAGE_SIZE}
 				selected={this.state.selection}
 				onSelected={this.onImagesSelected}
-				sort={this.state.sort} fileLinkPrefix="/api/adf/image"
-				renderFileActions={this.renderFileActions} />
-			<Pager page={this.state.page} total={this.state.listingTotal}
-				onPageChanged={page => this.refresh({page})} />
+				onRenderFileActions={this.renderFileActions}
+			/>
 		</Section>);
-	}
-
-	componentDidMount() {
-		this.refresh();
-	}
-
-	componentDidUpdate(props: ImageLibraryProps) {
-		if (this.props.refresh !== props.refresh || this.props.search !== props.search) {
-			this.refresh({search: this.props.search});
-		}
 	}
 
 	private renderActions(): JSX.Element {
@@ -120,11 +102,6 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	}
 
 	@boundMethod
-	private onHeaderClick(field: Field) {
-		this.refresh({sort: createSort(field, this.state.sort)});
-	}
-
-	@boundMethod
 	private onImagesSelected(entries: FileTableEntry[]) {
 		this.setState({selection: entries});
 	}
@@ -148,34 +125,11 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 				dispatchRequestError(err);
 				if (res.body)
 					dispatchApiErrors('Delete ADFs', res.body);
-				this.setState({selection: [], deleteSelected: false})
-				this.refresh();
+				this.setState({
+					selection: [],
+					deleteSelected: false,
+					refresh: this.state.refresh + 1,
+				})
 			});
-	}
-
-	private refresh(args?: RefreshParams): void {
-		args = args || {};
-		const sort = args.sort || this.state.sort;
-		const page = args.page || this.state.page;
-		const search = (args.search !== undefined && args.search !== null)
-					 ? args.search : this.props.search;
-		request.get("/api/adf/image").query({
-			filter: search,
-			sort: sort.field,
-			dir: sort.ascending ? 'asc' : 'desc',
-			start: page.start,
-			limit: page.limit
-		}).end((err, res) => {
-			dispatchRequestError(err);
-			let listing: FileTableEntry[] = [];
-			let listingTotal: number = 0;
-			if (!err) {
-				listing = res.body.listing;
-				listingTotal = res.body.total;
-			}
-			this.setState({listing, listingTotal, sort, page});
-			if (page.start != 0 && page.start > listingTotal)
-				this.refresh({page: new Page(0, page.limit)});
-		})
 	}
 }

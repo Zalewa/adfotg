@@ -3,8 +3,9 @@ import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
+import { Sort, createSort } from '../app/Storage';
 import { Actions, ActionSet } from '../component/Actions';
-import FileTable, { FileTableEntry, Field, Sort, createSort } from '../component/FileTable';
+import FileTable, { FileTableEntry, Field } from '../component/FileTable';
 import List from '../ui/List';
 import { Notification, Note, NoteType, dispatchApiErrors,
 	dispatchRequestError } from '../component/Notifier';
@@ -120,8 +121,8 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 
 	private refreshUploads(sort: Sort) {
 		request.get("/api/upload").query({
-			sort: sort.field,
-			dir: sort.ascending ? "asc" : "desc"
+			sort: sort.attr,
+			dir: sort.dir
 		}).end((err, res) => {
 			dispatchRequestError(err);
 			let listing: FileTableEntry[] = [];
@@ -225,15 +226,5 @@ class UploadZone extends Component<UploadZoneProps, UploadZoneState> {
 			this.resetTimer = null;
 			this.setState({uploadSuccess: null});
 		}, 2000);
-	}
-}
-
-class ListerProps {
-	listing: any[]
-}
-
-class Lister extends Component<ListerProps> {
-	render() {
-		return <FileTable listing={this.props.listing} />
 	}
 }
