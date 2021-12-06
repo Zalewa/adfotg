@@ -3,25 +3,33 @@ import { ReactNode, useEffect, useState } from 'react';
 import FileTable, { FileTableEntry } from "./FileTable";
 import Pager, { Page } from './Pager';
 import { dispatchRequestError } from './Notifier';
-import { AdfOps, FileAttr, FileRecord, ListResult, createSort } from "../app/Storage";
+import { AdfOps, FileOps, MountImagesOps,
+	FileAttr, FileRecord, ListResult, createSort } from "../app/Storage";
 
-interface AdfTableProps {
+interface CommonTableProps {
 	search: string,
 	refresh: number,
 	pageSize: number,
 	selected: FileTableEntry[],
 	onSelected?: (entries: FileTableEntry[]) => void,
 	onRenderFileActions?: (file: FileTableEntry) => ReactNode,
+	onRenderName?: (file: FileTableEntry) => ReactNode,
 }
 
-export const AdfTable = (props: AdfTableProps) => {
+interface CommonTablePrivateProps {
+	ops: FileOps,
+	fileLinkPrefix: string,
+	showSize: boolean,
+}
+
+const CommonTable = (props: CommonTableProps & CommonTablePrivateProps) => {
 	const [sort, setSort] = useState(createSort(FileAttr.Name));
 	const [start, setStart] = useState(0);
 	const [listing, setListing] = useState<FileRecord[]>([]);
 	const [total, setTotal] = useState(0);
 
 	useEffect(() => {
-		AdfOps.list({
+		props.ops.list({
 			filter: props.search,
 			sort: sort,
 			start: start,
@@ -37,12 +45,13 @@ export const AdfTable = (props: AdfTableProps) => {
 	return (<>
 		<FileTable
 			listing={listing}
-			showSize={false}
+			showSize={props.showSize}
 			sort={sort}
 			selected={props.selected}
 			onSelected={props.onSelected}
-			fileLinkPrefix="/api/adf/image"
+			fileLinkPrefix={props.fileLinkPrefix}
 			onHeaderClick={(field: FileAttr) => setSort(createSort(field, sort))}
+			renderName={props.onRenderName}
 			renderFileActions={props.onRenderFileActions}
 		/>
 		<Pager
@@ -52,3 +61,13 @@ export const AdfTable = (props: AdfTableProps) => {
 		/>
 	</>);
 }
+
+CommonTable.defaultProps = {
+	showSize: true,
+};
+
+export const AdfTable = (props: CommonTableProps) =>
+	<CommonTable ops={AdfOps} showSize={false} fileLinkPrefix="/api/adf/image" {...props} />;
+
+export const MountImagesTable = (props: CommonTableProps) =>
+	<CommonTable ops={MountImagesOps} fileLinkPrefix="/api/mountimg" {...props} />

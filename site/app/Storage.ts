@@ -47,7 +47,7 @@ export interface ListResult {
 
 type ListOp = (opts: ListOptions) => Promise<ListResult>;
 
-interface FileOps {
+export interface FileOps {
 	list: ListOp
 }
 
@@ -75,5 +75,11 @@ function listQuery(endpoint: string, opts: ListOptions) {
 export const AdfOps: FileOps = {
 	list: function(opts: ListOptions) {
 		return listQuery('/api/adf/image', opts);
+	}
+}
+
+export const MountImagesOps: FileOps = {
+	list: function(opts: ListOptions) {
+		return listQuery('/api/mountimg', opts);
 	}
 }
