@@ -83,3 +83,9 @@ export const MountImagesOps: FileOps = {
 		return listQuery('/api/mountimg', opts);
 	}
 }
+
+export const UploadOps: FileOps = {
+	list: function(opts: ListOptions) {
+		return listQuery('/api/upload', opts);
+	}
+}

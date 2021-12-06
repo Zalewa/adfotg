@@ -3,9 +3,9 @@ import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-import { Sort, createSort } from '../app/Storage';
 import { Actions, ActionSet } from '../component/Actions';
-import FileTable, { FileTableEntry, Field } from '../component/FileTable';
+import { FileTableEntry } from '../component/FileTable';
+import { UploadTable } from '../component/StorageTables';
 import List from '../ui/List';
 import { Notification, Note, NoteType, dispatchApiErrors,
 	dispatchRequestError } from '../component/Notifier';
@@ -23,18 +23,18 @@ interface UploaderProps {
 }
 
 interface UploaderState {
-	listing: FileTableEntry[]
 	selection: FileTableEntry[]
-	sort: Sort
 	deleteSelected: boolean
+	refresh: number
 }
+
+const PAGE_SIZE = 50;
 
 export default class Uploader extends Component<UploaderProps, UploaderState> {
 	state: Readonly<UploaderState> = {
-		listing: [],
-		sort: createSort(Field.Mtime),
 		selection: [],
 		deleteSelected: false,
+		refresh: 0,
 	}
 
 	render() {
@@ -43,10 +43,10 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 				{this.state.deleteSelected && this.renderDeleteSelected()}
 				<UploadZone onUpload={this.onUpload} />
 				{this.renderActions()}
-				<FileTable listing={this.state.listing}
-					fileLinkPrefix="/api/upload"
-					onHeaderClick={this.onHeaderClick}
-					sort={this.state.sort}
+				<UploadTable
+					search={null}
+					refresh={this.state.refresh}
+					pageSize={PAGE_SIZE}
 					selected={this.state.selection}
 					onSelected={this.onSelected} />
 			</Section>
@@ -83,15 +83,6 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 		</ConfirmModal>)
 	}
 
-	componentDidMount() {
-		this.refreshUploads(this.state.sort);
-	}
-
-	@boundMethod
-	private onHeaderClick(field: Field): void {
-		this.refreshUploads(createSort(field, this.state.sort));
-	}
-
 	@boundMethod
 	private onSelected(entries: FileTableEntry[]): void {
 		this.setState({selection: entries});
@@ -101,7 +92,7 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 
 	@boundMethod
 	private onUpload(): void {
-		this.refreshUploads(this.state.sort);
+		this.setState({refresh: this.state.refresh + 1});
 		if (this.props.onUpload)
 			this.props.onUpload();
 	}
@@ -114,26 +105,12 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 				dispatchRequestError(err);
 				if (res.body)
 					dispatchApiErrors('Delete uploads', res.body);
-				this.setState({selection: [], deleteSelected: false})
-				this.refreshUploads(this.state.sort);
+				this.setState({
+					selection: [],
+					deleteSelected: false,
+					refresh: this.state.refresh + 1,
+				})
 			});
-	}
-
-	private refreshUploads(sort: Sort) {
-		request.get("/api/upload").query({
-			sort: sort.attr,
-			dir: sort.dir
-		}).end((err, res) => {
-			dispatchRequestError(err);
-			let listing: FileTableEntry[] = [];
-			if (!err) {
-				listing = res.body;
-			}
-			this.setState({
-				listing: listing,
-				sort: sort
-			});
-		});
 	}
 }
 

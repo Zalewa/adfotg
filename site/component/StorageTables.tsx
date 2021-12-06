@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import FileTable, { FileTableEntry } from "./FileTable";
 import Pager, { Page } from './Pager';
 import { dispatchRequestError } from './Notifier';
-import { AdfOps, FileOps, MountImagesOps,
+import { AdfOps, FileOps, MountImagesOps, UploadOps,
 	FileAttr, FileRecord, ListResult, createSort } from "../app/Storage";
 
 interface CommonTableProps {
@@ -70,4 +70,7 @@ export const AdfTable = (props: CommonTableProps) =>
 	<CommonTable ops={AdfOps} showSize={false} fileLinkPrefix="/api/adf/image" {...props} />;
 
 export const MountImagesTable = (props: CommonTableProps) =>
-	<CommonTable ops={MountImagesOps} fileLinkPrefix="/api/mountimg" {...props} />
+	<CommonTable ops={MountImagesOps} fileLinkPrefix="/api/mountimg" {...props} />;
+
+export const UploadTable = (props: CommonTableProps) =>
+	<CommonTable ops={UploadOps} fileLinkPrefix="/api/upload" {...props} />;
