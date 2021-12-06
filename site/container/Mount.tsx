@@ -5,7 +5,7 @@ import { boundMethod } from 'autobind-decorator';
 
 import { Actions, ActionSet } from '../component/Actions';
 import { FileTableEntry } from '../component/FileTable';
-import { MountImagesTable } from '../component/FileTables';
+import { MountImagesTable } from '../component/StorageTables';
 import List from '../ui/List';
 import { MountImage } from '../component/MountImage';
 import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
