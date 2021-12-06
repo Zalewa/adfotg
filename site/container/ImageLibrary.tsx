@@ -1,16 +1,14 @@
-import { Component } from 'react';
+import { Component, ReactNode } from 'react';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-import { Actions, ActionSet } from '../component/Actions';
 import { FileTableEntry, } from '../component/FileTable';
 import { AdfTable } from '../component/StorageTables';
-import List from '../ui/List';
 import { CreateMountImage } from './Mount';
-import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
+import { dispatchRequestError } from '../component/Notifier';
 import * as res from '../res';
 import { Button } from '../ui/Button';
-import Modal, { ConfirmModal } from '../ui/Modal';
+import Modal from '../ui/Modal';
 import { Section } from '../ui/Section';
 
 interface ImageLibraryProps {
@@ -23,7 +21,6 @@ interface ImageLibraryProps {
 interface ImageLibraryState {
 	createImage: boolean
 	selection: FileTableEntry[]
-	deleteSelected: boolean
 	refresh: number
 }
 
@@ -33,15 +30,14 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	state: Readonly<ImageLibraryState> = {
 		createImage: false,
 		selection: [],
-		deleteSelected: false,
 		refresh: 0,
 	}
 
 	render() {
 		return (<Section title="ADFs">
 			{this.renderModal()}
-			{this.renderActions()}
 			<AdfTable
+				actions={this.renderActions()}
 				search={this.props.search}
 				refresh={this.state.refresh}
 				pageSize={PAGE_SIZE}
@@ -52,19 +48,12 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 		</Section>);
 	}
 
-	private renderActions(): JSX.Element {
-		return (<Actions>
-			<ActionSet>
-				<Button onClick={this.showCreateImage}
-					disabled={this.state.selection.length == 0}
-					title="Create Mount Image" />
-			</ActionSet>
-			<ActionSet right={true}>
-				<Button purpose="delete"
-					disabled={this.state.selection.length == 0}
-					onClick={() => this.setState({deleteSelected: true})} />
-			</ActionSet>
-		</Actions>);
+	private renderActions(): ReactNode {
+		return (
+			<Button onClick={this.showCreateImage}
+				disabled={this.state.selection.length == 0}
+				title="Create Mount Image" />
+		);
 	}
 
 	private renderModal(): JSX.Element {
@@ -73,14 +62,6 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 				<CreateMountImage adfs={this.state.selection.map(e => e.name)}
 					onDone={this.onModalAccepted} />
 			</Modal>
-		} else if (this.state.deleteSelected) {
-			return (<ConfirmModal text="Delete these ADFs?"
-					onAccept={this.deleteSelected}
-					onCancel={() => this.setState({deleteSelected: false})}
-					acceptText="Delete"
-					acceptPurpose="delete">
-				<List listing={this.state.selection.map(e => e.name)} />
-			</ConfirmModal>)
 		}
 		return null;
 	}
@@ -115,21 +96,5 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 	private onModalAccepted(): void {
 		this.props.onCreatedImage();
 		this.setState({createImage: false});
-	}
-
-	@boundMethod
-	private deleteSelected() {
-		request.delete("/api/adf/image")
-			.send({names: this.state.selection.map(e => e.name)})
-			.end((err, res) => {
-				dispatchRequestError(err);
-				if (res.body)
-					dispatchApiErrors('Delete ADFs', res.body);
-				this.setState({
-					selection: [],
-					deleteSelected: false,
-					refresh: this.state.refresh + 1,
-				})
-			});
 	}
 }

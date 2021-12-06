@@ -8,12 +8,11 @@ import { FileTableEntry } from '../component/FileTable';
 import { MountImagesTable } from '../component/StorageTables';
 import List from '../ui/List';
 import { MountImage } from '../component/MountImage';
-import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
+import { dispatchRequestError } from '../component/Notifier';
 import { Button } from '../ui/Button';
 import { LineInput } from '../ui/Input';
 import { ErrorLabel } from '../ui/Label';
 import { AppLink } from '../ui/Link';
-import { ConfirmModal } from '../ui/Modal';
 import { Section, Subsection } from '../ui/Section';
 import { TableLink } from '../ui/Table';
 import * as resrc from '../res';
@@ -43,7 +42,6 @@ interface MountProps {
 interface MountState {
 	mountInfo: MountInfo
 	imagesSelection: FileTableEntry[]
-	deleteSelected: boolean
 	refreshCounter: number
 }
 
@@ -53,23 +51,13 @@ export default class Mount extends Component<MountProps, MountState> {
 	readonly state: MountState = {
 		mountInfo: null,
 		imagesSelection: [],
-		deleteSelected: false,
 		refreshCounter: 0,
 	}
 
 	render() {
 		return (<Section title="Mounting">
-			{this.state.deleteSelected && this.renderDeleteSelected()}
 			<MountArea mountInfo={this.state.mountInfo} onUnmount={this.unmount}
 				refreshCounter={this.state.refreshCounter} />
-			<Actions>
-				<ActionSet right={true}>
-					<Button purpose="delete"
-						disabled={this.state.imagesSelection.length == 0}
-						onClick={() => this.setState({deleteSelected: true})}
-					/>
-				</ActionSet>
-			</Actions>
 			<MountImagesTable
 				search={this.props.search}
 				refresh={this.state.refreshCounter}
@@ -154,33 +142,6 @@ export default class Mount extends Component<MountProps, MountState> {
 	@boundMethod
 	private onImagesSelected(images: FileTableEntry[]) {
 		this.setState({imagesSelection: images});
-	}
-
-	private renderDeleteSelected(): JSX.Element {
-		return (<ConfirmModal text="Delete these mount images?"
-				onAccept={this.deleteSelected}
-				onCancel={() => this.setState({deleteSelected: false})}
-				acceptText="Delete"
-				acceptPurpose="delete">
-			<List listing={this.state.imagesSelection.map(e => e.name)} />
-		</ConfirmModal>)
-	}
-
-	@boundMethod
-	private deleteSelected() {
-		request.delete("/api/mountimg")
-			.send({names: this.state.imagesSelection.map(e => e.name)})
-			.end((err, res) => {
-				dispatchRequestError(err);
-				if (res.body)
-					dispatchApiErrors('Delete images', res.body);
-				this.setState({
-					imagesSelection: [],
-					deleteSelected: false,
-					refreshCounter: this.state.refreshCounter + 1,
-				})
-				this.refresh();
-			});
 	}
 }
 

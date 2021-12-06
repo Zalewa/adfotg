@@ -33,6 +33,16 @@ export function createSort(attr: FileAttr, oldSort?: Sort): Sort {
 	return {attr: attr, dir: dir}
 }
 
+export interface BulkResult {
+	statuses: {
+		error_code: number,
+		name: string,
+		error?: string
+	}[]
+}
+
+type BulkOp = (names: string[]) => Promise<BulkResult>;
+
 export interface ListOptions {
 	filter: string
 	sort: Sort
@@ -49,6 +59,7 @@ type ListOp = (opts: ListOptions) => Promise<ListResult>;
 
 export interface FileOps {
 	list: ListOp
+	remove: BulkOp
 }
 
 function listQuery(endpoint: string, opts: ListOptions) {
@@ -68,24 +79,52 @@ function listQuery(endpoint: string, opts: ListOptions) {
 			} else {
 				reject(err);
 			}
-		})
+		});
+	});
+}
+
+function removeQuery(endpoint: string, names: string[]) {
+	return new Promise<BulkResult>((resolve, reject) => {
+		request.delete(endpoint)
+			.send({names: names})
+			.end((err, res) => {
+				if (!err) {
+					const statuses = res.body.map((tuple: any[]) => ({
+						error_code: tuple[0],
+						name: tuple[1],
+						error: tuple[2],
+					}));
+					resolve({statuses});
+				} else {
+					reject(err);
+				}
+			});
 	});
 }
 
 export const AdfOps: FileOps = {
 	list: function(opts: ListOptions) {
 		return listQuery('/api/adf/image', opts);
-	}
+	},
+	remove: function(names: string[]) {
+		return removeQuery('/api/adf/image', names);
+	},
 }
 
 export const MountImagesOps: FileOps = {
 	list: function(opts: ListOptions) {
 		return listQuery('/api/mountimg', opts);
-	}
+	},
+	remove: function(names: string[]) {
+		return removeQuery('/api/mountimg', names);
+	},
 }
 
 export const UploadOps: FileOps = {
 	list: function(opts: ListOptions) {
 		return listQuery('/api/upload', opts);
-	}
+	},
+	remove: function(names: string[]) {
+		return removeQuery('/api/upload', names);
+	},
 }

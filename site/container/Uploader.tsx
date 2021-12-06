@@ -1,16 +1,12 @@
-import { Component } from 'react';
+import { Component, ReactNode } from 'react';
 import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
-import { Actions, ActionSet } from '../component/Actions';
 import { FileTableEntry } from '../component/FileTable';
 import { UploadTable } from '../component/StorageTables';
-import List from '../ui/List';
-import { Notification, Note, NoteType, dispatchApiErrors,
+import { Notification, Note, NoteType,
 	dispatchRequestError } from '../component/Notifier';
-import { Button } from '../ui/Button';
-import { ConfirmModal } from '../ui/Modal';
 import { Section } from '../ui/Section';
 import { Loader } from '../ui/ui';
 import * as skin from '../skin';
@@ -19,12 +15,11 @@ import * as skin from '../skin';
 interface UploaderProps {
 	onUpload?: () => void
 	onSelected?: (entries: FileTableEntry[]) => void
-	actions?: JSX.Element[]
+	actions?: ReactNode
 }
 
 interface UploaderState {
 	selection: FileTableEntry[]
-	deleteSelected: boolean
 	refresh: number
 }
 
@@ -33,54 +28,23 @@ const PAGE_SIZE = 50;
 export default class Uploader extends Component<UploaderProps, UploaderState> {
 	state: Readonly<UploaderState> = {
 		selection: [],
-		deleteSelected: false,
 		refresh: 0,
 	}
 
 	render() {
 		return (
 			<Section title="Upload Zone" css={{padding: "0 2em 1em 2em"}}>
-				{this.state.deleteSelected && this.renderDeleteSelected()}
 				<UploadZone onUpload={this.onUpload} />
-				{this.renderActions()}
 				<UploadTable
+					actions={this.props.actions}
 					search={null}
 					refresh={this.state.refresh}
 					pageSize={PAGE_SIZE}
 					selected={this.state.selection}
-					onSelected={this.onSelected} />
+					onSelected={this.onSelected}
+				/>
 			</Section>
 		);
-	}
-
-	renderActions(): JSX.Element {
-		return (<Actions>
-			{this.renderLeftActions()}
-			<ActionSet right={true}>
-				<Button purpose="delete"
-					disabled={this.state.selection.length == 0}
-					onClick={() => this.setState({deleteSelected: true})} />
-			</ActionSet>
-		</Actions>);
-	}
-
-	private renderLeftActions(): JSX.Element {
-		if (this.props.actions) {
-			return (<ActionSet>
-				{this.props.actions}
-			</ActionSet>);
-		}
-		return null;
-	}
-
-	private renderDeleteSelected(): JSX.Element {
-		return (<ConfirmModal text="Delete these uploads?"
-				onAccept={this.deleteSelected}
-				onCancel={() => this.setState({deleteSelected: false})}
-				acceptText="Delete"
-				acceptPurpose="delete">
-			<List listing={this.state.selection.map(e => e.name)} />
-		</ConfirmModal>)
 	}
 
 	@boundMethod
@@ -95,22 +59,6 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 		this.setState({refresh: this.state.refresh + 1});
 		if (this.props.onUpload)
 			this.props.onUpload();
-	}
-
-	@boundMethod
-	private deleteSelected() {
-		request.delete("/api/upload")
-			.send({names: this.state.selection.map(e => e.name)})
-			.end((err, res) => {
-				dispatchRequestError(err);
-				if (res.body)
-					dispatchApiErrors('Delete uploads', res.body);
-				this.setState({
-					selection: [],
-					deleteSelected: false,
-					refresh: this.state.refresh + 1,
-				})
-			});
 	}
 }
 
