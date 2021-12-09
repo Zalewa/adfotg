@@ -8,7 +8,6 @@ import { CheckBox } from '../ui/CheckBox';
 import { LinkText } from '../ui/Link';
 import { formatDate, formatSize } from '../ui/ui';
 import { Table, TableRecord, SelectCell, TableLink, CellPane, DataCell, HeaderCell as THeaderCell, HeaderSelectCell } from '../ui/Table';
-import { Page } from './Pager';
 
 import * as responsive from '../responsive';
 
@@ -249,48 +248,3 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 		return null;
 	}
 };
-
-export interface RefreshParams {
-	sort?: Sort
-	page?: Page
-	search?: string
-}
-
-/*
-TODO This is a failed attempt at code deduplication.
-Filtering method is the same in both ADF and Mount Image tables.
-I couldn't immediately figure out common code. I should
-return to this sometime later.
-
-interface QueryArgs {
-	sort: string
-	dir: string
-	search: string
-	start: number
-	limit: number
-}
-
-class RefreshParams {
-	sort?: Sort
-	page?: Page
-	search?: string
-
-	constructor(sort?: Sort, page?: Page, search?: string) {
-		const PAGE_SIZE = 50;
-
-		this.sort = sort || createSort(Field.Name);
-		this.page = page || new Page(0, PAGE_SIZE);
-		this.search = search;
-	}
-
-	toQueryArgs(): QueryArgs {
-		return {
-			sort: sort.field,
-			dir: sort.ascending ? "asc" : "desc",
-			search: this.search;
-			start: page.start,
-			limit: page.limit
-		}
-	}
-}
-*/
