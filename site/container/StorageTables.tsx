@@ -25,7 +25,6 @@ interface CommonTableProps {
 
 interface CommonTablePrivateProps {
 	ops: FileOps,
-	fileLinkPrefix: string,
 	showSize: boolean,
 }
 
@@ -90,7 +89,7 @@ const CommonTable = (props: CommonTableProps & CommonTablePrivateProps) => {
 			sort={sort}
 			selected={props.selected}
 			onSelected={props.onSelected}
-			fileLinkPrefix={props.fileLinkPrefix}
+			fileLinkPrefix={props.ops.fileLinkPrefix}
 			onHeaderClick={(field: FileAttr) => setSort(createSort(field, sort))}
 			renderName={props.onRenderName}
 			renderFileActions={props.onRenderFileActions}
@@ -108,10 +107,10 @@ CommonTable.defaultProps = {
 };
 
 export const AdfTable = (props: CommonTableProps) =>
-	<CommonTable ops={AdfOps} showSize={false} fileLinkPrefix="/api/adf/image" {...props} />;
+	<CommonTable ops={AdfOps} showSize={false} {...props} />;
 
 export const MountImagesTable = (props: CommonTableProps) =>
-	<CommonTable ops={MountImagesOps} fileLinkPrefix="/api/mountimg" {...props} />;
+	<CommonTable ops={MountImagesOps} {...props} />;
 
 export const UploadTable = (props: CommonTableProps) =>
-	<CommonTable ops={UploadOps} fileLinkPrefix="/api/upload" {...props} />;
+	<CommonTable ops={UploadOps} {...props} />;

@@ -60,6 +60,7 @@ type ListOp = (opts: ListOptions) => Promise<ListResult>;
 export interface FileOps {
 	list: ListOp
 	remove: BulkOp
+	fileLinkPrefix: string
 }
 
 function listQuery(endpoint: string, opts: ListOptions) {
@@ -109,6 +110,7 @@ export const AdfOps: FileOps = {
 	remove: function(names: string[]) {
 		return removeQuery('/api/adf/image', names);
 	},
+	fileLinkPrefix: '/api/adf/image',
 }
 
 export const MountImagesOps: FileOps = {
@@ -118,6 +120,7 @@ export const MountImagesOps: FileOps = {
 	remove: function(names: string[]) {
 		return removeQuery('/api/mountimg', names);
 	},
+	fileLinkPrefix: '/api/mountimg',
 }
 
 export const UploadOps: FileOps = {
@@ -127,4 +130,5 @@ export const UploadOps: FileOps = {
 	remove: function(names: string[]) {
 		return removeQuery('/api/upload', names);
 	},
+	fileLinkPrefix: '/api/upload',
 }
