@@ -3,7 +3,7 @@ import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 import { FileTableEntry, } from '../component/FileTable';
-import { AdfTable } from '../component/StorageTables';
+import { AdfTable } from './StorageTables';
 import { CreateMountImage } from './Mount';
 import { dispatchRequestError } from '../component/Notifier';
 import * as res from '../res';

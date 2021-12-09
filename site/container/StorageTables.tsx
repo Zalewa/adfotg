@@ -1,9 +1,9 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import { Actions, ActionSet } from './Actions';
-import FileTable, { FileTableEntry } from "./FileTable";
-import Pager, { Page } from './Pager';
-import { dispatchBulkResultErrors, dispatchRequestError } from './Notifier';
+import { Actions, ActionSet } from '../component/Actions';
+import FileTable, { FileTableEntry } from "../component/FileTable";
+import Pager, { Page } from '../component/Pager';
+import { dispatchBulkResultErrors, dispatchRequestError } from '../component/Notifier';
 
 import { Button } from '../ui/Button';
 import { ConfirmModal } from '../ui/Modal';

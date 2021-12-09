@@ -4,7 +4,7 @@ import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 import { FileTableEntry } from '../component/FileTable';
-import { UploadTable } from '../component/StorageTables';
+import { UploadTable } from './StorageTables';
 import { Notification, Note, NoteType,
 	dispatchRequestError } from '../component/Notifier';
 import { Section } from '../ui/Section';
