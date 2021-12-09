@@ -14,12 +14,12 @@ import * as skin from '../skin';
 
 interface UploaderProps {
 	onUpload?: () => void
-	onSelected?: (entries: FileTableEntry[]) => void
+	selected: FileTableEntry[]
+	onSelected: (entries: FileTableEntry[]) => void
 	actions?: ReactNode
 }
 
 interface UploaderState {
-	selection: FileTableEntry[]
 	refresh: number
 }
 
@@ -27,7 +27,6 @@ const PAGE_SIZE = 50;
 
 export default class Uploader extends Component<UploaderProps, UploaderState> {
 	state: Readonly<UploaderState> = {
-		selection: [],
 		refresh: 0,
 	}
 
@@ -40,18 +39,11 @@ export default class Uploader extends Component<UploaderProps, UploaderState> {
 					search={null}
 					refresh={this.state.refresh}
 					pageSize={PAGE_SIZE}
-					selected={this.state.selection}
-					onSelected={this.onSelected}
+					selected={this.props.selected}
+					onSelected={this.props.onSelected}
 				/>
 			</Section>
 		);
-	}
-
-	@boundMethod
-	private onSelected(entries: FileTableEntry[]): void {
-		this.setState({selection: entries});
-		if (this.props.onSelected)
-			this.props.onSelected(entries);
 	}
 
 	@boundMethod

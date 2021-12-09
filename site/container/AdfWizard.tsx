@@ -37,6 +37,7 @@ export default class AdfWizard extends Component {
 	render() {
 		return (<div>
 			<Uploader actions={this.actions()}
+				selected={this.state.selection}
 				onSelected={selection => this.setState({selection})} />
 			<Button onClick={this.addEmptyDisk} title="Add Empty ADF" />
 			{this.state.submitted && this.renderSubmitted()}
