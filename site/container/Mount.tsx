@@ -4,18 +4,15 @@ import * as request from 'superagent';
 import { boundMethod } from 'autobind-decorator';
 
 import { Actions, ActionSet } from '../component/Actions';
-import FileTable, { FileTableEntry, Field, Sort, createSort,
-	RefreshParams}
-	from '../component/FileTable';
+import { FileTableEntry } from '../component/FileTable';
+import { MountImagesTable } from './StorageTables';
 import List from '../ui/List';
 import { MountImage } from '../component/MountImage';
-import { dispatchApiErrors, dispatchRequestError } from '../component/Notifier';
-import Pager, { Page } from '../component/Pager';
+import { dispatchRequestError } from '../component/Notifier';
 import { Button } from '../ui/Button';
 import { LineInput } from '../ui/Input';
 import { ErrorLabel } from '../ui/Label';
 import { AppLink } from '../ui/Link';
-import { ConfirmModal } from '../ui/Modal';
 import { Section, Subsection } from '../ui/Section';
 import { TableLink } from '../ui/Table';
 import * as resrc from '../res';
@@ -44,13 +41,8 @@ interface MountProps {
 
 interface MountState {
 	mountInfo: MountInfo
-	imagesListing: FileTableEntry[]
-	imagesListingTotal: number
 	imagesSelection: FileTableEntry[]
-	sortImages: Sort
-	deleteSelected: boolean
 	refreshCounter: number
-	page: Page
 }
 
 const PAGE_SIZE = 50;
@@ -58,51 +50,34 @@ const PAGE_SIZE = 50;
 export default class Mount extends Component<MountProps, MountState> {
 	readonly state: MountState = {
 		mountInfo: null,
-		imagesListing: [],
-		imagesListingTotal: 0,
 		imagesSelection: [],
-		sortImages: createSort(Field.Name),
-		deleteSelected: false,
 		refreshCounter: 0,
-		page: new Page(0, PAGE_SIZE)
 	}
 
 	render() {
 		return (<Section title="Mounting">
-			{this.state.deleteSelected && this.renderDeleteSelected()}
 			<MountArea mountInfo={this.state.mountInfo} onUnmount={this.unmount}
 				refreshCounter={this.state.refreshCounter} />
-			<Actions>
-				<ActionSet right={true}>
-					<Button purpose="delete"
-						disabled={this.state.imagesSelection.length == 0}
-						onClick={() => this.setState({deleteSelected: true})}
-					/>
-				</ActionSet>
-			</Actions>
-			<FileTable listing={this.state.imagesListing}
-				onHeaderClick={this.onImagesHeaderClick}
-				sort={this.state.sortImages}
-				fileLinkPrefix="/api/mountimg"
+			<MountImagesTable
+				search={this.props.search}
+				refresh={this.state.refreshCounter}
+				pageSize={PAGE_SIZE}
 				selected={this.state.imagesSelection}
 				onSelected={this.onImagesSelected}
-				renderName={(entry) => this.renderName(entry)}
-				renderFileActions={(entry) => this.renderFileActions(entry)}
+				onRenderFileActions={(entry) => this.renderFileActions(entry)}
+				onRenderName={(entry) => this.renderName(entry)}
 				/>
-			<Pager page={this.state.page} total={this.state.imagesListingTotal}
-				onPageChanged={page => this.refreshImages({page})} />
 		</Section>);
 	}
 
 	componentDidMount() {
 		this.refresh();
-		this.refreshImages();
 	}
 
 	componentDidUpdate(props: MountProps) {
-		if (this.props.refresh !== props.refresh || this.props.search !== props.search) {
+		if (this.props.refresh !== props.refresh) {
 			this.setState({refreshCounter: this.state.refreshCounter + 1});
-			this.refresh({search: this.props.search});
+			this.refresh();
 		}
 	}
 
@@ -132,7 +107,7 @@ export default class Mount extends Component<MountProps, MountState> {
 		</ActionSet>);
 	}
 
-	private refresh(args?: RefreshParams): void {
+	private refresh(): void {
 		this.setState({});
 		request.get("/api/mount").end((err, res) => {
 			dispatchRequestError(err);
@@ -145,38 +120,6 @@ export default class Mount extends Component<MountProps, MountState> {
 				error: err ? err.toString() : res.body.error,
 				mountedImageName: res.body.file
 			}});
-		})
-		this.refreshImages(args);
-	}
-
-	private refreshImages(args?: RefreshParams): void {
-		args = args || {};
-		const sort = args.sort || this.state.sortImages;
-		const page = args.page || this.state.page;
-		const search = (args.search !== undefined && args.search !== null)
-					 ? args.search : this.props.search;
-		request.get("/api/mountimg").query({
-			filter: search,
-			sort: sort.field,
-			dir: sort.ascending ? "asc" : "desc",
-			start: page.start,
-			limit: page.limit
-		}).end((err, res) => {
-			dispatchRequestError(err);
-			let listing: FileTableEntry[] = [];
-			let listingTotal: number = 0;
-			if (!err) {
-				listing = res.body.listing;
-				listingTotal = res.body.total;
-			}
-			this.setState({
-				imagesListing: listing,
-				imagesListingTotal: listingTotal,
-				sortImages: sort,
-				page
-			})
-			if (page.start != 0 && page.start > listingTotal)
-				this.refreshImages({page: new Page(0, page.limit)});
 		})
 	}
 
@@ -197,36 +140,8 @@ export default class Mount extends Component<MountProps, MountState> {
 	}
 
 	@boundMethod
-	private onImagesHeaderClick(field: Field) {
-		this.refreshImages({sort: createSort(field, this.state.sortImages)});
-	}
-
-	@boundMethod
 	private onImagesSelected(images: FileTableEntry[]) {
 		this.setState({imagesSelection: images});
-	}
-
-	private renderDeleteSelected(): JSX.Element {
-		return (<ConfirmModal text="Delete these mount images?"
-				onAccept={this.deleteSelected}
-				onCancel={() => this.setState({deleteSelected: false})}
-				acceptText="Delete"
-				acceptPurpose="delete">
-			<List listing={this.state.imagesSelection.map(e => e.name)} />
-		</ConfirmModal>)
-	}
-
-	@boundMethod
-	private deleteSelected() {
-		request.delete("/api/mountimg")
-			.send({names: this.state.imagesSelection.map(e => e.name)})
-			.end((err, res) => {
-				dispatchRequestError(err);
-				if (res.body)
-					dispatchApiErrors('Delete images', res.body);
-				this.setState({imagesSelection: [], deleteSelected: false})
-				this.refresh();
-			});
 	}
 }
 

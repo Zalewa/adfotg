@@ -1,49 +1,18 @@
 import { Component, PureComponent, ReactNode } from 'react';
 import { boundMethod } from 'autobind-decorator';
-import { css } from '@emotion/react';
 
 import { ActionSet } from './Actions';
+import { FileRecord, FileAttr, Sort } from '../app/Storage';
+
 import { CheckBox } from '../ui/CheckBox';
 import { LinkText } from '../ui/Link';
 import { formatDate, formatSize } from '../ui/ui';
 import { Table, TableRecord, SelectCell, TableLink, CellPane, DataCell, HeaderCell as THeaderCell, HeaderSelectCell } from '../ui/Table';
-import { Page } from './Pager';
 
 import * as responsive from '../responsive';
 
-export const enum Field {
-	Name = "name",
-	Size = "size",
-	Mtime = "mtime"
-}
-
-/// true - ascending, false - descending
-const DEFAULT_SORTING: Map<Field, boolean> = new Map<Field, boolean>([
-	[Field.Name, true],
-	[Field.Size, false],
-	[Field.Mtime, false]
-]);
-
-export interface FileTableEntry {
-	name: string,
-	mtime: number,
-	size: number;
-}
-
-export interface Sort {
-	field: Field,
-	ascending: boolean
-}
-
-export function createSort(field: Field, oldSort?: Sort): Sort {
-	let ascending: boolean = DEFAULT_SORTING.get(field);
-	if (oldSort) {
-		if (field == oldSort.field) {
-			ascending = !oldSort.ascending;
-		}
-	}
-	return {field: field, ascending: ascending}
-}
+export import Field = FileAttr;
+export type FileTableEntry = FileRecord;
 
 type FileRenderFunc = (file: FileTableEntry) => ReactNode;
 
@@ -202,21 +171,13 @@ interface HeaderCellProps extends FileTableProps {
 }
 
 const HeaderCell = (props: HeaderCellProps) => {
-	const sortedBy: boolean = props.sort && props.sort.field == props.field;
-	let sort = null;
-	if (sortedBy) {
-		if (props.sort.ascending)
-			sort = css({});
-		else
-			sort = css({});
-	}
 	let label: JSX.Element;
 	if (props.onHeaderClick) {
 		label = <LinkText css={TableLink} onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>;
 	} else {
 		label = <span>{props.label}</span>
 	}
-	return <THeaderCell css={sort} className={props.className} rightmost={props.rightmost}>{label}</THeaderCell>;
+	return <THeaderCell className={props.className} rightmost={props.rightmost}>{label}</THeaderCell>;
 }
 
 interface FileTableRowProps {
@@ -287,48 +248,3 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 		return null;
 	}
 };
-
-export interface RefreshParams {
-	sort?: Sort
-	page?: Page
-	search?: string
-}
-
-/*
-TODO This is a failed attempt at code deduplication.
-Filtering method is the same in both ADF and Mount Image tables.
-I couldn't immediately figure out common code. I should
-return to this sometime later.
-
-interface QueryArgs {
-	sort: string
-	dir: string
-	search: string
-	start: number
-	limit: number
-}
-
-class RefreshParams {
-	sort?: Sort
-	page?: Page
-	search?: string
-
-	constructor(sort?: Sort, page?: Page, search?: string) {
-		const PAGE_SIZE = 50;
-
-		this.sort = sort || createSort(Field.Name);
-		this.page = page || new Page(0, PAGE_SIZE);
-		this.search = search;
-	}
-
-	toQueryArgs(): QueryArgs {
-		return {
-			sort: sort.field,
-			dir: sort.ascending ? "asc" : "desc",
-			search: this.search;
-			start: page.start,
-			limit: page.limit
-		}
-	}
-}
-*/

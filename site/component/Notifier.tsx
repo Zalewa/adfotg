@@ -6,6 +6,8 @@ import { boundMethod } from 'autobind-decorator';
 import { Button } from '../ui/Button';
 import { errorToString } from '../ui/ui';
 
+import { BulkResult } from '../app/Storage';
+
 import * as skin from '../skin';
 
 export enum NoteType {
@@ -42,6 +44,18 @@ export function dispatchApiErrors(title: string, apiResults: ApiResult[]) {
 			dispatch({
 				type: NoteType.Error,
 				message: title + " -- " + label + " -- " + message
+			});
+		}
+	});
+}
+
+export function dispatchBulkResultErrors(title: string, bulkResult: BulkResult) {
+	bulkResult.statuses.forEach(res => {
+		const { error_code, name, error } = res;
+		if (error_code != 200) {
+			dispatch({
+				type: NoteType.Error,
+				message: title + " -- " + name + " -- " + (error || "unknown error")
 			});
 		}
 	});
