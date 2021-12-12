@@ -4,7 +4,7 @@ import { boundMethod } from 'autobind-decorator';
 
 import { FileTableEntry, } from '../component/FileTable';
 import { AdfTable } from './StorageTables';
-import { CreateMountImage } from './Mount';
+import CreateMountImage from './CreateMountImage';
 import { dispatchRequestError } from '../component/Notifier';
 import * as res from '../res';
 import { Button } from '../ui/Button';
