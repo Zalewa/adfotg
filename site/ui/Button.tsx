@@ -19,7 +19,7 @@ export const ButtonMixin = css(
 		display: "inline-block",
 		fontFamily: skin.fontFamily,
 		position: "relative",
-		'&:active &:not(:disabled)': [
+		'&:active:enabled': [
 			{
 				backgroundColor: skin.workbench.titleColor,
 			},
