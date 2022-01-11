@@ -33,6 +33,11 @@ def serve_sites(*args, **kwargs):
     return serve_file('index.html')
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return serve_file('index.html'), 404
+
+
 @app.errorhandler(500)
 def error_500(exception):
     code = 500

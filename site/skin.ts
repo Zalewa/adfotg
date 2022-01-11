@@ -13,7 +13,9 @@ export const titleShadow = "2px 2px rgba(0, 0, 0, 64)";
 
 export const guruMeditation = {
 	background: "#000",
-	color: "#f20",
+	colorCritical: "#f20",
+	// TODO: scrape the proper color off https://wiki.amigaos.net/wiki/Intuition_Alerts
+	colorWarning: "#ff0",
 }
 
 export const kickstart = {
