@@ -16,33 +16,34 @@ import * as skin from '../skin';
 
 export default class App extends Component {
 	render() {
-		return (
-			<ErrorBoundary>
-				<Global styles={css`
-					@font-face {
-						font-family: Amiga Topaz;
-						src: url(/res/font/amiga-topaz/Amiga%20Topaz.ttf) format('truetype');
-					}
-				`} />
-				<Global styles={css({
-					".page": {
-						backgroundColor: darken(0.05, skin.page.background),
-						color: skin.page.color,
-						fontFamily: `${skin.fontFamily},Roboto,Helvetice Neue,Helvetica,Arial,sans-serif`,
-						fontSize: "1em",
-						margin: "0px auto",
-						maxWidth: "800px",
-					},
+		return (<>
+			<Global styles={css`
+				@font-face {
+				font-family: Amiga Topaz;
+				src: url(/res/font/amiga-topaz/Amiga%20Topaz.ttf) format('truetype');
+				}
+			`} />
+			<Global styles={css({
+				".page": {
+					backgroundColor: darken(0.05, skin.page.background),
+					color: skin.page.color,
+					fontFamily: `${skin.fontFamily},Roboto,Helvetica Neue,Helvetica,Arial,sans-serif`,
+					fontSize: "1em",
+					margin: "0px auto",
+					maxWidth: "800px",
+				},
 
-					".page__main": {
-						backgroundColor: skin.page.background,
-						margin: "auto 0",
-					},
-				})} />
+				".page__main": {
+					backgroundColor: skin.page.background,
+					margin: "auto 0",
+				},
+			})} />
+			<ErrorBoundary>
 				<Router>
 					<AppRoute />
 				</Router>
-			</ErrorBoundary>);
+			</ErrorBoundary>
+		</>);
 	}
 }
 
