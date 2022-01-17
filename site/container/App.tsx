@@ -6,11 +6,10 @@ import { darken } from 'polished';
 
 import AdfWizard from './AdfWizard';
 import Home from './Home';
-import { GuruMeditation, GuruFrame, GuruSection } from './GuruMeditation';
+import { GuruMeditation } from './GuruMeditation';
 import InspectMountImage from './InspectMountImage';
 import Notifier from '../component/Notifier';
-import { Link } from '../ui/Link';
-import { ErrorLabel } from '../ui/Label';
+import PageNotFound from '../component/PageNotFound';
 import { HOME_LINK, ADFWIZARD_LINK } from '../routes';
 import Title from './Title';
 import * as skin from '../skin';
@@ -83,11 +82,6 @@ const AppRoute = () => {
 	</div>
 }
 
-const PageNotFound = () => <GuruFrame severity="warning">
-	<GuruSection as="h1">GURU MEDITATION</GuruSection>
-	<ErrorLabel error="Page not found" />
-</GuruFrame>;
-
 interface ErrorBoundaryState {
 	error: Error | null,
 }
@@ -108,17 +102,7 @@ class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
 
 	render() {
 		if (this.state.error != null) {
-			return (<GuruMeditation severity="critical">
-				<GuruSection as="h1">GURU MEDITATION</GuruSection>
-				<GuruSection>ADF OTG has failed.</GuruSection>
-				<GuruSection css={{marginLeft: "32px"}}>{this.state.error.toString()}</GuruSection>
-				<GuruSection>
-					If you think this was caused by a bug, please
-					write down steps to reproduce it and report it
-					at<br/><Link href="https://github.com/Zalewa/adfotg">https://github.com/Zalewa/adfotg</Link>
-				</GuruSection>
-				<GuruSection>Browser's console may contain more detailed information.</GuruSection>
-			</GuruMeditation>);
+			return (<GuruMeditation severity="critical" error={this.state.error} />);
 		}
 
 		return this.props.children;

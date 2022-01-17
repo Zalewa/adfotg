@@ -1,66 +1,37 @@
-import { ReactNode } from 'react';
-import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
+import { GuruFrame, GuruSection, Severity } from '../component/GuruFrame';
 
+import { Link } from '../ui/Link';
 import * as skin from '../skin';
 
-type Severity = "critical"|"warning";
-
-function severityColor(severity: Severity) {
-	switch (severity) {
-		case "critical":
-		default:
-			return skin.guruMeditation.colorCritical;
-		case "warning":
-			return skin.guruMeditation.colorWarning;
-	}
-}
-
 interface GuruMeditationProps {
-	severity: Severity;
-	children?: ReactNode;
+	severity: Severity,
+	error: Error,
 }
 
+/** A full-screen error page. */
 export const GuruMeditation = (props: GuruMeditationProps ) => {
 	const GuruCenter = styled.div({
 		maxWidth: "800px",
 		margin: "0 auto",
 	});
 	return (<div css={[skin.fullpage, {
-		backgroundColor: skin.guruMeditation.background,
-		color: severityColor(props.severity),
+		backgroundColor: "#000",
 		overflow: "auto",
 	}]}>
 		<GuruCenter>
-			<GuruFrame {...props} />
+			<GuruFrame severity={props.severity}>
+				<GuruSection as="h1">GURU MEDITATION</GuruSection>
+				<GuruSection>ADF OTG has failed.</GuruSection>
+				<GuruSection css={{marginLeft: "32px"}}>{props.error.toString()}</GuruSection>
+				<GuruSection>
+					If you think this was caused by a bug, please
+					write down steps to reproduce it and report it
+					at<br/><Link href="https://github.com/Zalewa/adfotg">https://github.com/Zalewa/adfotg</Link>
+				</GuruSection>
+				<GuruSection>Browser's console may contain more detailed information.</GuruSection>
+
+			</GuruFrame>
 		</GuruCenter>
 	</div>);
 }
-
-export const GuruFrame = (props: GuruMeditationProps) => {
-	const color = severityColor(props.severity);
-	const blink = keyframes({
-		"50%": {
-			borderColor: color,
-		},
-	});
-	return <div css={{
-		animationName: blink,
-		animationDuration: "1.0s",
-		animationTimingFunction: "step-end",
-		animationIterationCount: "infinite",
-		animationDirection: "alternate",
-		border: "8px solid transparent",
-		color: color,
-		padding: "16px 50px",
-		margin: "30px",
-		overflow: "auto",
-	}} children={props.children} />;
-
-}
-
-export const GuruSection = styled.p({
-	"&:not(:last-child)": {
-		marginBottom: "16px",
-	}
-});
