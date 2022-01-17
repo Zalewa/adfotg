@@ -24,21 +24,25 @@ export default class App extends Component {
 				}
 			`} />
 			<Global styles={css({
-				".page": {
-					backgroundColor: darken(0.05, skin.page.background),
-					color: skin.page.color,
+				"body": {
 					fontFamily: `${skin.fontFamily},Roboto,Helvetica Neue,Helvetica,Arial,sans-serif`,
 					fontSize: "1em",
 					margin: "0px auto",
 					maxWidth: "800px",
-				},
-
-				".page__main": {
-					backgroundColor: skin.page.background,
-					margin: "auto 0",
-				},
+				}
 			})} />
 			<ErrorBoundary>
+				<Global styles={css({
+					"body": {
+						backgroundColor: darken(0.05, skin.page.background),
+						color: skin.page.color,
+					},
+
+					".app": {
+						backgroundColor: skin.page.background,
+						margin: "auto 0",
+					},
+				})} />
 				<Router>
 					<AppRoute />
 				</Router>
@@ -65,7 +69,7 @@ const AppRoute = () => {
 		return location.pathname === HOME_LINK;
 	}
 
-	return <div>
+	return <>
 		<Title refresh={refreshSwitch}
 			canSearch={canSearch()}
 			search={search}
@@ -79,7 +83,7 @@ const AppRoute = () => {
 			</Route>
 			<Route path="*" element={<PageNotFound />} />
 		</Routes>
-	</div>
+	</>
 }
 
 interface ErrorBoundaryState {
