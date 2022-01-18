@@ -5,9 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- A 404 page that simulates the Amiga's RECOVERY ALERT.
+
 ### Changed
 - Restructure the API URLs. All API URLs are now prefixed with /api.
   Some URLs have been changed.
+- Load the UI's compiled nodejs libraries as a separate javascript file.
+- The mount images inspector is now a separate page with its own URL.
+- Rely on the `body` element to render the GURU MEDITATION error page's
+  background instead of overlaying the normal `body` with a fullscreen div.
+
+### Fixed
+- Install: the 'OS user already exists' message appeared when the
+  user didn't actually exist.
 
 ## [0.3.0] - 2021-08-08
 ### Changed
