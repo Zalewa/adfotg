@@ -33,6 +33,10 @@ export default class App extends Component {
 			})} />
 			<ErrorBoundary>
 				<Global styles={css({
+					"html, body": {
+						minHeight: "100vh",
+					},
+
 					"body": {
 						backgroundColor: darken(0.05, skin.page.background),
 						color: skin.page.color,
@@ -40,7 +44,8 @@ export default class App extends Component {
 
 					".app": {
 						backgroundColor: skin.page.background,
-						margin: "auto 0",
+						minHeight: "100vh",
+						position: "absolute",
 					},
 				})} />
 				<Router>

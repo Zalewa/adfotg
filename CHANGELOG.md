@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The mount images inspector is now a separate page with its own URL.
 - Rely on the `body` element to render the GURU MEDITATION error page's
   background instead of overlaying the normal `body` with a fullscreen div.
+- Stretch the UI main area background 100% to the bottom, even if there's
+  less vertical content.
 
 ### Fixed
 - Install: the 'OS user already exists' message appeared when the
