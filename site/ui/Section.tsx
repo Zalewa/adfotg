@@ -12,7 +12,7 @@ export const Section = (props: SectionProps) => (
 		marginTop: "2px",
 		marginBottom: "16px",
 		position: "relative",
-	}}>
+	}} className={props.className}>
 		<h1 css={{
 			fontSize: "2em",
 			margin: "0",
