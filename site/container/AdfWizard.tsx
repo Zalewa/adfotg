@@ -5,7 +5,7 @@ import * as request from 'superagent';
 import { FileTableEntry } from '../component/FileTable';
 import List from '../ui/List';
 import { Notification, NoteType } from '../component/Notifier';
-import Uploader from './Uploader';
+import Upload from './Upload';
 import { Button } from '../ui/Button';
 import { Form, FormItem } from '../ui/Form';
 import { LineInput } from '../ui/Input';
@@ -36,7 +36,7 @@ export default class AdfWizard extends Component {
 
 	render() {
 		return (<div>
-			<Uploader actions={this.actions()}
+			<Upload actions={this.actions()}
 				selected={this.state.selection}
 				onSelected={selection => this.setState({selection})} />
 			<Button onClick={this.addEmptyDisk} title="Add Empty ADF" />

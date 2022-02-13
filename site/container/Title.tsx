@@ -7,7 +7,7 @@ import * as request from 'superagent';
 
 import { HealthBar } from './Health';
 import { dispatchRequestError } from '../component/Notifier';
-import { ADFWIZARD_LINK, HOME_LINK } from '../routes';
+import { HOME_LINK, UPLOAD_LINK } from '../routes';
 import Search from '../component/Search';
 import { Labelled } from '../ui/Label';
 import { AppLink, AppLinkProps, Link } from '../ui/Link';
@@ -84,7 +84,7 @@ export default class Title extends Component<TitleProps, TitleState> {
 				</TitleRow>
 				<TitleRow>
 					<TitleSection fill>
-						<TitleAppLink to={ADFWIZARD_LINK}>Create ADFs</TitleAppLink>
+						<TitleAppLink to={UPLOAD_LINK}>Upload</TitleAppLink>
 					</TitleSection>
 					{this.renderSearch()}
 				</TitleRow>

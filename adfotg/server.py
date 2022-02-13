@@ -27,8 +27,8 @@ def serve_file(path):
             raise
 
 
-@app.route('/adfwizard')
 @app.route('/inspect/mountimg/<path:path>')
+@app.route('/upload')
 def serve_sites(*args, **kwargs):
     return serve_file('index.html')
 

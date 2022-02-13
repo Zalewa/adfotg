@@ -10,7 +10,7 @@ import { GuruMeditation } from './GuruMeditation';
 import InspectMountImage from './InspectMountImage';
 import Notifier from '../component/Notifier';
 import PageNotFound from '../component/PageNotFound';
-import { HOME_LINK, ADFWIZARD_LINK } from '../routes';
+import { HOME_LINK, UPLOAD_LINK } from '../routes';
 import Title from './Title';
 import * as skin from '../skin';
 
@@ -82,7 +82,7 @@ const AppRoute = () => {
 		<Notifier />
 		<Routes>
 			<Route index element={<Home search={search} />} />
-			<Route path={ADFWIZARD_LINK} element={<AdfWizard />} />
+			<Route path={UPLOAD_LINK} element={<AdfWizard />} />
 			<Route path="inspect">
 				<Route path="mountimg/*" element={<InspectMountImage />} />
 			</Route>
