@@ -8,6 +8,7 @@ import { Section } from '../ui/Section';
 
 interface UploadProps {
 	onUpload?: () => void
+	search: string
 	selected: FileTableEntry[]
 	onSelected: (entries: FileTableEntry[]) => void
 	actions?: ReactNode
@@ -28,7 +29,7 @@ export default (props: UploadProps) => {
 		<Uploader onUpload={onUpload} />
 		<UploadTable
 			actions={props.actions}
-			search={null}
+			search={props.search}
 			refresh={refresh}
 			pageSize={PAGE_SIZE}
 			selected={props.selected}

@@ -13,6 +13,9 @@ import { errorToString } from '../ui/ui';
 import * as Strings from '../strings';
 import * as skin from '../skin';
 
+interface AdfWizardProps {
+	search: string
+}
 
 interface AdfWizardState {
 	disks: DiskDescriptor[]
@@ -22,7 +25,7 @@ interface AdfWizardState {
 	submitted: boolean
 }
 
-export default class AdfWizard extends Component {
+export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState> {
 	readonly state: AdfWizardState = {
 		disks: [],
 		basename: "adfotg",
@@ -37,6 +40,7 @@ export default class AdfWizard extends Component {
 	render() {
 		return (<div>
 			<Upload actions={this.actions()}
+				search={this.props.search}
 				selected={this.state.selection}
 				onSelected={selection => this.setState({selection})} />
 			<Button onClick={this.addEmptyDisk} title="Add Empty ADF" />

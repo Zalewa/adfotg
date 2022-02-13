@@ -60,18 +60,14 @@ const AppRoute = () => {
 	const [ refreshSwitch, setRefreshSwitch ] = useState(false);
 	const [ search, setSearch ] = useState("");
 	const location = useLocation();
-	const [ prevLocation, setPrevLocation ] = useState(location);
 
 	useEffect(() => {
-		if (prevLocation.pathname != location.pathname) {
-			setPrevLocation(location);
-			setSearch("");
-		}
 		setRefreshSwitch(!refreshSwitch);
 	}, [location]);
 
 	function canSearch(): boolean {
-		return location.pathname === HOME_LINK;
+		return location.pathname === HOME_LINK
+			|| location.pathname === UPLOAD_LINK;
 	}
 
 	return <>
@@ -82,7 +78,7 @@ const AppRoute = () => {
 		<Notifier />
 		<Routes>
 			<Route index element={<Home search={search} />} />
-			<Route path={UPLOAD_LINK} element={<AdfWizard />} />
+			<Route path={UPLOAD_LINK} element={<AdfWizard search={search} />} />
 			<Route path="inspect">
 				<Route path="mountimg/*" element={<InspectMountImage />} />
 			</Route>
