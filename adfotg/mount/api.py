@@ -1,6 +1,7 @@
 import traceback
 
-from flask import jsonify, safe_join, Blueprint
+from flask import jsonify, Blueprint
+from werkzeug.utils import safe_join
 
 from adfotg.apiutil import apierr
 from adfotg.config import config

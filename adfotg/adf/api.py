@@ -1,6 +1,7 @@
 import os
 
-from flask import jsonify, request, safe_join, send_from_directory, Blueprint
+from flask import jsonify, request, send_from_directory, Blueprint
+from werkzeug.utils import safe_join
 
 from adfotg import adf, storage
 from adfotg.apiutil import Listing, del_files

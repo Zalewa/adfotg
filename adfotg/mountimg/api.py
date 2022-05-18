@@ -2,8 +2,9 @@ import os
 import tempfile
 import weakref
 
-from flask import jsonify, request, safe_join, send_file, \
+from flask import jsonify, request, send_file, \
     send_from_directory, Blueprint
+from werkzeug.utils import safe_join
 
 from adfotg import storage
 from adfotg.apiutil import apierr, Listing

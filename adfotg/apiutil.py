@@ -1,4 +1,5 @@
-from flask import jsonify, safe_join
+from flask import jsonify
+from werkzeug.utils import safe_join
 
 from adfotg import storage
 from adfotg.error import ActionError

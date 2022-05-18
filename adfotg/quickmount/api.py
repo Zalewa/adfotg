@@ -1,6 +1,7 @@
 import os
 
-from flask import safe_join, Blueprint
+from flask import Blueprint
+from werkzeug.utils import safe_join
 
 from adfotg import adf
 from adfotg.apiutil import apierr

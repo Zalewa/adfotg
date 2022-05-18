@@ -3,7 +3,7 @@ import subprocess
 import sys
 from tempfile import NamedTemporaryFile
 
-from flask import safe_join
+from werkzeug.utils import safe_join
 
 from adfotg import storage
 from adfotg.config import config
