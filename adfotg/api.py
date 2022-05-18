@@ -79,7 +79,8 @@ from .config import config
 from .error import AdfotgError, ActionError
 from .mountimg import Mount, MountImage
 
-from flask import jsonify, request, safe_join, send_file, send_from_directory
+from flask import jsonify, request, send_file, send_from_directory
+from werkzeug.utils import safe_join
 
 import os
 import shutil

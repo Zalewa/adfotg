@@ -77,7 +77,7 @@ setup(
     python_requires='>=3.5',
     install_requires=[
         'amitools>=0.5,<0.7',
-        'Flask',
+        'Flask==2.1.*',
     ],
     entry_points={
         'console_scripts': ['adfotg=adfotg.cli:main']
