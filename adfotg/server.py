@@ -2,7 +2,7 @@ from . import app
 from .error import ActionError
 
 from flask import abort, jsonify, send_from_directory
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import InternalServerError, NotFound
 
 import os
 
@@ -40,6 +40,9 @@ def page_not_found(e):
 
 @app.errorhandler(500)
 def error_500(exception):
+    if (isinstance(exception, InternalServerError)
+            and hasattr(exception, "original_exception")):
+        exception = exception.original_exception
     code = 500
     if isinstance(exception, ActionError):
         code = 400
