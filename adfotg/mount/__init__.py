@@ -51,6 +51,11 @@ class Mount:
 
     def mount(self):
         mount_state = self.state()
+        if mount_state == MountStatus.OtherImageMounted:
+            # Unmount the other image first if it's mounted.
+            self._mounter.unmount()
+            mount_state = self.state()
+
         if mount_state == MountStatus.Mounted:
             # Image is already mounted, no-op.
             return

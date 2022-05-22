@@ -85,12 +85,10 @@ export default class Mount extends Component<MountProps, MountState> {
 	private renderFileActions(file: FileTableEntry): JSX.Element {
 		const mountStatus = this.state.mountInfo && this.state.mountInfo.mountStatus
 		function canMount() {
-			return mountStatus === MountStatus.Unmounted;
+			return mountStatus === MountStatus.Unmounted || mountStatus === MountStatus.Mounted;
 		}
 		function cannotMountReason() {
-			if (mountStatus === MountStatus.Mounted)
-				return "Currently mounted image must be unmounted first.";
-			else if (mountStatus == null)
+			if (mountStatus == null)
 				return "Cannot mount as current mount status is unknown.";
 			else
 				return "Current mount status forbids mounting an image.";
