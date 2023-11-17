@@ -53,7 +53,7 @@ Security
 ========
 
 **This is important!**
-**There's no security provided by the app itself!**
+**There's no network security provided by the app itself!**
 
 It doesn't even put a basic HTTP authentication in place. When you host it
 on your device, keep it in a private network without remote access.
@@ -67,17 +67,44 @@ without password prompt.
 Requirements
 ============
 
+Adfotg supports Raspberry Pi OS 12 (bookworm) since version 0.4.0.
+
 Software:
 
-* Python 3
+* Raspberry Pi OS 12 (bookworm) or newer
+* Python 3, pipx
 * mtools
-* sudo privileges
 
 Hardware:
 
 * Raspberry Pi Zero
 * Gotek
 * An Amiga
+
+OS:
+
+* `sudo` privileges will be required
+
+
+Preparing your Raspberry Pi
+===========================
+
+**This is mandatory.**
+
+1. We need to make sure we are using the dwc2 USB driver
+   `echo "dtoverlay=dwc2" | sudo tee -a /boot/config.txt`
+2. Enable it in Raspberry PI OS `echo "dwc2" | sudo tee -a /etc/modules`
+3. Also add `g_mass_storage`:
+   `echo "g_mass_storage" | sudo tee -a /etc/modules`.
+4. Reboot your RPi.
+
+The above is an excerpt from
+https://gist.github.com/gbaman/50b6cca61dd1c3f88f41
+
+In case of trouble connecting with Gotek, you may try to
+diagnose some problems by connecting the RPi to an USB socket
+in a PC. When an USB drive image is mounted, the PC should see
+the RPi as an USB drive.
 
 
 Install
@@ -87,38 +114,39 @@ This program is designed to be run on a *Raspberry Pi Zero* with the
 Raspberry Pi OS. Installing the release package on anything else is not
 recommended, although will succeed and should be harmless (no warranty).
 
-Provided you have the Raspberry Pi Zero, do the following:
-
-1. `pip3 install adfotg`
-2. `mtools` are also essential
-
-Commands:
+Only run `sudo` when needed. Stick to the normal OS user for other
+operations.
 
 ```
-  sudo apt update && sudo apt install mtools python3-pip
-  sudo pip3 install adfotg
+  sudo apt update && sudo apt install mtools pipx
+  pipx install adfotg
+  pipx ensurepath
 ```
+
+If you had to run `pipx ensurepath`, relogin now.
 
 
 Update
 ------
 
+Make sure you use the same OS user that you used during the installation.
+
 ```
-  sudo pip3 install -U adfotg
+  pipx upgrade adfotg
 ```
 
 adfotg needs to be restarted now. If you integrated it with your
 Raspberry Pi OS (see the section below), then it's sufficient to do this:
 
 ```
-  sudo service adfotg restart
+  sudo systemctl restart adfotg
 ```
 
 
 Integrating with Raspberry Pi OS
 --------------------------------
 
-After pip3 install:
+After install:
 
 ```
   sudo adfotg --install
@@ -131,30 +159,6 @@ This will:
 2. Create adfotg's default config file in `/etc/adfotg.conf`.
 3. Create adfotg's base directory at `/var/lib/adfotg`.
 4. Add `adfotg.service` to systemd; adfotg will start with the system.
-
-
-Preparing your Raspberry Pi
----------------------------
-
-**This is mandatory.** Follow the instructions from
-https://gist.github.com/gbaman/50b6cca61dd1c3f88f41
-to enable dwc2 and g_mass_storage modules.
-
-Hereby is the excerpt from the guide with adjustment
-for `g_mass_storage` module.
-
-1. We need to make sure we are using the dwc2 USB driver
-   `echo "dtoverlay=dwc2" | sudo tee -a /boot/config.txt`
-2. Enable it in Raspberry PI OS `echo "dwc2" | sudo tee -a /etc/modules`
-3. Now pick which module you want to use from the list above,
-   for ADF OTG we need `g_mass_storage`, so:
-   `echo "g_mass_storage" | sudo tee -a /etc/modules`.
-4. Reboot your RPi.
-
-In case of trouble connecting with Gotek, you may try to
-diagnose some problems by connecting the RPi to an USB socket
-in a PC. When an USB drive image is mounted, the PC should see
-the RPi as an USB drive.
 
 
 Development
