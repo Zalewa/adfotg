@@ -20,7 +20,7 @@ def self_check():
     }
     - rpi -- are we running on a Raspberry Pi device
     - g_mass_storage -- is this kernel module available
-    - xdftool -- is xdftool available
+    - xdftool -- is adfotg-xdftool available
     - mtools -- are mtools installed; several tools needed to
       manipulate the USB drive images are checked
     - storage -- do all workspace directories exists and are

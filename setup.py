@@ -76,11 +76,13 @@ setup(
     url='https://github.com/Zalewa/adfotg',
     python_requires='>=3.5',
     install_requires=[
-        'amitools>=0.5,<0.7',
         'Flask==2.1.*',
         'werkzeug~=2.0',
     ],
     entry_points={
-        'console_scripts': ['adfotg=adfotg.cli:main']
+        'console_scripts': [
+            'adfotg=adfotg.cli:main',
+            'adfotg-xdftool=adfotg.amitools.tools.xdftool:main',
+        ]
     }
 )

@@ -67,7 +67,7 @@ def _check_mtools():
 
 @_catch_error
 def _check_xdftool():
-    return _check_command('xdftool')
+    return _check_command('adfotg-xdftool')
 
 
 @_catch_error

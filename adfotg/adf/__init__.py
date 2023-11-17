@@ -113,7 +113,7 @@ def create_adf(adf_path, label, file_ops):
     workdir = os.path.dirname(adf_path)
     adf_name = os.path.basename(adf_path)
     cmd_base = [
-        'xdftool', adf_name,
+        'adfotg-xdftool', adf_name,
         'create', '+',
         'format', label, 'ffs',
     ]

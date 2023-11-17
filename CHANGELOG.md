@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Incorporate the source code of `amitools` and `xdftool` into adfotg,
+  because we don't need whatever amitools is trying to compile and can't.
+  Thank you, Christian Vogelgsang, for creating these amazing tools, but
+  I really need just this minimal part of them. This should fix problems
+  with installing the `amitools` package, and this fix should be ultimate.
 - A 404 page that simulates the Amiga's RECOVERY ALERT.
 
 ### Changed
