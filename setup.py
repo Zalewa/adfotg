@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
-from setuptools import setup
+from setuptools import setup, find_packages
 import subprocess
 import os
 
@@ -72,7 +72,7 @@ setup(
     author_email='zalewapl@gmail.com',
     license=license,
     include_package_data=True,
-    packages=['adfotg'],
+    packages=find_packages(include=["adfotg", "adfotg.*"]),
     url='https://github.com/Zalewa/adfotg',
     python_requires='>=3.5',
     install_requires=[
