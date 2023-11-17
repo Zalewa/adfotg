@@ -78,6 +78,7 @@ setup(
     install_requires=[
         'amitools>=0.5,<0.7',
         'Flask==2.1.*',
+        'werkzeug~=2.0',
     ],
     entry_points={
         'console_scripts': ['adfotg=adfotg.cli:main']

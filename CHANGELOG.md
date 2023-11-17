@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Install: the 'OS user already exists' message appeared when the
   user didn't actually exist.
+- Stick werkzeug to versions 2.x so that Flask 2.1.x remains compatible.
 
 ## [0.3.1] - 2022-05-18
 ### Fixed
