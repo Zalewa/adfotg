@@ -3,21 +3,20 @@
 ADF On-The-Go
 =============
 
-ADF On-The-Go (adfotg) converts your Raspberry Pi Zero into an USB drive
-with a web interface. It organises your ADF images and allows you to
-bundle one or more of them into virtual USB drives. You can swap them
-freely from any modern web browser. This permits to freely upload,
-download and mount ADFs without ever disconnecting the USB cable from
-your Gotek.
+**ADF On-The-Go (adfotg)** converts your **Raspberry Pi Zero** into an
+USB drive with a web interface. It organises your **ADF** images and
+allows you to bundle one or more of them into **virtual USB drives**.
+You can swap, download, upload and mount ADFs without ever disconnecting
+the USB cable from your **Gotek**, all from any modern web browser.
 
-ADF On-The-Go (adfotg) is a HTTP service designed for use in a Raspberry
-Pi Zero. The RPi must be connected through its USB OTG port to a Gotek
-Floppy Drive emulator in use in an Amiga computer. Then everything can
-be controlled from a website user interface. ADF On-The-Go can prepare
-ADF images from files, split big files into floppy-sized chunks or just
-mount the ADF images directly. It allows to store bundles of ADF files
-on their own virtual USB drives and swap multiple virtual USB drives
-freely.
+**ADF On-The-Go (adfotg)** is a HTTP service designed for use in a
+**Raspberry Pi Zero**. The RPi must be connected through its USB OTG
+port to a **Gotek** Floppy Drive emulator in an **Amiga** computer.
+ADF On-The-Go can prepare ADF images from files, split big files into
+floppy-sized chunks, or just mount the ADF images directly. It allows to
+store bundles of ADF files on their own virtual USB drives and swap
+multiple virtual USB drives freely. All of this is controlled through a
+website interface, by default hosted on a HTTP port **41364**.
 
 There also is a REST API, if you happen to not like the default UI, but
 its current status is **unstable**.
@@ -35,16 +34,16 @@ its current status is **unstable**.
 !!! HARDWARE DAMAGE RISK !!!
 ============================
 
-**CUT THE +5V LINE FROM THE USB CABLE!**
+**CUT OR BLOCK THE +5V LINE IN THE USB CABLE!**
 
-This line will connect the voltage from the Raspberry Pi and
-power up your Gotek and your Amiga. When Amiga PSU is OFF, the Amiga
-will be put in a strange half-state with LEDs lighting up but the
-computer remaining off. The RPi will also reboot. When Amiga PSU is
-ON, the +5V USB line will prevent the Amiga's Power LED from dimming
+This line connects the voltage from the Raspberry Pi to Gotek and powers
+up your Gotek and your Amiga. This is **undesirable**. When Amiga PSU is
+OFF, the Amiga will be put in a strange half-state with LEDs lighting up,
+but the computer remaining off. The RPi will also reboot. When Amiga PSU
+is ON, the +5V USB line will prevent the Amiga's Power LED from dimming
 when Amiga reboots.
 
-**FOR SAFETY MEASURES, CUT THE +5V LINE! I DID IN MINE.**
+**FOR SAFETY MEASURES, CUT OR BLOCK THE +5V LINE!**
 
 
 <img align="right" width=400 src="/docs/mainpage.jpg">
@@ -110,12 +109,14 @@ the RPi as an USB drive.
 Install
 =======
 
-This program is designed to be run on a *Raspberry Pi Zero* with the
-Raspberry Pi OS. Installing the release package on anything else is not
+This program is designed to be run on a **Raspberry Pi Zero** with the
+*Raspberry Pi OS*. Installing the release package on anything else is not
 recommended, although will succeed and should be harmless (no warranty).
 
-Only run `sudo` when needed. Stick to the normal OS user for other
+**Only** run `sudo` when needed. Stick to the normal OS user for other
 operations.
+
+On your Raspberry Pi:
 
 ```
   sudo apt update && sudo apt install mtools pipx
@@ -129,14 +130,16 @@ If you had to run `pipx ensurepath`, relogin now.
 Update
 ------
 
-Make sure you use the same OS user that you used during the installation.
+Make sure you do this logged in as the same OS user that you
+used during the installation.
 
 ```
   pipx upgrade adfotg
 ```
 
-adfotg needs to be restarted now. If you integrated it with your
-Raspberry Pi OS (see the section below), then it's sufficient to do this:
+Adfotg needs to be restarted now. If you integrated it with your
+*Raspberry Pi OS* (see the section below), then it's sufficient to
+do this:
 
 ```
   sudo systemctl restart adfotg
@@ -187,6 +190,14 @@ restarted. See the "Update" section in README to learn how to restart
 the service and clear your browser cache.
 
 
+**Problem:** This software ceases to work after the system upgrade.
+
+**Solution:** Sorry, both Raspberry Pi OS and the Python rules for
+software distribution and installation tend to change. Reinstalling
+adfotg from scratch may help. Other than that, contact me for more
+help.
+
+
 Background
 ==========
 
@@ -220,7 +231,9 @@ https://gist.github.com/gbaman/50b6cca61dd1c3f88f41
 
 [amitools](https://github.com/cnvogelg/amitools/) contains xdftool,
 with which adfotg is capable of manipulating ADF image files to
-some extent.
+some extent. Adfotg doesn't depend on amitools, but incorporates
+a subset of its source code and installs `adfotg-xdftool` as a separate
+tool.
 
 
 REST API
