@@ -90,18 +90,23 @@ Preparing your Raspberry Pi
 
 **This is mandatory.**
 
-1. We need to make sure we are using the dwc2 USB driver
-   `echo "dtoverlay=dwc2" | sudo tee -a /boot/config.txt`
-2. Enable it in Raspberry PI OS `echo "dwc2" | sudo tee -a /etc/modules`
-3. Also add `g_mass_storage`:
-   `echo "g_mass_storage" | sudo tee -a /etc/modules`.
-4. Reboot your RPi.
+We need to make sure we are using the dwc2 USB driver,
+and that `dwc2` and `g_mass_storage` modules are enabled.
 
-The above is an excerpt from
-https://gist.github.com/gbaman/50b6cca61dd1c3f88f41
+If you have a fresh Raspberry Pi OS, it's enough to do:
 
-In case of trouble connecting with Gotek, you may try to
-diagnose some problems by connecting the RPi to an USB socket
+```
+  echo dtoverlay=dwc2 | sudo tee -a /boot/config.txt
+  echo dwc2 | sudo tee -a /etc/modules
+  echo g_mass_storage | sudo tee -a /etc/modules`
+```
+
+Then reboot your RPi.
+
+The above is based on https://gist.github.com/gbaman/50b6cca61dd1c3f88f41
+
+In case of trouble with connecting to Gotek, you may try to
+diagnose the USB problems by connecting the RPi to an USB socket
 in a PC. When an USB drive image is mounted, the PC should see
 the RPi as an USB drive.
 
