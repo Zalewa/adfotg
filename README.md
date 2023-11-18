@@ -120,36 +120,16 @@ On your Raspberry Pi:
 
 ```
   sudo apt update && sudo apt install mtools pipx
-  pipx install adfotg
-  pipx ensurepath
+  sudo PIPX_HOME=/opt/adfotg PIPX_BIN_DIR=/usr/local/bin pipx install adfotg
 ```
 
-If you had to run `pipx ensurepath`, relogin now.
-
-
-Update
-------
-
-Make sure you do this logged in as the same OS user that you
-used during the installation.
-
-```
-  pipx upgrade adfotg
-```
-
-Adfotg needs to be restarted now. If you integrated it with your
-*Raspberry Pi OS* (see the section below), then it's sufficient to
-do this:
-
-```
-  sudo systemctl restart adfotg
-```
+The first time installation may be lengthy (it's only a **Zero**, after all).
 
 
 Integrating with Raspberry Pi OS
 --------------------------------
 
-After install:
+After `pipx install adfotg` is done, run:
 
 ```
   sudo adfotg --install
@@ -162,6 +142,25 @@ This will:
 2. Create adfotg's default config file in `/etc/adfotg.conf`.
 3. Create adfotg's base directory at `/var/lib/adfotg`.
 4. Add `adfotg.service` to systemd; adfotg will start with the system.
+
+
+Update
+------
+
+Make sure you do this logged in as the same OS user that you
+used during the installation.
+
+```
+  sudo PIPX_HOME=/opt/adfotg PIPX_BIN_DIR=/usr/local/bin pipx upgrade adfotg
+```
+
+Adfotg needs to be restarted now. If you integrated it with your
+*Raspberry Pi OS* (see the section below), then it's sufficient to
+do this:
+
+```
+  sudo systemctl restart adfotg
+```
 
 
 Development
