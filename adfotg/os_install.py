@@ -6,7 +6,6 @@ from pkg_resources import resource_exists, resource_string
 from subprocess import PIPE
 from tempfile import mkdtemp
 
-_BINARY_PATH = '/usr/local/bin/adfotg'
 _CONF_RESOURCE = 'conf/adfotg.conf'
 _CONF_DESTINATION = '/etc/adfotg.conf'
 _HOME_DIR = '/var/lib/adfotg'
@@ -25,8 +24,6 @@ def install():
 def _check_preconditions():
     if not _is_root():
         raise InstallError("must run as root")
-    if not _has_binary('adfotg'):
-        raise InstallError("adfotg not found")
     os_id = _os_id()
     _log("OS ID:", os_id)
     if os_id != 'Raspbian':
@@ -34,11 +31,11 @@ def _check_preconditions():
     if not os.path.isdir("/lib/systemd"):
         raise InstallError("systemd not detected")
     if not _has_res(_CONF_RESOURCE):
-        _log("install package doesn't have the base config file; "
+        _log("the install package doesn't have the base config file; "
              "'{}' won't be created".format(_CONF_DESTINATION))
-    if not os.path.exists(_BINARY_PATH):
-        raise InstallError("adfotg executable not found at expected "
-                           " path: {}".format(_BINARY_PATH))
+    if not os.path.exists(_get_executable_path()):
+        raise InstallError("adfotg executable not found at the expected "
+                           " path: {}".format(_get_executable_path()))
 
 
 def _install():
@@ -50,12 +47,9 @@ def _install():
 
 
 def _add_user():
-    try:
-        pwd.getpwnam(_OS_USER)
+    if _has_user(_OS_USER):
         _log("OS user '{}' already exists; skipping".format(_OS_USER))
         return
-    except KeyError:
-        pass
     _log("Adding OS user '{}'".format(_OS_USER))
     empty_dir = mkdtemp()
     try:
@@ -95,16 +89,29 @@ def _install_conf():
 
 
 def _install_service():
-    _log("Installing 'adfotg.service' in systemd")
-    with open('/lib/systemd/system/adfotg.service', 'w') as out:
-        out.write(_SYSTEMD_SERVICE)
+    # Remove itself from the pre-0.4.0 location, which should be reserved for
+    # the distribution package manager
+    if os.path.isfile("/lib/systemd/system/adfotg.service"):
+        _log("Removing 'adfotg.service' from the /lib/systemd")
+        os.unlink("/lib/systemd/system/adfotg.service")
+
+    # Install the service at the system location for the administrator-installed
+    # programs.
+    _log("Installing 'adfotg.service' to /usr/local/lib/systemd")
+    os.makedirs("/usr/local/lib/systemd/system", exist_ok=True)
+    with open("/usr/local/lib/systemd/system/adfotg.service", 'w') as out:
+        out.write(_SYSTEMD_SERVICE_TEMPLATE.format(
+            binary=_get_executable_path(),
+            user=_OS_USER
+        ))
+    subprocess.check_call(['systemctl', 'daemon-reload'])
     subprocess.check_call(['systemctl', 'enable', 'adfotg.service'])
 
 
 def _goodbye():
     _log("")
     _log("Installation complete!")
-    _log("It should be possible to start adfotg with 'sudo service adfotg start'")
+    _log("It should now be possible to start adfotg with 'sudo systemctl start adfotg'")
     _log("Log is available through 'journalctl -fu adfotg'")
 
 
@@ -112,12 +119,21 @@ def _is_root():
     return os.geteuid() == 0
 
 
-def _has_binary(name):
-    return subprocess.call(['which', name]) == 0
+_executable = None
+def _get_executable_path():
+    global _executable
+    if _executable is None:
+        _executable = sys.argv[0]
+        _log("adfotg executable is at: {}".format(_executable))
+    return _executable
 
 
 def _has_user(name):
-    pass
+    try:
+        pwd.getpwnam(_OS_USER)
+    except KeyError:
+        return False
+    return True
 
 
 def _os_id():
@@ -138,7 +154,7 @@ def _log(*args):
     print(*args, file=sys.stderr)
 
 
-_SYSTEMD_SERVICE = """[Unit]
+_SYSTEMD_SERVICE_TEMPLATE = """[Unit]
 Description=ADF On-The-Go
 After=network.target
 
@@ -146,9 +162,7 @@ After=network.target
 ExecStart={binary}
 User={user}
 SyslogIdentifier=adfotg
-StandardOutput=syslog
-StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target
-""".format(binary=_BINARY_PATH, user=_OS_USER)
+"""
