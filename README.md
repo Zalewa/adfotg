@@ -113,9 +113,6 @@ This program is designed to be run on a **Raspberry Pi Zero** with the
 *Raspberry Pi OS*. Installing the release package on anything else is not
 recommended, although will succeed and should be harmless (no warranty).
 
-**Only** run `sudo` when needed. Stick to the normal OS user for other
-operations.
-
 On your Raspberry Pi:
 
 ```
