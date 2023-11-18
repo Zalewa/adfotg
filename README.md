@@ -165,6 +165,55 @@ do this:
 ```
 
 
+Uninstall
+=========
+
+Adfotg needs to be uninstalled manually and this is even more involved
+than installing. Depending on how far you've went with installation and
+what you wish to keep, you may be skipping some steps.
+
+* First of all, stop the service:
+
+```
+  sudo systemctl stop adfotg
+```
+
+* If you wish to uninstall, and then install adfotg again, do:
+
+```
+  sudo PIPX_HOME=/opt/adfotg PIPX_BIN_DIR=/usr/local/bin pipx uninstall adfotg
+```
+
+This will keep the internal Python setup, your config and your ADF/USB library.
+Then proceed as if installing for the first time.
+
+* To remove the internal Python setup, do:
+
+```
+  sudo rm -rf /opt/adfotg
+```
+
+* To uninstall from systemd and to remove the adfotg OS user:
+
+```
+  sudo rm /usr/local/lib/systemd/system/adfotg.service
+  sudo systemctl daemon-reload
+  sudo deluser adfotg
+```
+
+* To remove the config:
+
+```
+  sudo rm /etc/adfotg.conf
+```
+
+* To remove your ADF and USB images library:
+
+```
+  sudo rm -rf /var/lib/adfotg
+```
+
+
 Development
 ===========
 
