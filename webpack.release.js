@@ -6,6 +6,6 @@ module.exports = merge(common, {
 	mode: 'production',
 	devtool: 'source-map',
 	output: {
-		path: path.resolve(__dirname, 'adfotg/site'),
+		path: path.resolve(__dirname, 'src/adfotg/site'),
 	},
 });

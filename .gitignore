@@ -1,10 +1,11 @@
 *.pyc
 *.pyo
 __pycache__
+.eggs
 
-adfotg/site/
 adfotg.egg-info/
 dist/
 node_modules/
 site/dist/
+src/adfotg/site/
 npm-debug.log

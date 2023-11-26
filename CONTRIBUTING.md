@@ -94,11 +94,13 @@ Building Release Package
 
 Tagging steps:
 
-1. Bump the X.Y.Z version in adfotg/version.py and commit it.
-2. Tag the bump commit using 'vX.Y.Z' tag with `-am "adfotg vX.Y.Z"` switch.
-3. Push with `--tags`.
-4. Build the release package.
+1. Tag the bump commit using 'vX.Y.Z' tag with `-am "adfotg vX.Y.Z"` switch.
+2. Push with `--tags`.
+3. Build the release package.
+
+Version is read from `git describe` automatically by the power
+of `setuptools_scm`.
 
 To build the release package, run `make all` from the repo's root
 directory. The package will appear in the `dist/` directory. This
-package is ready to be `pip3 install`-ed or uploaded to the PyPI.
+package is ready to be `pipx install`-ed or uploaded to the PyPI.

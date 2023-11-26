@@ -1,5 +1,5 @@
 include HARDWARE_DAMAGE_RISK.txt
 include README.md
 include LICENSE
-include adfotg/conf/adfotg.conf
-recursive-include adfotg/site/ *
+include src/adfotg/conf/adfotg.conf
+recursive-include src/adfotg/site/ *
