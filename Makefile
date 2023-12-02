@@ -19,7 +19,7 @@ server:
 
 clean-server:
 	find src/adfotg -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
-	rm -rf adfotg.egg-info build dist
+	rm -rf src/adfotg.egg-info build dist
 
 site:
 	npm install
