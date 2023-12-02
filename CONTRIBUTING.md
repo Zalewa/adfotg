@@ -134,8 +134,23 @@ or `adfotg -p <port>` argument
 Releasing a new version
 =======================
 
-Tag the new version with the following steps, substituting the proper
-version number for `X.Y.Z`:
+This project adheres to Semantic Versioning.
+
+The version needs to be bumped manually first in:
+
+- `CHANGELOG.md`
+- `package.json`
+- `package-lock.json`
+
+Bump these areas, then create a bump commit, substituting the
+proper version number for `X.Y.Z`:
+
+```
+git commit -m "Bump to version X.Y.Z"
+git push
+```
+
+Then tag the new version with the following steps:
 
 ```
 git tag -am "adfotg vX.Y.Z" vX.Y.Z
