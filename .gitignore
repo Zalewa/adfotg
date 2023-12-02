@@ -2,6 +2,7 @@
 *.pyo
 __pycache__
 .eggs
+.venv
 
 adfotg.egg-info/
 dist/
