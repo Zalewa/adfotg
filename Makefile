@@ -1,4 +1,4 @@
-.PHONY: all clean clean-site clean-server dev distclean init package sdist server site
+.PHONY: all clean clean-site clean-server dev distclean init package server site
 .NOTPARALLEL:
 
 all: package
@@ -6,13 +6,10 @@ all: package
 package: site server
 
 init:
-	pip install -r requirements.txt
+	python3 -m pip install build
 
 dev:
-	python3 setup.py develop
-
-sdist:
-	python3 setup.py sdist
+	python3 -m pip install -e .
 
 server:
 	python3 -m build

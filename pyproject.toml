@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adfotg"
+description = "ADF On-The-Go - convert your RPi Zero to Gotek-ready USB disk"
+authors = [
+    { name = "Robikz", email = "zalewapl@gmail.com" },
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = [
+    "Amiga", "Gotek", "Raspberry Pi"
+]
+requires-python = ">=3.8"
+dependencies = [
+    "Flask==2.1.*",
+    "werkzeug~=2.0",
+    "importlib-metadata>=3.0, <7.0; python_version < '3.8.1'"
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/zalewa/adfotg"
+
+[project.scripts]
+adfotg = "adfotg.cli:main"
+adfotg-xdftool = "adfotg.amitools.tools.xdftool:main"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools_scm]
+tag_regex = "^(?P<prefix>v)(?P<version>[0-9\\.]+)$"
