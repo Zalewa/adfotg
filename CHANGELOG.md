@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.0] - 2023-12-02
 ### Added
 - Incorporate the source code of `amitools` and `xdftool` into adfotg,
   because we don't need whatever amitools is trying to compile and can't.
@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   background instead of overlaying the normal `body` with a fullscreen div.
 - Stretch the UI main area background 100% to the bottom, even if there's
   less vertical content.
+- Restructure the Python part of the project around the `pyproject.toml`
+  file. Remove `setup.cfg` and `setup.py`. Make `Makefile` more straight
+  "out-of-the-bag" and expand the development instructions in
+  `CONTRIBUTING.md`.
 
 ### Fixed
 - Install: the 'OS user already exists' message appeared when the
@@ -91,7 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2018-12-15
 First release of the program.
 
-[Unreleased]: https://github.com/Zalewa/adfotg/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/Zalewa/adfotg/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/Zalewa/adfotg/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/Zalewa/adfotg/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/Zalewa/adfotg/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Zalewa/adfotg/compare/v0.1.1...v0.2.0
