@@ -14,9 +14,9 @@ def serve_file(path):
         if os.path.isdir(os.path.join(app.root_path, "site")):
             # This is valid for deployment.
             return send_from_directory("site", path)
-        elif os.path.isfile(os.path.join(app.root_path, "../setup.py")):
+        elif os.path.isfile(os.path.join(app.root_path, "../../setup.py")):
             # Assume development mode and try to send from repository.
-            return send_from_directory("../site/dist", path)
+            return send_from_directory("../../site/dist", path)
         else:
             return abort(404)
     except NotFound as e:
