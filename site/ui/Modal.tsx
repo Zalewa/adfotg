@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Component } from 'react';
+import { useEffect } from 'react';
 import styled from '@emotion/styled';
-import { boundMethod } from 'autobind-decorator';
 
 import { Button, ButtonPurpose } from './Button';
 
@@ -62,53 +61,47 @@ const Pane = styled.div([
 
 interface ModalProps {
 	onClose: ()=>void
+	children?: React.ReactNode
 }
 
-export default class Modal extends Component<ModalProps> {
-	render() {
-		return <Outside onClick={this.handleOutsideClick}>
-			<Box onClick={this.handleInsideClick}>
-				<TitleBar>
-					<Button onClick={this.props.onClose} title="X" />
-				</TitleBar>
-				<Body>
-					<VerticalFrame />
-					<Pane>{this.props.children}</Pane>
-					<VerticalFrame />
-				</Body>
-				<HorizontalFrame />
-			</Box>
-		</Outside>;
-	}
-
-	componentDidMount() {
-		window.addEventListener("keydown", this.handleKeys);
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener("keydown", this.handleKeys);
-	}
-
-	@boundMethod
-	private handleKeys(e: KeyboardEvent) {
-		if (e.keyCode == 27) {
-			this.props.onClose();
+const Modal = (props: ModalProps) => {
+	function handleKeys(e: KeyboardEvent) {
+		if (e.key == "Escape") {
+			props.onClose();
 			e.stopPropagation();
 		}
 	}
 
-	@boundMethod
-	private handleOutsideClick(e: React.MouseEvent) {
-		this.props.onClose();
+	function handleOutsideClick(e: React.MouseEvent) {
+		props.onClose();
 		e.stopPropagation();
 	}
 
-	@boundMethod
-	private handleInsideClick(e: React.MouseEvent) {
+	function handleInsideClick(e: React.MouseEvent) {
 		e.stopPropagation();
 	}
+
+	useEffect(() => {
+		window.addEventListener("keydown", handleKeys);
+		return () => {
+			window.removeEventListener("keydown", handleKeys);
+		};
+	}, [handleKeys]);
+
+	return <Outside onClick={handleOutsideClick}>
+		<Box onClick={handleInsideClick}>
+			<TitleBar>
+				<Button onClick={props.onClose} title="X" />
+			</TitleBar>
+			<Body>
+				<VerticalFrame />
+				<Pane>{props.children}</Pane>
+				<VerticalFrame />
+			</Body>
+			<HorizontalFrame />
+		</Box>
+	</Outside>;
 }
-
 
 const ModalText = styled.p({
 	marginBottom: "16px",
@@ -121,7 +114,6 @@ const ModalButtons = styled.div({
 	marginTop: "5px",
 });
 
-
 interface ConfirmModalProps {
 	text: string
 	onAccept?: ()=>void
@@ -129,30 +121,28 @@ interface ConfirmModalProps {
 	acceptText?: string
 	cancelText?: string
 	acceptPurpose?: ButtonPurpose
+	children?: React.ReactNode
 }
 
-export class ConfirmModal extends Component<ConfirmModalProps> {
-	public static readonly defaultProps: Partial<ConfirmModalProps> = {
-		onAccept: ()=>{},
-		onCancel: ()=>{},
-		acceptText: "OK",
-		cancelText: "Cancel",
-		acceptPurpose: "submit",
-	}
+export const ConfirmModal = ({
+	text,
+	onAccept = () => {},
+	onCancel = () => {},
+	acceptText = "OK",
+	cancelText = "Cancel",
+	acceptPurpose = "submit",
+	children
+}: ConfirmModalProps) => (
+	<Modal onClose={onCancel}>
+		<ModalText>
+			{text}
+		</ModalText>
+		{children}
+		<ModalButtons>
+			<Button purpose={acceptPurpose} onClick={onAccept} title={acceptText} />
+			<Button onClick={onCancel} title={cancelText} />
+		</ModalButtons>
+	</Modal>
+);
 
-	render() {
-		return (<Modal onClose={() => this.props.onCancel()}>
-			<ModalText>{this.props.text}</ModalText>
-			{this.props.children}
-			<ModalButtons>
-				<Button purpose={this.props.acceptPurpose}
-					onClick={this.props.onAccept}
-					title={this.props.acceptText}
-					/>
-				<Button onClick={this.props.onCancel}
-					title={this.props.cancelText}
-					/>
-			</ModalButtons>
-		</Modal>);
-	}
-}
+export default Modal;

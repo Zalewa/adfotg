@@ -1,7 +1,6 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { rgba } from 'polished';
-import { boundMethod } from 'autobind-decorator';
 
 import { Button } from '../ui/Button';
 import { errorToString } from '../ui/ui';
@@ -73,48 +72,28 @@ function dispatch(note: Note) {
 	window.dispatchEvent(new CustomEvent<Note>("__notify", {detail: note}));
 }
 
-interface NotifierState {
-	notes: Note[]
-}
+const Notifier = () => {
+	const [notes, setNotes] = useState<Note[]>([])
 
-export default class Notifier extends Component<{}, NotifierState> {
-	readonly state: NotifierState = {
-		notes: []
-	}
-	private boundNotify: (e: CustomEvent<Note>) => void;
+	useEffect(() => {
+		const onNotify = (e: CustomEvent<Note>) => {
+			setNotes([...notes, e.detail]);
+		}
+		window.addEventListener("__notify", onNotify);
+		return () => {
+			window.removeEventListener("__notify", onNotify);
+		};
+	}, [notes]);
 
-	componentDidMount() {
-		window.addEventListener("__notify", this.onNotify);
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener("__notify", this.onNotify);
-	}
-
-	render() {
-		let notifications: JSX.Element[] = [];
-		this.state.notes.forEach(note => {
-			notifications.push(<Notification key={note.key} note={note}
-				onClose={this.onClose} />)
-		});
-		return (<div>
-			{notifications}
-		</div>);
+	function onClose(key: number) {
+		setNotes(notes.filter((note: Note) => note.key != key));
 	}
 
-	@boundMethod
-	onClose(key: number) {
-		let notes = this.state.notes;
-		notes = notes.filter(note => note.key != key);
-		this.setState({notes: notes});
-	}
-
-	@boundMethod
-	onNotify(e: CustomEvent<Note>) {
-		let notes = this.state.notes;
-		notes.push(e.detail);
-		this.setState({notes: notes});
-	}
+	return (<div>
+		{notes.map(note => <Notification key={note.key} note={note}
+			onClose={onClose} />
+		)}
+	</div>);
 }
 
 interface NotificationProps {
@@ -133,26 +112,8 @@ const NotificationSuccess = css({
 	background: rgba(skin.successColor, 0.4),
 });
 
-export class Notification extends Component<NotificationProps> {
-	render() {
-		const { note, className } = this.props;
-		return (<div css={[
-			{
-				border: "1px dashed",
-				padding: "0.25em",
-				margin: "0.25em",
-			},
-			this.noteClass(note),
-		]} className={className}>
-			{this.props.onClose &&
-			 <span css={{marginRight: "5px"}}>
-				<Button onClick={() => this.props.onClose(note.key)} title="X" />
-			 </span>}
-			<span>{note.message}</span>
-		</div>);
-	}
-
-	private noteClass(note: Note) {
+export const Notification = (props: NotificationProps) => {
+	function noteClass(note: Note) {
 		switch (note.type) {
 		case NoteType.Error:
 			return NotificationError;
@@ -162,4 +123,21 @@ export class Notification extends Component<NotificationProps> {
 			return null;
 		}
 	}
+
+	return (<div css={[
+		{
+			border: "1px dashed",
+			padding: "0.25em",
+			margin: "0.25em",
+		},
+		noteClass(props.note),
+	]} className={props.className}>
+		{props.onClose &&
+		 <span css={{marginRight: "5px"}}>
+			<Button onClick={() => props.onClose(props.note.key)} title="X" />
+		 </span>}
+		<span>{props.note.message}</span>
+	</div>);
 }
+
+export default Notifier;

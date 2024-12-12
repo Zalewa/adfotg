@@ -1,5 +1,4 @@
-import { Component, PureComponent, ReactNode } from 'react';
-import { boundMethod } from 'autobind-decorator';
+import { ReactNode, useState } from 'react';
 
 import { ActionSet } from './Actions';
 import { FileRecord, FileAttr, Sort } from '../app/Storage';
@@ -18,58 +17,25 @@ type FileRenderFunc = (file: FileTableEntry) => ReactNode;
 
 interface FileTableProps {
 	listing: FileTableEntry[]
-	showSize: boolean,
+	showSize?: boolean,
 	onHeaderClick?: (field: Field) => void,
 	onSelected?: (entries: FileTableEntry[]) => void,
-	selected: FileTableEntry[],
-	sort: Sort,
+	selected?: FileTableEntry[],
+	sort?: Sort,
 	fileLinkPrefix?: string
 	renderName?: FileRenderFunc
 	renderFileActions?: FileRenderFunc
 }
 
-interface FileTableState {
-	selectedAll: boolean
-}
+const FileTable = ({
+	showSize = true,
+	selected = [],
+	...props
+}: FileTableProps) => {
+	const [selectedAll, setSelectedAll] = useState(false);
 
-export default class FileTable extends Component<FileTableProps, FileTableState> {
-	public static defaultProps: Partial<FileTableProps> = {
-		showSize: true,
-		selected: []
-	}
-
-	state: Readonly<FileTableState> = {
-		selectedAll: false
-	}
-
-	render() {
-		let rows: JSX.Element[] = [];
-		if (this.props.listing) {
-			const renderName = this.props.renderName || this.renderEntryUrl;
-			this.props.listing.forEach((e: FileTableEntry) => {
-				rows.push(<FileTableRow
-					entry={e} key={e.name} showSize={this.props.showSize}
-					renderName={renderName}
-					renderFileActions={this.props.renderFileActions}
-					selected={this.isSelected(e.name)}
-					onSelected={this.props.onSelected && this.onSelect || null}
-				/>);
-			});
-		}
-		return (
-			<Table css={{width: "100%"}}>
-				<Header {...this.props} selectedAll={this.state.selectedAll}
-					onSelected={this.props.onSelected && this.onSelectAll || null} />
-				<tbody>
-					{rows}
-				</tbody>
-			</Table>
-		);
-	}
-
-	@boundMethod
-	private renderEntryUrl(entry: FileTableEntry) {
-		const url = this.entryUrl(entry);
+	function renderEntryUrl(entry: FileTableEntry) {
+		const url = entryUrl(entry);
 		if (url != null) {
 			return <a css={TableLink} href={url}>{entry.name}</a>;
 		} else {
@@ -77,10 +43,10 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 		}
 	}
 
-	private entryUrl(entry: FileTableEntry) {
+	function entryUrl(entry: FileTableEntry) {
 		let url = null;
-		if (this.props.fileLinkPrefix) {
-			url = this.props.fileLinkPrefix;
+		if (props.fileLinkPrefix) {
+			url = props.fileLinkPrefix;
 			if (!url.endsWith("/"))
 				url += "/";
 			url += entry.name;
@@ -88,41 +54,57 @@ export default class FileTable extends Component<FileTableProps, FileTableState>
 		return url;
 	}
 
-	private isSelected(name: string): boolean {
-		return this.props.selected &&
-			this.props.selected.findIndex(e => e.name == name) > -1;
+	function isSelected(name: string): boolean {
+		return selected &&
+			selected.findIndex(e => e.name == name) > -1;
 	}
 
-	@boundMethod
-	private onSelectAll() {
-		const select = !this.state.selectedAll;
-		const selected = select ?
-			this.props.listing.slice() :
-			[];
-		this.setState({selectedAll: select})
-		this.callbackSelected(selected);
-	}
-
-	@boundMethod
-	private onSelect(name: string): void {
-		this.select(name);
-	}
-
-	private select(name: string): void {
-		const { listing, selected } = this.props;
+	function selectItem(name: string): void {
 		const idx: number = selected.findIndex(e => e.name == name);
 		if (idx == -1) {
-			selected.push(listing.find(e => e.name == name));
+			selected.push(props.listing.find(e => e.name == name));
 		} else {
 			selected.splice(idx, 1);
 		}
-		this.callbackSelected(selected);
+		callbackSelected(selected);
 	}
 
-	private callbackSelected(entries: FileTableEntry[]) {
-		if (this.props.onSelected)
-			this.props.onSelected(entries);
+	function callbackSelected(entries: FileTableEntry[]) {
+		if (props.onSelected)
+			props.onSelected(entries);
 	}
+
+	function selectAll() {
+		const select = !selectedAll;
+		const selected = select ?
+			props.listing.slice() :
+			[];
+		setSelectedAll(select);
+		callbackSelected(selected);
+	}
+
+	let rows: JSX.Element[] = [];
+	if (props.listing) {
+		const renderName = props.renderName || renderEntryUrl;
+		props.listing.forEach((e: FileTableEntry) => {
+			rows.push(<FileTableRow
+				entry={e} key={e.name} showSize={showSize}
+				renderName={renderName}
+				renderFileActions={props.renderFileActions}
+				selected={isSelected(e.name)}
+				onSelected={props.onSelected && selectItem || null}
+			/>);
+		});
+	}
+	return (
+		<Table css={{width: "100%"}}>
+			<Header {...props} showSize={showSize} selected={selected} selectedAll={selectedAll}
+				onSelected={props.onSelected && selectAll || null} />
+			<tbody>
+				{rows}
+			</tbody>
+		</Table>
+	);
 }
 
 interface HeaderProps extends FileTableProps {
@@ -130,34 +112,32 @@ interface HeaderProps extends FileTableProps {
 	onSelected: () => void
 }
 
-class Header extends Component<HeaderProps> {
-	render() {
-		let sizeTd = null;
-		if (this.props.showSize)
-			sizeTd = (<HeaderCell {...this.props} field={Field.Size} label="Size" css={{width: "4em"}} />);
-		return (<thead>
-			<tr>
-				{this.props.onSelected &&
-				<HeaderSelectCell>
-					<CellPane>
-						<CheckBox checked={this.props.selectedAll}
-							onClick={this.props.onSelected} />
-					</CellPane>
-				</HeaderSelectCell>}
-				<HeaderCell {...this.props} field={Field.Name} label="Name" />
-				{sizeTd}
-				<HeaderCell {...this.props} field={Field.Mtime} label="Modified Date" rightmost
-					css={{
-						[`@media (${responsive.normalScreen})`]: {
-							width: "9em",
-						},
-						[`@media (${responsive.tightScreen})`]: {
-							width: "4em",
-						},
-					}} />
-			</tr>
-		</thead>);
-	}
+const Header = (props: HeaderProps) => {
+	let sizeTd = null;
+	if (props.showSize)
+		sizeTd = (<HeaderCell {...props} field={Field.Size} label="Size" css={{width: "4em"}} />);
+	return (<thead>
+		<tr>
+			{props.onSelected &&
+			<HeaderSelectCell>
+				<CellPane>
+					<CheckBox checked={props.selectedAll}
+						onClick={props.onSelected} />
+				</CellPane>
+			</HeaderSelectCell>}
+			<HeaderCell {...props} field={Field.Name} label="Name" />
+			{sizeTd}
+			<HeaderCell {...props} field={Field.Mtime} label="Modified Date" rightmost
+				css={{
+					[`@media (${responsive.normalScreen})`]: {
+						width: "9em",
+					},
+					[`@media (${responsive.tightScreen})`]: {
+						width: "4em",
+					},
+				}} />
+		</tr>
+	</thead>);
 }
 
 // Such inheritance is a code-smell, but done so regardless
@@ -171,7 +151,7 @@ interface HeaderCellProps extends FileTableProps {
 }
 
 const HeaderCell = (props: HeaderCellProps) => {
-	let label: JSX.Element;
+	let label: ReactNode;
 	if (props.onHeaderClick) {
 		label = <LinkText css={TableLink} onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>;
 	} else {
@@ -190,18 +170,9 @@ interface FileTableRowProps {
 	renderFileActions: FileRenderFunc
 }
 
-class FileTableRow extends PureComponent<FileTableRowProps> {
-	render() {
-		return (<TableRecord>
-			{this.renderSelectCell()}
-			{this.renderNameCell()}
-			{this.renderSizeCell()}
-			{this.renderDateCell()}
-		</TableRecord>);
-	}
+const FileTableRow = (props: FileTableRowProps) => {
 
-	private renderSelectCell(): JSX.Element {
-		const { props } = this;
+	function renderSelectCell(): ReactNode {
 		if (props.onSelected) {
 			return (<td css={SelectCell}>
 				<CellPane>
@@ -214,32 +185,31 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 		return null;
 	}
 
-	private renderNameCell(): JSX.Element {
+	function renderNameCell(): ReactNode {
 		return (<DataCell>
 			<CellPane>
-				{this.renderName()}
-				{this.renderActions()}
+				{renderName()}
+				{renderActions()}
 			</CellPane>
 		</DataCell>)
 	}
 
-	private renderName(): ReactNode {
-		return this.props.renderName(this.props.entry);
+	function renderName(): ReactNode {
+		return props.renderName(props.entry);
 	}
 
-	private renderSizeCell(): JSX.Element {
-		if (this.props.showSize)
-			return <DataCell>{formatSize(this.props.entry.size)}</DataCell>;
+	function renderSizeCell(): ReactNode {
+		if (props.showSize)
+			return <DataCell>{formatSize(props.entry.size)}</DataCell>;
 		return null;
 	}
 
-	private renderDateCell(): JSX.Element {
-		const date = new Date(this.props.entry.mtime * 1000);
+	function renderDateCell(): ReactNode {
+		const date = new Date(props.entry.mtime * 1000);
 		return <DataCell>{formatDate(date)}</DataCell>
 	}
 
-	private renderActions(): JSX.Element {
-		const { props } = this;
+	function renderActions(): ReactNode {
 		if (props.renderFileActions) {
 			return (<ActionSet right>
 				{props.renderFileActions(props.entry)}
@@ -247,4 +217,13 @@ class FileTableRow extends PureComponent<FileTableRowProps> {
 		}
 		return null;
 	}
+
+	return (<TableRecord>
+		{renderSelectCell()}
+		{renderNameCell()}
+		{renderSizeCell()}
+		{renderDateCell()}
+	</TableRecord>);
 };
+
+export default FileTable;

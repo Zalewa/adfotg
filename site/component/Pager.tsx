@@ -1,7 +1,6 @@
-import { Component } from 'react';
+import { ReactNode } from 'react';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
-import { boundMethod } from 'autobind-decorator';
 
 import { LinkText, LinkTextProps } from '../ui/Link';
 
@@ -33,7 +32,7 @@ const PagerRight = styled.div({
 });
 
 interface PagerPageLinkProps extends LinkTextProps {
-	selected: boolean;
+	selected?: boolean;
 };
 
 const PageLink = (props: PagerPageLinkProps) => (
@@ -51,108 +50,106 @@ const PageLink = (props: PagerPageLinkProps) => (
 	/>
 );
 
-PageLink.defaultProps = {selected: false};
+const Pager = (props: PagerProps) => {
+	if (!hasPages())
+		return null;
 
-export default class Pager extends Component<PagerProps> {
-	render() {
-		if (!this.hasPages())
-			return null;
-		return (<div css={css({
-			display: "flex",
-			flexWrap: "wrap",
-			justifyContent: "space-evenly",
-		})}>
-			{this.renderLeft()}
-			{this.renderNumbers()}
-			{this.renderRight()}
-		</div>);
-	}
-
-	private renderLeft(): JSX.Element {
-		if (this.hasLeft()) {
+	function renderLeft(): ReactNode {
+		if (hasLeft()) {
 			return (<PagerLeft>
-				<PageLink onClick={() => this.change(0)}>&lt;&lt;</PageLink>
-				<PageLink onClick={() => this.change(this.page() - 1)}>&lt;</PageLink>
+				<PageLink onClick={() => change(0)}>&lt;&lt;</PageLink>
+				<PageLink onClick={() => change(currentPage() - 1)}>&lt;</PageLink>
 			</PagerLeft>);
 		} else {
 			return <PagerLeft />
 		}
 	}
 
-	private renderRight(): JSX.Element {
-		if (this.hasRight()) {
+	function renderRight(): ReactNode {
+		if (hasRight()) {
 			return (<PagerRight>
-				<PageLink onClick={() => this.change(this.page() + 1)}>&gt;</PageLink>
-				<PageLink onClick={() => this.change(this.lastPage())}>&gt;&gt;</PageLink>
+				<PageLink onClick={() => change(currentPage() + 1)}>&gt;</PageLink>
+				<PageLink onClick={() => change(lastPage())}>&gt;&gt;</PageLink>
 			</PagerRight>);
 		} else {
 			return <PagerRight />
 		}
 	}
 
-	private renderNumbers(): JSX.Element[] {
+	function renderNumbers(): ReactNode {
 		let links: JSX.Element[] = [];
-		for (let page = 0; page < this.numPages(); ++page) {
+		for (let page = 0; page < numPages(); ++page) {
 			links.push(<PageLink key={page}
-					selected={page == this.page()}
-					onClick={() => this.change(page)}>
+					selected={page == currentPage()}
+					onClick={() => change(page)}>
 				{page + 1}
 			</PageLink>);
 		}
 		return links;
 	}
 
-	@boundMethod
-	private change(pageNum: number) {
-		const page = new Page(this.startAtPage(pageNum), this.limit());
-		this.props.onPageChanged(page);
+	function change(pageNum: number) {
+		const page = new Page(startAtPage(pageNum), limit());
+		props.onPageChanged(page);
 	}
 
-	private hasPages(): boolean {
-		return this.total() > this.limit();
+	function hasPages(): boolean {
+		return total() > limit();
 	}
 
-	private hasLeft(): boolean {
-		return this.start() > 0;
+	function hasLeft(): boolean {
+		return start() > 0;
 	}
 
-	private hasRight(): boolean {
-		return this.total() > 0 &&
-			this.start() + this.limit() < this.total();
+	function hasRight(): boolean {
+		return total() > 0 &&
+			start() + limit() < total();
 	}
 
-	private numPages(): number {
-		const { total, page } = this.props;
+	function numPages(): number {
+		const { total, page } = props;
 		if (page.limit <= 0)
 			return 0;
 		return total / page.limit;
 	}
 
-	private page(): number {
-		if (this.limit() <= 0 || this.start() <= 0)
+	function currentPage(): number {
+		if (limit() <= 0 || start() <= 0)
 			return 0;
-		return Math.floor(this.start() / this.limit());
+		return Math.floor(start() / limit());
 	}
 
-	private lastPage(): number {
-		if (this.total() <= 0 || this.limit() <= 0)
+	function lastPage(): number {
+		if (total() <= 0 || limit() <= 0)
 			return 0;
-		return Math.floor((this.total() - 1) / this.limit());
+		return Math.floor((total() - 1) / limit());
 	}
 
-	private startAtPage(page: number): number {
-		return page * this.limit();
+	function startAtPage(page: number): number {
+		return page * limit();
 	}
 
-	private start(): number {
-		return this.props.page.start;
+	function start(): number {
+		return props.page.start;
 	}
 
-	private limit(): number {
-		return this.props.page.limit;
+	function limit(): number {
+		return props.page.limit;
 	}
 
-	private total(): number {
-		return this.props.total;
+	function total(): number {
+		return props.total;
 	}
+
+	return (<div css={css({
+		display: "flex",
+		flexWrap: "wrap",
+		justifyContent: "space-evenly",
+	})}>
+		{renderLeft()}
+		{renderNumbers()}
+		{renderRight()}
+	</div>);
 }
+
+export default Pager;
