@@ -1,9 +1,5 @@
-function r(path: string) {
-	return require('./res/' + path);
-}
-
-export const arrow_down = r('arrow_down.png');
-export const arrow_up = r('arrow_up.png');
-export const loader = r('ajax-loader.gif');
-export const looking_glass = r('looking_glass.png');
-export const usb_icon_horz = r('usb_icon_horz.svg');
+export { default as arrow_down } from './res/arrow_down.png';
+export { default as arrow_up } from './res/arrow_up.png';
+export { default as loader } from './res/ajax-loader.gif';
+export { default as looking_glass } from './res/looking_glass.png';
+export { default as usb_icon_horz } from './res/usb_icon_horz.svg';
