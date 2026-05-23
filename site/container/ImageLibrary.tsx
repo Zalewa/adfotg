@@ -1,8 +1,7 @@
-import { Component, ReactNode } from 'react';
+import { Component, type ReactNode } from 'react';
 import * as request from 'superagent';
-import { boundMethod } from 'autobind-decorator';
 
-import { FileTableEntry, } from '../component/FileTable';
+import { type FileTableEntry } from '../component/FileTable';
 import { AdfTable } from './StorageTables';
 import CreateMountImage from './CreateMountImage';
 import { dispatchRequestError } from '../component/Notifier';
@@ -42,39 +41,38 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 				refresh={this.state.refresh}
 				pageSize={PAGE_SIZE}
 				selected={this.state.selection}
-				onSelected={this.onImagesSelected}
-				onRenderFileActions={this.renderFileActions}
+				onSelected={this.onImagesSelected.bind(this)}
+				onRenderFileActions={this.renderFileActions.bind(this)}
 			/>
 		</Section>);
 	}
 
 	private renderActions(): ReactNode {
 		return (
-			<Button onClick={this.showCreateImage}
+			<Button onClick={this.showCreateImage.bind(this)}
 				disabled={this.state.selection.length == 0}
 				title="Create Mount Image" />
 		);
 	}
 
-	private renderModal(): JSX.Element {
+	private renderModal(): ReactNode {
 		if (this.state.createImage) {
 			return <Modal onClose={() => this.setState({createImage: false})}>
 				<CreateMountImage adfs={this.state.selection.map(e => e.name)}
-					onDone={this.onModalAccepted} />
+					onDone={this.onModalAccepted.bind(this)} />
 			</Modal>
 		}
 		return null;
 	}
 
-	@boundMethod
-	private renderFileActions(file: FileTableEntry): JSX.Element {
+	private renderFileActions(file: FileTableEntry): ReactNode {
+		const quickMount = this.quickMount.bind(this)
 		return (<Button table title="Quick mount" icon={res.usb_icon_horz}
-			onClick={() => this.quickMount(file.name)} />)
+			onClick={() => quickMount(file.name)} />)
 	}
 
-	@boundMethod
 	private quickMount(file: string): void {
-		request.post("/api/quickmount/adf/" + file).end((err, res) => {
+		request.post("/api/quickmount/adf/" + file).end((err) => {
 			dispatchRequestError(err);
 			if (!err && this.props.onMountedImage) {
 				this.props.onMountedImage();
@@ -82,17 +80,14 @@ export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibr
 		});
 	}
 
-	@boundMethod
 	private onImagesSelected(entries: FileTableEntry[]) {
 		this.setState({selection: entries});
 	}
 
-	@boundMethod
 	private showCreateImage(): void {
 		this.setState({createImage: true});
 	}
 
-	@boundMethod
 	private onModalAccepted(): void {
 		this.props.onCreatedImage();
 		this.setState({createImage: false});

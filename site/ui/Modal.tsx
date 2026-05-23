@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import styled from '@emotion/styled';
 
-import { Button, ButtonPurpose } from './Button';
+import { Button, type ButtonPurpose } from './Button';
 
 import * as skin from '../skin';
 

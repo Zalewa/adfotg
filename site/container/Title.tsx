@@ -1,8 +1,7 @@
-import { Component } from 'react';
+import { Component, type ReactNode } from 'react';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { rgba } from 'polished';
-import { boundMethod } from 'autobind-decorator';
 import * as request from 'superagent';
 
 import { HealthBar } from './Health';
@@ -10,7 +9,7 @@ import { dispatchRequestError } from '../component/Notifier';
 import { HOME_LINK, UPLOAD_LINK } from '../routes';
 import Search from '../component/Search';
 import { Labelled } from '../ui/Label';
-import { AppLink, AppLinkProps, Link } from '../ui/Link';
+import { AppLink, type AppLinkProps, Link } from '../ui/Link';
 import { Table, TableRecord, HeaderCell, LabelCell, DataCell } from '../ui/Table';
 import { formatSize } from '../ui/ui';
 import * as responsive from '../responsive';
@@ -56,9 +55,10 @@ export default class Title extends Component<TitleProps, TitleState> {
 			title: this.getMatchMediaTitle(),
 			searchPrompt: props.search
 		};
+		this.boundMatchMedia = this.matchMedia.bind(this)
 	}
 
-	searchPrompt: string
+	private boundMatchMedia
 
 	render() {
 		return (
@@ -92,12 +92,12 @@ export default class Title extends Component<TitleProps, TitleState> {
 		);
 	}
 
-	private renderSearch(): JSX.Element {
+	private renderSearch(): ReactNode {
 		if (this.props.canSearch) {
 			return (<TitleSection>
 				<Search text={this.state.searchPrompt}
-					onEdit={this.onSearchEdited}
-					onSubmit={this.onSearchSubmitted} />
+					onEdit={this.onSearchEdited.bind(this)}
+					onSubmit={this.onSearchSubmitted.bind(this)} />
 			</TitleSection>);
 		} else {
 			return null;
@@ -105,7 +105,7 @@ export default class Title extends Component<TitleProps, TitleState> {
 	}
 
 	componentDidMount() {
-		responsive.matchWidth.addListener(this.matchMedia);
+		responsive.matchWidth.addListener(this.boundMatchMedia);
 	}
 
 	componentDidUpdate(props: TitleProps) {
@@ -115,10 +115,9 @@ export default class Title extends Component<TitleProps, TitleState> {
 	}
 
 	componentWillUnmount() {
-		responsive.matchWidth.removeListener(this.matchMedia);
+		responsive.matchWidth.removeListener(this.boundMatchMedia);
 	}
 
-	@boundMethod
 	private matchMedia(): void {
 		this.setState({title: this.getMatchMediaTitle()});
 	}
@@ -127,12 +126,10 @@ export default class Title extends Component<TitleProps, TitleState> {
 		return responsive.matchWidth.matches ? "ADF OTG" : "ADF On-The-Go";
 	}
 
-	@boundMethod
 	private onSearchEdited(searchPrompt: string): void {
 		this.setState({searchPrompt});
 	}
 
-	@boundMethod
 	private onSearchSubmitted(): void {
 		this.props.onSearch(this.state.searchPrompt);
 	}
@@ -210,8 +207,8 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 		this.refresh();
 	}
 
-	private renderStats(): JSX.Element[] {
-		let el: JSX.Element[] = [];
+	private renderStats(): ReactNode {
+		let el: ReactNode[] = [];
 		this.state.fsStats.forEach((stat: FsStats) => {
 			el.push(<TableRecord key={stat.name}>
 				<LabelCell>{stat.name}</LabelCell>

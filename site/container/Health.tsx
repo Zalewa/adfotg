@@ -1,20 +1,20 @@
-import { Component } from 'react';
+import { Component, type ReactNode } from 'react';
 import * as request from 'superagent';
-import { boundMethod } from 'autobind-decorator';
 
 import { enumKeys } from '../enum';
 import { dispatchRequestError, dispatchError } from '../component/Notifier';
 import * as skin from '../skin';
 
 
-enum HealthPoint {
-	Rpi = "rpi",
-	MassStorage = "g_mass_storage",
-	Xdftool = "xdftool",
-	Mtools = "mtools",
-	Storage = "storage"
-}
+const HealthPoint = {
+	Rpi: "rpi",
+	MassStorage: "g_mass_storage",
+	Xdftool: "xdftool",
+	Mtools: "mtools",
+	Storage: "storage"
+} as const
 
+type HealthPoint = typeof HealthPoint[keyof typeof HealthPoint]
 
 interface HealthBarState {
 	health: Map<string, string>;
@@ -42,7 +42,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 					width: "100%",
 				},
 				this.hasErrors() && {cursor: "pointer"},
-			]} onClick={this.showErrors}>
+			]} onClick={this.showErrors.bind(this)}>
 			<tbody>
 				<tr css={{justifyItems: "stretch"}}>
 					{this.renderPoints()}
@@ -55,19 +55,19 @@ export class HealthBar extends Component<{}, HealthBarState> {
 		this.refresh();
 	}
 
-	private renderPoints(): JSX.Element[] {
-		let elems: JSX.Element[] = [];
+	private renderPoints(): ReactNode {
+		let elems: ReactNode[] = [];
 		for (const healthPoint of enumKeys(HealthPoint)) {
 			elems.push(this.renderPoint(HealthPoint[healthPoint]));
 		}
 		return elems;
 	}
 
-	private renderPoint(healthPoint: string): JSX.Element {
+	private renderPoint(healthPoint: string): ReactNode {
 		let modifier: string;
 		let message: string = "";
 		if (this.state.health.has(healthPoint)) {
-			message = this.state.health.get(healthPoint);
+			message = this.state.health.get(healthPoint) ?? "";
 			modifier = !message ? skin.successColor : skin.dangerColor;
 		} else {
 			modifier = skin.pane.background;
@@ -108,7 +108,6 @@ export class HealthBar extends Component<{}, HealthBarState> {
 		return false;
 	}
 
-	@boundMethod
 	private showErrors(): void {
 		this.state.health.forEach((msg: string, name: string) => {
 			if (!!msg) {

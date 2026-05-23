@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import { errorToString } from './ui';
 import * as skin from '../skin';

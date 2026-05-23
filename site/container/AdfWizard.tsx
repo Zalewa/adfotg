@@ -1,8 +1,7 @@
-import { Component } from 'react';
-import { boundMethod } from 'autobind-decorator';
+import { Component, type ReactNode } from 'react';
 import * as request from 'superagent';
 
-import { FileTableEntry } from '../component/FileTable';
+import { type FileTableEntry } from '../component/FileTable';
 import List from '../ui/List';
 import { Notification, NoteType } from '../component/Notifier';
 import Upload from './Upload';
@@ -43,17 +42,17 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 				search={this.props.search}
 				selected={this.state.selection}
 				onSelected={selection => this.setState({selection})} />
-			<Button onClick={this.addEmptyDisk} title="Add Empty ADF" />
+			<Button onClick={this.addEmptyDisk.bind(this)} title="Add Empty ADF" />
 			{this.state.submitted && this.renderSubmitted()}
 			{this.state.disks.length > 0 && this.renderComposition()}
 		</div>);
 	}
 
-	private actions(): JSX.Element[] {
+	private actions(): ReactNode {
 		return [
 			<Button key="distribute"
 				disabled={this.state.selection.length == 0 || this.state.submitting}
-				onClick={this.distributeDisks}
+				onClick={this.distributeDisks.bind(this)}
 				title="Distribute ADFs" />,
 			<label key="basenamelabel"
 				css={{alignSelf: "center"}}>Base name:</label>,
@@ -63,12 +62,12 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 		]
 	}
 
-	private renderComposition(): JSX.Element {
+	private renderComposition(): ReactNode {
 		return <DiskComposition parent={this} disks={this.state.disks}
 			allowSubmit={!this.state.submitting} />
 	}
 
-	private renderSubmitted(): JSX.Element {
+	private renderSubmitted(): ReactNode {
 		if (this.state.disks.length == 0) {
 			return <Notification note={{
 				type: NoteType.Success,
@@ -80,7 +79,6 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 		}
 	}
 
-	@boundMethod
 	private addEmptyDisk(): void {
 		this.addDisk(
 			this.state.basename + "" + this.diskKey,
@@ -98,14 +96,12 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 		this.setState({disks: this.disks, submitted: false});
 	}
 
-	@boundMethod
 	public clearDisks() {
 		this.disks = []
 		this.diskKey = 1;
 		this.setState({disks: this.disks, submitted: false, submitting: false});
 	}
 
-	@boundMethod
 	public discardDisk(disk: DiskDescriptor): void {
 		const idx = this.disks.findIndex(e => e.key == disk.key);
 		if (idx != -1) {
@@ -114,7 +110,6 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 		this.setState({disks: this.disks, submitted: false});
 	}
 
-	@boundMethod
 	private distributeDisks(): void {
 		this.clearDisks();
 		const files = this.state.selection;
@@ -129,7 +124,6 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 		this.setState({submitted: false});
 	}
 
-	@boundMethod
 	public submit(): void {
 		this.setState({submitting: true, submitted: false});
 		this.submitAsync().then(() => {
@@ -150,7 +144,7 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 		});
 		for (let i = 0; i < requests.length; ++i) {
 			try {
-				let res  = await requests[i];
+				await requests[i];
 				disks[i].done = true;
 			} catch (e) {
 				disks[i].error = errorToString(e);
@@ -161,13 +155,13 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 }
 
 class DiskDescriptor {
-	public name: string
-	public label: string
-	public contents: FileOp[]
+	public name: string = ""
+	public label: string = ""
+	public contents: FileOp[] = []
 
-	public error: string
+	public error: string = ""
 	public done: boolean = false;
-	public key: number
+	public key: number = 0
 
 	public setName(v: string): void {
 		this.name = v;
@@ -200,15 +194,15 @@ class DiskComposition extends Component<DiskCompositionProps> {
 	render() {
 		const { parent } = this.props;
 		return (<div>
-			<Button purpose="submit" onClick={parent.submit}
+			<Button purpose="submit" onClick={parent.submit.bind(parent)}
 				disabled={!this.props.allowSubmit}
 				title="Submit" />
-			<Button onClick={parent.clearDisks} title="Discard All" />
+			<Button onClick={parent.clearDisks.bind(parent)} title="Discard All" />
 			{this.renderDisks()}
 		</div>);
 	}
 
-	private renderDisks(): JSX.Element[] {
+	private renderDisks(): ReactNode {
 		const { disks } = this.props;
 		return disks.map((disk: DiskDescriptor) =>
 			!disk.done ?
@@ -274,9 +268,9 @@ class DiskForm extends Component<DiskFormProps, DiskFormState> {
 				<Notification note={{type: NoteType.Error, message: error}} />)}
 			<Form>
 				<FormItem label="Name" hint=".adf"
-					note={this.state.nameError && {
+					note={this.state.nameError ? {
 						type: NoteType.Error,
-						message: this.state.nameError}}>
+						message: this.state.nameError} : undefined}>
 					<LineInput value={name} css={{width: "100%"}}
 						onChange={e => props.onNameEdited(e.target.value)} />
 				</FormItem>
@@ -376,7 +370,10 @@ class Distributor {
 			};
 			const freespace = () => Distributor.MAX_SIZE - takenspace();
 			// 4.1. Start with largest file and put it on to the disk
-			disk.push(fitting.shift());
+			const file = fitting.shift()
+			if (file != null) {
+				disk.push(file);
+			}
 			while (fitting.length > 0) {
 				// 4.2. Find next largest file that still fits
 				//      and put it on the disk

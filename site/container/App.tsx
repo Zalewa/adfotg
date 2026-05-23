@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component, useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router';
 import { Global, css } from '@emotion/react';
 import { darken } from 'polished';
 
@@ -91,7 +91,7 @@ interface ErrorBoundaryState {
 	error: Error | null,
 }
 
-class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
+class ErrorBoundary extends React.Component<{children?: React.ReactNode}, ErrorBoundaryState> {
 	state: Readonly<ErrorBoundaryState> = {
 		error: null
 	}

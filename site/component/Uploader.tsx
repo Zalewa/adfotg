@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
 
-import { Notification, Note, NoteType,
+import { Notification, type Note, NoteType,
 	dispatchRequestError } from '../component/Notifier';
 import { Loader } from '../ui/ui';
 import * as skin from '../skin';
@@ -15,7 +15,7 @@ const MyDropzone = (props : {
 		props.onUploading();
 		const req = request.post("/api/upload");
 		accepted.forEach(file => req.attach(file.name, file));
-		req.end((err, res) => props.onUploadDone(err));
+		req.end((err) => props.onUploadDone(err));
 	}
 
 	return (<Dropzone onDropAccepted={onDrop}>
@@ -58,11 +58,11 @@ interface UploadProps {
 
 export default (props: UploadProps) => {
 	const [ uploading, setUploading ] = useState(false);
-	const [ uploadSuccess, setUploadSuccess ] = useState(null);
+	const [ uploadSuccess, setUploadSuccess ] = useState<boolean | null>(null);
 
 	useEffect(() => {
-		let timer: NodeJS.Timeout = null;
-		if (uploadSuccess !== null) {
+		let timer: NodeJS.Timeout | undefined = undefined;
+		if (uploadSuccess != null) {
 			timer = setTimeout(() => setUploadSuccess(null), 2000);
 			return () => clearTimeout(timer);
 		} else {

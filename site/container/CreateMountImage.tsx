@@ -1,6 +1,5 @@
-import { Component, ReactNode } from 'react';
+import { Component, type ReactNode } from 'react';
 import * as request from 'superagent';
-import { boundMethod } from 'autobind-decorator';
 
 import { Actions, ActionSet } from '../component/Actions';
 import List from '../ui/List';
@@ -17,7 +16,7 @@ export interface CreateMountImageProps {
 }
 
 interface CreateMountImageState {
-	error: Error
+	error?: Error
 	imageName: string
 	sortedAdfs: string[]
 	refreshing: boolean
@@ -28,7 +27,6 @@ export default class CreateMountImage extends Component<CreateMountImageProps, C
 		super(props);
 		this.state = {
 			sortedAdfs: sorted(props.adfs),
-			error: null,
 			imageName: "",
 			refreshing: true
 		}
@@ -43,6 +41,8 @@ export default class CreateMountImage extends Component<CreateMountImageProps, C
 	}
 
 	private renderWorkspace(): ReactNode {
+		const create = this.create.bind(this)
+		const onNameChange = this.onNameChange.bind(this)
 		return (<div>
 			<span>Create Mount Image with following ADFs:</span>
 			<List listing={this.state.sortedAdfs}
@@ -51,15 +51,15 @@ export default class CreateMountImage extends Component<CreateMountImageProps, C
 			<ActionSet>
 				<LineInput autoFocus type="text"
 					value={this.state.imageName}
-					onChange={e => this.onNameChange(e.target.value)}
+					onChange={e => onNameChange(e.target.value)}
 					onKeyPress={e => {
 						if (e.key === "Enter") {
-							this.create();
+							create();
 						}
 					}} />
 			</ActionSet>
 			<ActionSet right>
-				<Button purpose="submit" onClick={this.create}
+				<Button purpose="submit" onClick={create}
 					disabled={this.state.imageName.length == 0}
 					title="Create" />
 			</ActionSet>
@@ -100,13 +100,12 @@ export default class CreateMountImage extends Component<CreateMountImageProps, C
 		});
 	}
 
-	@boundMethod
 	private create(): void {
 		if (!this.state.imageName)
 			return;
 		request.put("/api/mountimg/" + this.state.imageName + "/pack_adfs")
 			.send({adfs: this.state.sortedAdfs})
-			.end((err, res) => {
+			.end((err) => {
 				if (err) {
 					this.setState({error: err});
 				} else {
@@ -116,7 +115,6 @@ export default class CreateMountImage extends Component<CreateMountImageProps, C
 			});
 	}
 
-	@boundMethod
 	private onNameChange(value: string): void {
 		this.setState({imageName: value});
 	}

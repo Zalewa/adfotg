@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as request from 'superagent';
 
-import FileTable, { FileTableEntry } from './FileTable';
+import FileTable, { type FileTableEntry } from './FileTable';
 import { ErrorLabel, Labelled } from '../ui/Label';
 import { Link } from '../ui/Link';
 import { formatSize } from '../ui/ui';
@@ -55,22 +55,14 @@ export const MountImage = (props: MountImageProps) => {
 	useEffect(() => {
 		const isReset = props.name != loadContents.name;
 		setLoadStat({
-			...loadStat,
+			...(isReset ? {} : loadStat),
 			name: props.name,
-			loading: true,
-			...(isReset && {
-				stat: null,
-				error: null,
-			}),
-		});
+			loading: true
+		})
 		setLoadContents({
-			...loadContents,
+			...(isReset ? {} : loadContents),
 			name: props.name,
 			loading: true,
-			...(isReset && {
-				listing: null,
-				error: null,
-			}),
 		});
 		request.get(statApi()).end((err, res) => {
 			setLoadStat({

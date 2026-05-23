@@ -5,14 +5,16 @@ import { rgba } from 'polished';
 import { Button } from '../ui/Button';
 import { errorToString } from '../ui/ui';
 
-import { BulkResult } from '../app/Storage';
+import { type BulkResult } from '../app/Storage';
 
 import * as skin from '../skin';
 
-export enum NoteType {
-	Error = "error",
-	Success = "success"
-}
+export const NoteType = {
+	Error: "error",
+	Success: "success",
+} as const
+
+export type NoteType = typeof NoteType[keyof typeof NoteType]
 
 export interface Note {
 	type: NoteType,
@@ -79,9 +81,9 @@ const Notifier = () => {
 		const onNotify = (e: CustomEvent<Note>) => {
 			setNotes([...notes, e.detail]);
 		}
-		window.addEventListener("__notify", onNotify);
+		window.addEventListener("__notify", onNotify as EventListener);
 		return () => {
-			window.removeEventListener("__notify", onNotify);
+			window.removeEventListener("__notify", onNotify as EventListener);
 		};
 	}, [notes]);
 
@@ -124,6 +126,9 @@ export const Notification = (props: NotificationProps) => {
 		}
 	}
 
+	const { onClose } = props
+	const noteKey = props.note.key
+
 	return (<div css={[
 		{
 			border: "1px dashed",
@@ -132,9 +137,9 @@ export const Notification = (props: NotificationProps) => {
 		},
 		noteClass(props.note),
 	]} className={props.className}>
-		{props.onClose &&
+		{onClose && noteKey &&
 		 <span css={{marginRight: "5px"}}>
-			<Button onClick={() => props.onClose(props.note.key)} title="X" />
+			<Button onClick={() => onClose(noteKey)} title="X" />
 		 </span>}
 		<span>{props.note.message}</span>
 	</div>);

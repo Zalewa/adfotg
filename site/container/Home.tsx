@@ -1,5 +1,4 @@
 import { Component } from 'react';
-import { boundMethod } from 'autobind-decorator';
 
 import ImageLibrary from './ImageLibrary';
 import Mount from './Mount';
@@ -23,13 +22,12 @@ export default class Home extends Component<HomeProps, HomeState> {
 				<Mount refresh={this.state.refreshSwitch}
 					search={this.props.search} />
 				<ImageLibrary refresh={this.state.refreshSwitch}
-					onCreatedImage={this.promptRefresh}
-					onMountedImage={this.promptRefresh}
+					onCreatedImage={this.promptRefresh.bind(this)}
+					onMountedImage={this.promptRefresh.bind(this)}
 					search={this.props.search} />
 			</div>);
 	}
 
-	@boundMethod
 	private promptRefresh(): void {
 		this.setState({
 			refreshSwitch: !this.state.refreshSwitch

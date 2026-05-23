@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { Component, ReactNode } from 'react';
+import { Component, type ReactNode } from 'react';
 import * as request from 'superagent';
-import { boundMethod } from 'autobind-decorator';
 
 import { ActionSet } from '../component/Actions';
-import { FileTableEntry } from '../component/FileTable';
+import { type FileTableEntry } from '../component/FileTable';
 import { MountImagesTable } from './StorageTables';
 import { MountImage } from '../component/MountImage';
 import { dispatchRequestError } from '../component/Notifier';
@@ -17,17 +16,19 @@ import * as resrc from '../res';
 import * as skin from '../skin';
 
 
-const enum MountStatus {
-	Mounted = "mounted",
-	Unmounted = "unmounted",
-	NoImage = "no_image",
-	BadImage = "bad_image",
-	OtherImageMounted = "other_image_mounted"
-}
+const MountStatus = {
+	Mounted: "mounted",
+	Unmounted: "unmounted",
+	NoImage: "no_image",
+	BadImage: "bad_image",
+	OtherImageMounted: "other_image_mounted",
+} as const
+
+export type MountStatus = typeof MountStatus[keyof typeof MountStatus]
 
 interface MountInfo {
 	error?: string
-	mountStatus: MountStatus
+	mountStatus: MountStatus | null
 	mountedImageName: string
 }
 
@@ -37,7 +38,7 @@ interface MountProps {
 }
 
 interface MountState {
-	mountInfo: MountInfo
+	mountInfo?: MountInfo
 	imagesSelection: FileTableEntry[]
 	refreshCounter: number
 }
@@ -46,21 +47,20 @@ const PAGE_SIZE = 50;
 
 export default class Mount extends Component<MountProps, MountState> {
 	readonly state: MountState = {
-		mountInfo: null,
 		imagesSelection: [],
 		refreshCounter: 0,
 	}
 
 	render() {
 		return (<Section title="Mounting">
-			<MountArea mountInfo={this.state.mountInfo} onUnmount={this.unmount}
+			<MountArea mountInfo={this.state.mountInfo} onUnmount={this.unmount.bind(this)}
 				refreshCounter={this.state.refreshCounter} />
 			<MountImagesTable
 				search={this.props.search}
 				refresh={this.state.refreshCounter}
 				pageSize={PAGE_SIZE}
 				selected={this.state.imagesSelection}
-				onSelected={this.onImagesSelected}
+				onSelected={this.onImagesSelected.bind(this)}
 				onRenderFileActions={(entry) => this.renderFileActions(entry)}
 				onRenderName={(entry) => this.renderName(entry)}
 				/>
@@ -82,7 +82,7 @@ export default class Mount extends Component<MountProps, MountState> {
 		return <AppLink css={TableLink} to={`/inspect/mountimg/${file.name}`}>{file.name}</AppLink>;
 	}
 
-	private renderFileActions(file: FileTableEntry): JSX.Element {
+	private renderFileActions(file: FileTableEntry): ReactNode {
 		const mountStatus = this.state.mountInfo && this.state.mountInfo.mountStatus
 		function canMount() {
 			return mountStatus === MountStatus.Unmounted || mountStatus === MountStatus.Mounted;
@@ -95,10 +95,11 @@ export default class Mount extends Component<MountProps, MountState> {
 		}
 		const mountTitle = canMount() ? "Mount this image" : cannotMountReason();
 
+		const mount = this.mount.bind(this)
 		return (<ActionSet>
 			<Button table title={mountTitle} icon={resrc.usb_icon_horz}
 					disabled={!canMount()}
-					onClick={() => this.mount(file.name)} />
+					onClick={() => mount(file.name)} />
 		</ActionSet>);
 	}
 
@@ -106,7 +107,7 @@ export default class Mount extends Component<MountProps, MountState> {
 		this.setState({});
 		request.get("/api/mount").end((err, res) => {
 			dispatchRequestError(err);
-			let mountStatus: MountStatus = null;
+			let mountStatus: MountStatus | null = null;
 			if (!err) {
 				mountStatus = res.body.status;
 			}
@@ -118,23 +119,20 @@ export default class Mount extends Component<MountProps, MountState> {
 		})
 	}
 
-	@boundMethod
 	private mount(image: string): void {
-		request.post("/api/mount/" + image).end((err, res) => {
+		request.post("/api/mount/" + image).end((err) => {
 			dispatchRequestError(err);
 			this.refresh();
 		});
 	}
 
-	@boundMethod
 	private unmount(): void {
-		request.delete("/api/mount").end((err, res) => {
+		request.delete("/api/mount").end((err) => {
 			dispatchRequestError(err);
 			this.refresh();
 		});
 	}
 
-	@boundMethod
 	private onImagesSelected(images: FileTableEntry[]) {
 		this.setState({imagesSelection: images});
 	}
@@ -142,7 +140,7 @@ export default class Mount extends Component<MountProps, MountState> {
 
 interface MountAreaProps {
 	refreshCounter: number
-	mountInfo: MountInfo
+	mountInfo?: MountInfo
 	onUnmount: () => void
 }
 
@@ -163,7 +161,7 @@ const MountArea = (props: MountAreaProps) => {
 
 interface MountStatusProps {
 	error?: string
-	mountStatus: MountStatus
+	mountStatus: MountStatus | null
 	mountedImageName: string
 }
 
@@ -204,7 +202,7 @@ class MountStatusDisplay extends Component<MountStatusProps> {
 }
 
 interface MountActionsProps {
-	mountStatus: MountStatus,
+	mountStatus: MountStatus | null,
 	onUnmount: ()=>void,
 }
 
@@ -212,13 +210,13 @@ class MountActions extends React.Component<MountActionsProps> {
 	render() {
 		const actions = this.actions();
 		return (<div css={{
-			marginRight: (actions.length == 0) ? "0em" : "0.25em",
+			marginRight: actions ? "0.25em" : "0em",
 		}}>
 			{actions}
 		</div>);
 	}
 
-	private actions(): JSX.Element[] {
+	private actions(): ReactNode {
 		switch (this.props.mountStatus) {
 			case MountStatus.Mounted:
 				return this.mountedActions();
@@ -233,18 +231,18 @@ class MountActions extends React.Component<MountActionsProps> {
 		}
 	}
 
-	private mountedActions(): JSX.Element[] {
+	private mountedActions(): ReactNode {
 		return [
 			<Button key="unmount" title="Unmount"
 				onClick={this.props.onUnmount} />,
 		];
 	}
 
-	private unmountedActions(): JSX.Element[] {
+	private unmountedActions(): ReactNode {
 		return [];
 	}
 
-	private rescueActions(): JSX.Element[] {
+	private rescueActions(): ReactNode {
 		return [
 			<Button key="unmount" title="Force unmount"
 				onClick={this.props.onUnmount} />,
