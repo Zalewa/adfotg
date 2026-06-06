@@ -39,8 +39,10 @@ class _Config:
         SECTION = _PROGNAME
 
         def _load(attr):
-            setattr(self, attr, parser.get(
-                SECTION, attr, fallback=getattr(self, attr)))
+            path_from_cfg = parser.get(
+                SECTION, attr, fallback=getattr(self, attr))
+            expanded_path = os.path.expanduser(path_from_cfg)
+            setattr(self, attr, expanded_path)
 
         self.port = parser.getint(SECTION, 'port', fallback=self.port)
         _load('adf_dir')
