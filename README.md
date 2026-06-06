@@ -121,7 +121,7 @@ recommended, although will succeed and should be harmless (no warranty).
 On your Raspberry Pi:
 
 ```
-  sudo apt update && sudo apt install mtools pipx
+  sudo apt update && sudo apt install mtools dosfstools pipx
   sudo PIPX_HOME=/opt/adfotg PIPX_BIN_DIR=/usr/local/bin pipx install adfotg
 ```
 
