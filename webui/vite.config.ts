@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  root: "site",
   plugins: [react()],
   server: {
     proxy: {
@@ -11,6 +10,6 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "../src/adfotg/site",
+    outDir: "../src/adfotg/webui",
   },
 })

@@ -45,21 +45,21 @@ Setting up the Development Environment
 ADF On-The-Go consists of two separate programs:
 
 1. The HTTP REST API and static files server.
-2. The website (the `site/` directory).
+2. The web UI (the `webui/` directory).
 
-The server hosts the website and also hosts the REST API. For full
+The server hosts the web UI and also hosts the REST API. For full
 development, both must be set up. This can be done separately or
 in one go.
 
 
-Setup both the server and the website
--------------------------------------
+Setup both the server and the web UI
+------------------------------------
 
 ```
 make init
 ```
 
-Then follow the individual instructions for **Server** and **Website**.
+Then follow the individual instructions for **Server** and **web UI**.
 
 
 Server
@@ -104,10 +104,10 @@ the directory. Assign to all directories you create the write `chmod`
 for the user you run the program as.
 
 
-Website
--------
+Web UI
+------
 
-Website is written in TypeScript and uses the React framework. All
+Web UI is written in TypeScript and uses the React framework. All
 setup is done via `npm`.
 
 Open a new terminal window, **don't** activate the virtualenv.
@@ -115,18 +115,18 @@ Open a new terminal window, **don't** activate the virtualenv.
 Run:
 
 ```
-make init-site
-npm run dev
+make init-webui
+cd webui && npm run dev
 ```
 
 
 Running the app in development mode
 ===================================
 
-The combined ADF On-The-Go **app** is the **website** running on the
+The combined ADF On-The-Go **app** is the **web UI** running on the
 `adfotg` **server**.
 
-You need both the `adfotg` server and the website running in the
+You need both the `adfotg` server and the web UI running in the
 development mode, as described in the previous sections.
 
 Then open the app in a web browser:
@@ -134,8 +134,8 @@ Then open the app in a web browser:
 http://127.0.0.1:5173
 ```
 
-Server's and website's development modes run as separate HTTP servers.
-The default port for the website is `5173` and for the server it's `43164`.
+Server's and web UI's development modes run as separate HTTP servers.
+The default port for the web UI is `5173` and for the server it's `43164`.
 
 Releasing a new version
 =======================

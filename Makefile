@@ -1,7 +1,7 @@
-.PHONY: all clean clean-server clean-site distclean \
+.PHONY: all clean clean-server clean-webui distclean \
     dev dev-server \
-    init init-server init-site \
-    package server site
+    init init-server init-webui \
+    package server webui
 .NOTPARALLEL:
 
 VENV_NAME ?= .venv
@@ -9,13 +9,13 @@ VENV_NAME ?= .venv
 # Main targets
 all: package
 
-package: site server
+package: webui server
 
-init: init-server init-site
+init: init-server init-webui
 
-dev: dev-server init-site
+dev: dev-server init-webui
 
-clean: clean-site clean-server
+clean: clean-webui clean-server
 
 distclean: clean
 	rm -rf node_modules
@@ -35,21 +35,21 @@ clean-server:
 	find src/adfotg -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 	rm -rf src/adfotg.egg-info build dist
 
-# Site targets
-init-site: node_modules
+# Web UI targets
+init-webui: webui/node_modules
 
-site: node_modules
-	npm install
-	npm run build
+webui: init-webui
+	cd webui && npm install
+	cd webui && npm run build
 
-clean-site:
-	rm -rf src/adfotg/site
-	rm -rf site/dist
+clean-webui:
+	rm -rf src/adfotg/webui
+	rm -rf webui/dist
 
 # Real targets (impl details)
-node_modules:
+webui/node_modules:
 	@echo "Creating NodeJS node_modules ..."
-	npm install
+	cd webui && npm install
 
 $(VENV_NAME)/bin/activate:
 	@echo "Creating virtual environment ..."

@@ -11,12 +11,9 @@ import os
 @app.route('/<path:path>')
 def serve_file(path):
     try:
-        if os.path.isdir(os.path.join(app.root_path, "site")):
+        if os.path.isdir(os.path.join(app.root_path, "webui")):
             # This is valid for deployment.
-            return send_from_directory("site", path)
-        elif os.path.isfile(os.path.join(app.root_path, "../../pyproject.toml")):
-            # Assume development mode and try to send from repository.
-            return send_from_directory("../../site/dist", path)
+            return send_from_directory("webui", path)
         else:
             return abort(404)
     except NotFound as e:

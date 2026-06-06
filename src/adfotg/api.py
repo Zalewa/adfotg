@@ -63,8 +63,8 @@ be incomplete.
 
 This application doesn't only provide a REST API service but is also
 a HTTP server that may serve HTML or other content to be rendered
-in the browser. The default 'site' implementation comes with several
-files that are served as-is.
+in the browser. It comes with a bundled web UI, that is served directly
+from the serivce, and which operates as HTML/JS interactive website.
 
 The application handles this by first trying to match the request
 URL to an API endpoint. If no API endpoint matches, it will fall back

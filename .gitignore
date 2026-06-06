@@ -4,9 +4,10 @@ __pycache__
 .eggs
 .venv
 
+node_modules/
+webui/dist/
+
 adfotg.egg-info/
 dist/
-node_modules/
-site/dist/
-src/adfotg/site/
+src/adfotg/webui/
 npm-debug.log
