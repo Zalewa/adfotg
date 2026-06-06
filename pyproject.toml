@@ -9,7 +9,8 @@ authors = [
     { name = "Robikz", email = "zalewapl@gmail.com" },
 ]
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 keywords = [
     "Amiga", "Gotek", "Raspberry Pi"
 ]
