@@ -67,12 +67,19 @@ Server
 
 The server is written in Python 3 and uses the Flask framework.
 
+Prepare a local config first at `~/.config/adfotg.conf`:
+
+```
+mkdir -p ~/.config ~/.local/share/adfotg
+sed 's|/var/lib/adfotg|~/.local/share/adfotg|' ./src/adfotg/conf/adfotg.conf > ~/.config/adfotg.conf
+```
+
 Open a new terminal window and run:
 
 ```
 make dev-server
 source .venv/bin/activate
-FLASK_ENV=development adfotg -c conf/adfotg.conf
+FLASK_ENV=development adfotg
 ```
 
 **The first** command initializes the development environment. It starts
