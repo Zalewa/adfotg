@@ -20,7 +20,7 @@ export default class App extends Component {
 			<Global styles={css`
 				@font-face {
 				font-family: Amiga Topaz;
-				src: url(/res/font/amiga-topaz/Amiga%20Topaz.ttf) format('truetype');
+				src: url(/font/amiga-topaz/Amiga%20Topaz.ttf) format('truetype');
 				}
 			`} />
 			<Global styles={css({
