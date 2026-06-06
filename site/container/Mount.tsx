@@ -109,12 +109,12 @@ export default class Mount extends Component<MountProps, MountState> {
 			dispatchRequestError(err);
 			let mountStatus: MountStatus | null = null;
 			if (!err) {
-				mountStatus = res.body.status;
+				mountStatus = res.body?.status;
 			}
 			this.setState({mountInfo: {
 				mountStatus: mountStatus,
-				error: err ? err.toString() : res.body.error,
-				mountedImageName: res.body.file
+				error: err ? err.toString() : res.body?.error,
+				mountedImageName: res.body?.file
 			}});
 		})
 	}

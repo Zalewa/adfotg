@@ -176,7 +176,7 @@ interface SpaceInfoState {
 }
 
 class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
-	readonly state: SpaceInfoState = {
+	state: SpaceInfoState = {
 		fsStats: []
 	}
 
@@ -223,7 +223,7 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 		request.get("/api/filesystem").end((err, res) => {
 			dispatchRequestError(err);
 			if (!err) {
-				this.setState({fsStats: res.body});
+				this.setState({fsStats: res.body ?? []});
 			}
 		});
 	}

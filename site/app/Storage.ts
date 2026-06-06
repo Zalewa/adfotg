@@ -76,8 +76,8 @@ function listQuery(endpoint: string, opts: ListOptions) {
 		}).end((err, res) => {
 			if (!err) {
 				resolve({
-					listing: res.body.listing,
-					total: res.body.total,
+					listing: res.body?.listing ?? [],
+					total: res.body?.total ?? 0,
 				});
 			} else {
 				reject(err);

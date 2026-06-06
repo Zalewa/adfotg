@@ -92,7 +92,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 			dispatchRequestError(err);
 			if (!err) {
 				let { health } = this.state;
-				Object.keys(res.body).forEach((name: string) => {
+				Object.keys(res.body ?? {}).forEach((name: string) => {
 					health.set(name, res.body[name]);
 				});
 				this.setState({health});
