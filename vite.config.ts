@@ -10,4 +10,7 @@ export default defineConfig({
       '/api': 'http://localhost:43164'
     },
   },
+  build: {
+    outDir: "../src/adfotg/site",
+  },
 })
