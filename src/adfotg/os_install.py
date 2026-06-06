@@ -2,7 +2,7 @@ import os
 import pwd
 import subprocess
 import sys
-from pkg_resources import resource_exists, resource_string
+from importlib.resources import files
 from subprocess import PIPE
 from tempfile import mkdtemp
 
@@ -143,11 +143,11 @@ def _os_id():
 
 
 def _has_res(name):
-    return resource_exists('adfotg', name)
+    return (files('adfotg') / name).exists()
 
 
 def _res(name):
-    return resource_string('adfotg', name)
+    return (files('adfotg') / name).read_bytes()
 
 
 def _log(*args):
