@@ -1,5 +1,5 @@
 import { Global, css } from '@emotion/react';
-import { GuruFrame, GuruSection, Severity } from '../component/GuruFrame';
+import { GuruFrame, GuruSection, type Severity } from '../component/GuruFrame';
 
 import { Link } from '../ui/Link';
 

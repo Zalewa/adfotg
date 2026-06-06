@@ -40,7 +40,7 @@ init-site: node_modules
 
 site: node_modules
 	npm install
-	npm run dist
+	npm run build
 
 clean-site:
 	rm -rf src/adfotg/site

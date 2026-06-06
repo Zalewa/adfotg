@@ -1,8 +1,8 @@
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import { LinkText, LinkTextProps } from '../ui/Link';
+import { LinkText, type LinkTextProps } from '../ui/Link';
 
 export class Page {
 	public readonly start: number = 0
@@ -77,7 +77,7 @@ const Pager = (props: PagerProps) => {
 	}
 
 	function renderNumbers(): ReactNode {
-		let links: JSX.Element[] = [];
+		let links: ReactNode[] = [];
 		for (let page = 0; page < numPages(); ++page) {
 			links.push(<PageLink key={page}
 					selected={page == currentPage()}

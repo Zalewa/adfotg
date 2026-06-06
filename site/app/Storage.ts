@@ -1,6 +1,6 @@
 import * as request from 'superagent';
 
-import { SortDirection } from './Listing';
+import { type SortDirection } from './Listing';
 
 export interface FileRecord {
 	name: string
@@ -8,11 +8,13 @@ export interface FileRecord {
 	size: number
 }
 
-export const enum FileAttr {
-	Name = "name",
-	Size = "size",
-	Mtime = "mtime"
-}
+export const FileAttr = {
+	Name: "name",
+	Size: "size",
+	Mtime: "mtime",
+} as const
+
+export type FileAttr = typeof FileAttr[keyof typeof FileAttr]
 
 export interface Sort {
 	attr: FileAttr,
@@ -26,7 +28,7 @@ const DEFAULT_SORTING: Map<FileAttr, SortDirection> = new Map<FileAttr, SortDire
 ]);
 
 export function createSort(attr: FileAttr, oldSort?: Sort): Sort {
-	let dir: SortDirection = DEFAULT_SORTING.get(attr);
+	let dir: SortDirection = DEFAULT_SORTING.get(attr) ?? 'asc';
 	if (oldSort && attr == oldSort.attr) {
 		dir = oldSort.dir === 'asc' ? 'desc' : 'asc';
 	}
@@ -74,8 +76,8 @@ function listQuery(endpoint: string, opts: ListOptions) {
 		}).end((err, res) => {
 			if (!err) {
 				resolve({
-					listing: res.body.listing,
-					total: res.body.total,
+					listing: res.body?.listing ?? [],
+					total: res.body?.total ?? 0,
 				});
 			} else {
 				reject(err);

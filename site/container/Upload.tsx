@@ -1,6 +1,6 @@
-import { useState, ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
-import { FileTableEntry } from '../component/FileTable';
+import { type FileTableEntry } from '../component/FileTable';
 import { UploadTable } from './StorageTables';
 import Uploader from '../component/Uploader';
 import { Section } from '../ui/Section';

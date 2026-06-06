@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from '@emotion/styled';
 
 // ui imports from component - not great, not terrible
-import { Notification, Note } from '../component/Notifier';
+import { Notification, type Note } from '../component/Notifier';
 
 import * as skin from '../skin';
 

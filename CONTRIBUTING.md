@@ -131,12 +131,11 @@ development mode, as described in the previous sections.
 
 Then open the app in a web browser:
 ```
-http://127.0.0.1:43164
+http://127.0.0.1:5173
 ```
 
-The default port `43164` can be changed via server's config file
-or `adfotg -p <port>` argument
-
+Server's and website's development modes run as separate HTTP servers.
+The default port for the website is `5173` and for the server it's `43164`.
 
 Releasing a new version
 =======================

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavLink, NavLinkProps } from 'react-router-dom';
+import { NavLink, type NavLinkProps } from 'react-router';
 import { css } from '@emotion/react';
 
 interface LinkProps {
@@ -36,7 +36,7 @@ export interface LinkTextProps {
 export const LinkText = (props: LinkTextProps) =>
 	<span css={LinkMixin}
 		className={props.className}
-		onClick={(e) => {props.onClick(e); return false;}}>
+		onClick={(e) => {props.onClick?.(e); return false;}}>
 		{props.children}
 	</span>;
 

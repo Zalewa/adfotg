@@ -35,7 +35,7 @@ const List = (props: ListProps) => {
 	function swapRecord(idx_a: number, idx_b: number): void {
 		let listing = props.listing.slice();
 		listing = swap(listing, idx_a, idx_b);
-		props.onOrderChange(listing);
+		props.onOrderChange?.(listing);
 	}
 
 	function moveUp(entry_idx: number): void {

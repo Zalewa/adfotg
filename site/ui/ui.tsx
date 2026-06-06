@@ -1,11 +1,11 @@
-import { Response, HTTPError } from 'superagent';
+import { Response, type HTTPError } from 'superagent';
 import * as res from '../res';
 
 export const Loader = (props: {className?: string}) =>
 	<img src={res.loader} className={props.className} />;
 
 
-export function errorToString(err: Error | string): string {
+export function errorToString(err: unknown): string {
 	if (typeof(err) === "string")
 		return err;
 
@@ -14,7 +14,7 @@ export function errorToString(err: Error | string): string {
 	if (res && res.body && res.body.error) {
 		message = res.body.error;
 	} else {
-		message = err.toString();
+		message = (err as any).toString();
 	}
 	if (res && res.error) {
 		const text = (res.error as HTTPError).text;

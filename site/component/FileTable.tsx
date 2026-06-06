@@ -1,7 +1,7 @@
-import { ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import { ActionSet } from './Actions';
-import { FileRecord, FileAttr, Sort } from '../app/Storage';
+import { type FileRecord, FileAttr, type Sort } from '../app/Storage';
 
 import { CheckBox } from '../ui/CheckBox';
 import { LinkText } from '../ui/Link';
@@ -10,7 +10,8 @@ import { Table, TableRecord, SelectCell, TableLink, CellPane, DataCell, HeaderCe
 
 import * as responsive from '../responsive';
 
-export import Field = FileAttr;
+export const Field = FileAttr;
+export type Field = FileAttr;
 export type FileTableEntry = FileRecord;
 
 type FileRenderFunc = (file: FileTableEntry) => ReactNode;
@@ -59,10 +60,14 @@ const FileTable = ({
 			selected.findIndex(e => e.name == name) > -1;
 	}
 
-	function selectItem(name: string): void {
+	function selectItem(name?: string): void {
+		if (name == null) return
 		const idx: number = selected.findIndex(e => e.name == name);
 		if (idx == -1) {
-			selected.push(props.listing.find(e => e.name == name));
+			const itemByName = props.listing.find(e => e.name == name);
+			if (itemByName != null) {
+				selected.push();
+			}
 		} else {
 			selected.splice(idx, 1);
 		}
@@ -83,7 +88,7 @@ const FileTable = ({
 		callbackSelected(selected);
 	}
 
-	let rows: JSX.Element[] = [];
+	let rows: ReactNode[] = []
 	if (props.listing) {
 		const renderName = props.renderName || renderEntryUrl;
 		props.listing.forEach((e: FileTableEntry) => {
@@ -92,14 +97,14 @@ const FileTable = ({
 				renderName={renderName}
 				renderFileActions={props.renderFileActions}
 				selected={isSelected(e.name)}
-				onSelected={props.onSelected && selectItem || null}
+				onSelected={props.onSelected && selectItem}
 			/>);
 		});
 	}
 	return (
 		<Table css={{width: "100%"}}>
 			<Header {...props} showSize={showSize} selected={selected} selectedAll={selectedAll}
-				onSelected={props.onSelected && selectAll || null} />
+				onSelected={props.onSelected && selectAll} />
 			<tbody>
 				{rows}
 			</tbody>
@@ -109,7 +114,7 @@ const FileTable = ({
 
 interface HeaderProps extends FileTableProps {
 	selectedAll: boolean,
-	onSelected: () => void
+	onSelected?: () => void
 }
 
 const Header = (props: HeaderProps) => {
@@ -152,8 +157,9 @@ interface HeaderCellProps extends FileTableProps {
 
 const HeaderCell = (props: HeaderCellProps) => {
 	let label: ReactNode;
-	if (props.onHeaderClick) {
-		label = <LinkText css={TableLink} onClick={() => props.onHeaderClick(props.field)}>{props.label}</LinkText>;
+	const { onHeaderClick } = props
+	if (onHeaderClick) {
+		label = <LinkText css={TableLink} onClick={() => onHeaderClick(props.field)}>{props.label}</LinkText>;
 	} else {
 		label = <span>{props.label}</span>
 	}
@@ -164,10 +170,10 @@ interface FileTableRowProps {
 	entry: FileTableEntry,
 	showSize: boolean,
 	selected: boolean,
-	onSelected: (name: string) => void,
+	onSelected?: (name?: string) => void,
 	url?: string
 	renderName: FileRenderFunc
-	renderFileActions: FileRenderFunc
+	renderFileActions?: FileRenderFunc
 }
 
 const FileTableRow = (props: FileTableRowProps) => {
