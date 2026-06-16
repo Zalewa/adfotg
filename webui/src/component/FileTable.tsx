@@ -88,7 +88,7 @@ const FileTable = ({
 		callbackSelected(selected);
 	}
 
-	let rows: ReactNode[] = []
+	const rows: ReactNode[] = []
 	if (props.listing) {
 		const renderName = props.renderName || renderEntryUrl;
 		props.listing.forEach((e: FileTableEntry) => {

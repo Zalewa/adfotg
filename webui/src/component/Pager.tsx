@@ -77,7 +77,7 @@ const Pager = (props: PagerProps) => {
 	}
 
 	function renderNumbers(): ReactNode {
-		let links: ReactNode[] = [];
+		const links: ReactNode[] = [];
 		for (let page = 0; page < numPages(); ++page) {
 			links.push(<PageLink key={page}
 					selected={page == currentPage()}

@@ -9,7 +9,7 @@ export function errorToString(err: unknown): string {
 	if (typeof(err) === "string")
 		return err;
 
-	let res: Response = (err as any).response;
+	const res: Response = (err as any).response;
 	let message: string;
 	if (res && res.body && res.body.error) {
 		message = res.body.error;

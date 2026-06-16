@@ -208,7 +208,7 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 	}
 
 	private renderStats(): ReactNode {
-		let el: ReactNode[] = [];
+		const el: ReactNode[] = [];
 		this.state.fsStats.forEach((stat: FsStats) => {
 			el.push(<TableRecord key={stat.name}>
 				<LabelCell>{stat.name}</LabelCell>

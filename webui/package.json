@@ -11,6 +11,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build --emptyOutDir",
     "lint": "eslint .",
+    "format": "eslint . --fix",
     "preview": "vite preview"
   },
   "dependencies": {

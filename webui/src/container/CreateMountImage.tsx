@@ -90,8 +90,8 @@ export default class CreateMountImage extends Component<CreateMountImageProps, C
 			if (err) {
 				this.setState({error: err})
 			} else {
-				let stdAdfs = res.body;
-				let sortedAdfs = this.state.sortedAdfs;
+				const stdAdfs = res.body;
+				const sortedAdfs = this.state.sortedAdfs;
 				this.setState({
 					sortedAdfs: stdAdfs.concat(sortedAdfs),
 					refreshing: false

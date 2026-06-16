@@ -87,7 +87,7 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 	}
 
 	private addDisk(name: string, label: string, contents: FileOp[]): void {
-		let descriptor = new DiskDescriptor();
+		const descriptor = new DiskDescriptor();
 		descriptor.name = name;
 		descriptor.label = label;
 		descriptor.contents = contents.slice();
@@ -114,7 +114,7 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 		this.clearDisks();
 		const files = this.state.selection;
 		const { basename } = this.state;
-		let distributor = new Distributor(files);
+		const distributor = new Distributor(files);
 		const disks: FileOp[][] = distributor.distribute();
 		for (let diskNum = 0; diskNum < disks.length; ++diskNum) {
 			const name = basename + (diskNum + 1);
@@ -138,7 +138,7 @@ export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState>
 
 	private async submitAsync(): Promise<void> {
 		const disks = this.disks.slice();
-		let requests = disks.map(disk => {
+		const requests = disks.map(disk => {
 			return request.post("/api/adf/image/" + disk.name + ".adf")
 				.send({label: disk.label, contents: disk.contents});
 		});
@@ -333,14 +333,14 @@ class Distributor {
 	 * on each of the disks.
 	 */
 	public distribute(): FileOp[][] {
-		let distribution: FileOp[][] = [];
+		const distribution: FileOp[][] = [];
 
 		// 1. Sort files by size descending
-		let sorted = this.files.sort((a, b) => b.size - a.size);
+		const sorted = this.files.sort((a, b) => b.size - a.size);
 
 		// 2. Split files that won't fit on a disk
 		const toobig = sorted.filter(e => e.size > Distributor.MAX_SIZE);
-		let splits: FileOp[] = [];
+		const splits: FileOp[] = [];
 		toobig.forEach(bigfile => {
 			const partsize = Distributor.MAX_SIZE;
 			const parts_count = Math.ceil(bigfile.size / partsize);
@@ -361,9 +361,9 @@ class Distributor {
 
 		// 4. Files that fit onto disks should be distributed
 		//    to try to fill up the whole disk
-		let fitting = sorted.filter(e => e.size <= Distributor.MAX_SIZE);
+		const fitting = sorted.filter(e => e.size <= Distributor.MAX_SIZE);
 		while (fitting.length > 0) {
-			let disk: FileTableEntry[] = [];
+			const disk: FileTableEntry[] = [];
 			const takenspace = () => {
 				return Distributor.META_SPACE_PER_FILE * (disk.length + 1)
 					+ disk.reduce((prev, cur) => prev + cur.size, 0);

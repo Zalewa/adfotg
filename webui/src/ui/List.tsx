@@ -22,7 +22,7 @@ const Record = styled.li({
 })
 
 function swap<T>(records: T[], a: number, b: number): T[] {
-	let elem = records[a];
+	const elem = records[a];
 	records[a] = records[b];
 	records[b] = elem;
 	return records

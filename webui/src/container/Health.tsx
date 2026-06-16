@@ -56,7 +56,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 	}
 
 	private renderPoints(): ReactNode {
-		let elems: ReactNode[] = [];
+		const elems: ReactNode[] = [];
 		for (const healthPoint of enumKeys(HealthPoint)) {
 			elems.push(this.renderPoint(HealthPoint[healthPoint]));
 		}
@@ -91,7 +91,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 		request.get("/api/selfcheck").end((err, res) => {
 			dispatchRequestError(err);
 			if (!err) {
-				let { health } = this.state;
+				const { health } = this.state;
 				Object.keys(res.body ?? {}).forEach((name: string) => {
 					health.set(name, res.body[name]);
 				});
@@ -102,7 +102,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 
 	private hasErrors(): boolean {
 		for (const msg of this.state.health.values()) {
-			if (!!msg)
+			if (msg)
 				return true;
 		}
 		return false;
@@ -110,7 +110,7 @@ export class HealthBar extends Component<{}, HealthBarState> {
 
 	private showErrors(): void {
 		this.state.health.forEach((msg: string, name: string) => {
-			if (!!msg) {
+			if (msg) {
 				dispatchError("Health check '" + name + "': " + msg);
 			}
 		});
