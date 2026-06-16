@@ -15,6 +15,7 @@ export const CheckBox = (props: {
 			padding: "0px",
 		}
 	]}
+		type="button"
 		name={props.name}
 		onClick={() => props.onClick && props.onClick(props.name)}>
 		<span css={[
@@ -31,7 +32,7 @@ export const CheckBox = (props: {
 				height: "11px",
 				border: `solid ${skin.workbench.color}`,
 				borderWidth: "0 2px 2px 0",
-			transform: "rotate(45deg)",
+				transform: "rotate(45deg)",
 			}
 		]} />
 	</button>

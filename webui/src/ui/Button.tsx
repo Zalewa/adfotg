@@ -64,6 +64,7 @@ export const Button = (props: {
 				lineHeight: "14px",
 			},
 		]}
+		type="button"
 		disabled={props.disabled}
 		onClick={props.onClick}
 	>
