@@ -13,7 +13,7 @@ import { Section } from '@/ui/Section';
 interface ImageLibraryProps {
 	onCreatedImage: ()=>void
 	onMountedImage: ()=>void
-	refresh: boolean
+	refresh: number
 	search: string
 }
 

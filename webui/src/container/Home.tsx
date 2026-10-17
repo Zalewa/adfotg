@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
 import ImageLibrary from '@/container/ImageLibrary';
 import Mount from '@/container/Mount';
@@ -7,30 +7,27 @@ interface HomeProps {
 	search: string
 }
 
-interface HomeState {
-	refreshSwitch: boolean
+const Home = ({search}: HomeProps) => {
+	const [refreshToken, setRefreshToken] = useState(0)
+
+	function promptRefresh(): void {
+		setRefreshToken(token => token + 1)
+	}
+
+	return (
+		<div>
+			<Mount
+				refresh={refreshToken}
+				search={search}
+			/>
+			<ImageLibrary
+				refresh={refreshToken}
+				onCreatedImage={promptRefresh}
+				onMountedImage={promptRefresh}
+				search={search}
+			/>
+		</div>
+	);
 }
 
-export default class Home extends Component<HomeProps, HomeState> {
-	readonly state: HomeState = {
-		refreshSwitch: false,
-	}
-
-	render () {
-		return (
-			<div>
-				<Mount refresh={this.state.refreshSwitch}
-					search={this.props.search} />
-				<ImageLibrary refresh={this.state.refreshSwitch}
-					onCreatedImage={this.promptRefresh.bind(this)}
-					onMountedImage={this.promptRefresh.bind(this)}
-					search={this.props.search} />
-			</div>);
-	}
-
-	private promptRefresh(): void {
-		this.setState({
-			refreshSwitch: !this.state.refreshSwitch
-		})
-	}
-}
+export default Home

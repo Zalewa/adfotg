@@ -33,7 +33,7 @@ interface MountInfo {
 }
 
 interface MountProps {
-	refresh: boolean
+	refresh: number
 	search: string
 }
 
