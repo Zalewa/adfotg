@@ -1,4 +1,4 @@
-import { Component, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import * as request from 'superagent';
 
 import { enumKeys } from '@/enum';
@@ -16,19 +16,43 @@ const HealthPoint = {
 
 type HealthPoint = typeof HealthPoint[keyof typeof HealthPoint]
 
-interface HealthBarState {
-	health: Map<string, string>;
-}
+export const HealthBar = () => {
+	const [health, setHealth] = useState<Map<string, string>>(new Map);
 
+	function hasErrors(): boolean {
+		for (const msg of health.values()) {
+			if (msg)
+				return true;
+		}
+		return false;
+	}
 
-export class HealthBar extends Component<{}, HealthBarState> {
-	readonly state: HealthBarState = {
-		health: new Map<string, string>()
-	};
+	function showErrors(): void {
+		health.forEach((msg: string, name: string) => {
+			if (msg) {
+				dispatchError("Health check '" + name + "': " + msg);
+			}
+		});
+	}
 
-	render() {
-		const border = "2px solid gray";
-		return (<table
+	function refresh(): void {
+		request.get("/api/selfcheck").end((err, res) => {
+			dispatchRequestError(err);
+			if (!err) {
+				const health = new Map<string, string>()
+				Object.keys(res.body ?? {}).forEach((name: string) => {
+					health.set(name, res.body[name]);
+				});
+				setHealth(health);
+			}
+		})
+	}
+
+	useEffect(refresh, [])
+
+	const border = "2px solid gray";
+	return (
+		<table
 			css={[
 				{
 					backgroundColor: skin.workbench.background,
@@ -41,78 +65,54 @@ export class HealthBar extends Component<{}, HealthBarState> {
 					marginBottom: "1px",
 					width: "100%",
 				},
-				this.hasErrors() && {cursor: "pointer"},
-			]} onClick={this.showErrors.bind(this)}>
+				hasErrors() && {cursor: "pointer"},
+			]}
+			onClick={showErrors}
+		>
 			<tbody>
 				<tr css={{justifyItems: "stretch"}}>
-					{this.renderPoints()}
+					{
+						enumKeys(HealthPoint)
+							.map(healthPoint => HealthPoint[healthPoint])
+							.map(healthPoint =>
+								<HealthLed
+									key={healthPoint}
+									healthPoint={healthPoint}
+									healthStatusKnown={health.has(healthPoint)}
+									healthStatus={health.get(healthPoint)}
+								/>
+							)
+					}
 				</tr>
 			</tbody>
-		</table>);
-	}
+		</table>
+	);
+}
 
-	componentDidMount() {
-		this.refresh();
-	}
-
-	private renderPoints(): ReactNode {
-		const elems: ReactNode[] = [];
-		for (const healthPoint of enumKeys(HealthPoint)) {
-			elems.push(this.renderPoint(HealthPoint[healthPoint]));
-		}
-		return elems;
-	}
-
-	private renderPoint(healthPoint: string): ReactNode {
-		let modifier: string;
-		let message: string = "";
-		if (this.state.health.has(healthPoint)) {
-			message = this.state.health.get(healthPoint) ?? "";
-			modifier = !message ? skin.successColor : skin.dangerColor;
+const HealthLed = ({healthPoint, healthStatusKnown, healthStatus} : {
+	healthPoint: HealthPoint,
+	healthStatusKnown: boolean,
+	healthStatus?: string
+}) => {
+	function backgroundColor(): string {
+		if (healthStatusKnown) {
+			return !healthStatus ? skin.successColor : skin.dangerColor;
 		} else {
-			modifier = skin.pane.background;
+			return skin.pane.background;
 		}
-		return (<td
-			key={healthPoint}
+	}
+	return (
+		<td
 			css={{
 				minHeight: "4px",
 				height: "4px",
-				backgroundColor: modifier,
+				backgroundColor: backgroundColor(),
 				"&:nth-of-type(last)": {
 					marginRight: "2px",
 				},
 			}}
 			id={"healthbar__" + healthPoint}
-			title={message}
-		/>);
-	}
-
-	private refresh(): void {
-		request.get("/api/selfcheck").end((err, res) => {
-			dispatchRequestError(err);
-			if (!err) {
-				const { health } = this.state;
-				Object.keys(res.body ?? {}).forEach((name: string) => {
-					health.set(name, res.body[name]);
-				});
-				this.setState({health});
-			}
-		})
-	}
-
-	private hasErrors(): boolean {
-		for (const msg of this.state.health.values()) {
-			if (msg)
-				return true;
-		}
-		return false;
-	}
-
-	private showErrors(): void {
-		this.state.health.forEach((msg: string, name: string) => {
-			if (msg) {
-				dispatchError("Health check '" + name + "': " + msg);
-			}
-		});
-	}
+			title={healthStatus}
+		/>
+	);
 }
