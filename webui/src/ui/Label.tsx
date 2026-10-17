@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 
-import { errorToString } from './ui';
+import { errorToString } from '../text';
 import * as skin from '../skin';
 
 export const ErrorLabel = (props: {error: Error | string}) =>

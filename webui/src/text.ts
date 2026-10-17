@@ -1,9 +1,4 @@
 import { Response, type HTTPError } from 'superagent';
-import * as res from '../res';
-
-export const Loader = (props: {className?: string}) =>
-	<img src={res.loader} className={props.className} />;
-
 
 export function errorToString(err: unknown): string {
 	if (typeof(err) === "string")
@@ -57,6 +52,6 @@ export function formatSize(numBytes: number) {
 	}
 }
 
-function fixdiv(divident: number, divisor: number, precision: number): string {
+export function fixdiv(divident: number, divisor: number, precision: number): string {
 	return (divident / divisor).toFixed(precision);
 }

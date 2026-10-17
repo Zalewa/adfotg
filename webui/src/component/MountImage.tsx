@@ -4,7 +4,7 @@ import * as request from 'superagent';
 import FileTable, { type FileTableEntry } from './FileTable';
 import { ErrorLabel, Labelled } from '../ui/Label';
 import { Link } from '../ui/Link';
-import { formatSize } from '../ui/ui';
+import { formatSize } from '../text';
 
 interface MountImageProps {
 	name: string

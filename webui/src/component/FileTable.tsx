@@ -5,7 +5,7 @@ import { type FileRecord, FileAttr, type Sort } from '../app/Storage';
 
 import { CheckBox } from '../ui/CheckBox';
 import { LinkText } from '../ui/Link';
-import { formatDate, formatSize } from '../ui/ui';
+import { formatDate, formatSize } from '../text';
 import { Table, TableRecord, SelectCell, TableLink, CellPane, DataCell, HeaderCell as THeaderCell, HeaderSelectCell } from '../ui/Table';
 
 import * as responsive from '../responsive';

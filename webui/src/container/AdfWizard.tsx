@@ -8,7 +8,7 @@ import Upload from './Upload';
 import { Button } from '../ui/Button';
 import { Form, FormItem } from '../ui/Form';
 import { LineInput } from '../ui/Input';
-import { errorToString } from '../ui/ui';
+import { errorToString } from '../text';
 import * as Strings from '../strings';
 import * as skin from '../skin';
 

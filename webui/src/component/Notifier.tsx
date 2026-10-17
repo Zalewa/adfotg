@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import { rgba } from 'polished';
 
 import { Button } from '../ui/Button';
-import { errorToString } from '../ui/ui';
+import { errorToString } from '../text';
 
 import { type BulkResult } from '../app/Storage';
 

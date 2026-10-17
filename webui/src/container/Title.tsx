@@ -11,7 +11,7 @@ import Search from '../component/Search';
 import { Labelled } from '../ui/Label';
 import { AppLink, type AppLinkProps, Link } from '../ui/Link';
 import { Table, TableRecord, HeaderCell, LabelCell, DataCell } from '../ui/Table';
-import { formatSize } from '../ui/ui';
+import { formatSize } from '../text';
 import * as responsive from '../responsive';
 import * as skin from '../skin';
 
