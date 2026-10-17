@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Component, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router';
 import { Global, css } from '@emotion/react';
 import { darken } from 'polished';
@@ -14,9 +14,9 @@ import { HOME_LINK, UPLOAD_LINK } from '@/routes';
 import Title from '@/container/Title';
 import * as skin from '@/skin';
 
-export default class App extends Component {
-	render() {
-		return (<>
+const App = () =>
+	(
+		<>
 			<Global styles={css`
 				@font-face {
 				font-family: Amiga Topaz;
@@ -52,9 +52,10 @@ export default class App extends Component {
 					<AppRoute />
 				</Router>
 			</ErrorBoundary>
-		</>);
-	}
-}
+		</>
+	);
+
+export default App;
 
 const AppRoute = () => {
 	const [ refreshSwitch, setRefreshSwitch ] = useState(false);
