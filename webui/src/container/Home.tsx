@@ -1,7 +1,7 @@
 import { Component } from 'react';
 
-import ImageLibrary from './ImageLibrary';
-import Mount from './Mount';
+import ImageLibrary from '@/container/ImageLibrary';
+import Mount from '@/container/Mount';
 
 interface HomeProps {
 	search: string

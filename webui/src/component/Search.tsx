@@ -1,7 +1,7 @@
-import * as responsive from '../responsive';
-import * as resrc from '../res';
-import { Button } from '../ui/Button';
-import { TextInput } from '../ui/Input';
+import * as responsive from '@/responsive';
+import * as resrc from '@/res';
+import { Button } from '@/ui/Button';
+import { TextInput } from '@/ui/Input';
 
 interface SearchProps {
 	text: string

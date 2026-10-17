@@ -1,7 +1,7 @@
 import { Global, css } from '@emotion/react';
-import { GuruFrame, GuruSection, type Severity } from '../component/GuruFrame';
+import { GuruFrame, GuruSection, type Severity } from '@/component/GuruFrame';
 
-import { Link } from '../ui/Link';
+import { Link } from '@/ui/Link';
 
 interface GuruMeditationProps {
 	severity: Severity,

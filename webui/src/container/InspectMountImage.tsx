@@ -1,7 +1,7 @@
 import { useParams } from 'react-router';
 
-import { MountImage } from '../component/MountImage';
-import { Section } from '../ui/Section';
+import { MountImage } from '@/component/MountImage';
+import { Section } from '@/ui/Section';
 
 
 export default () => {

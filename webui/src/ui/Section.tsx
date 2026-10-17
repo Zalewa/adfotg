@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import * as skin from '../skin';
+import * as skin from '@/skin';
 
 interface SectionProps {
 	title: string,

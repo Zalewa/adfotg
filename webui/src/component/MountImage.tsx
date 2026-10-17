@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import * as request from 'superagent';
 
-import FileTable, { type FileTableEntry } from './FileTable';
-import { ErrorLabel, Labelled } from '../ui/Label';
-import { Link } from '../ui/Link';
-import { formatSize } from '../text';
+import FileTable, { type FileTableEntry } from '@/component/FileTable';
+import { ErrorLabel, Labelled } from '@/ui/Label';
+import { Link } from '@/ui/Link';
+import { formatSize } from '@/text';
 
 interface MountImageProps {
 	name: string

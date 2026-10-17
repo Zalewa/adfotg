@@ -1,9 +1,9 @@
 import { Component, type ReactNode } from 'react';
 import * as request from 'superagent';
 
-import { enumKeys } from '../enum';
-import { dispatchRequestError, dispatchError } from '../component/Notifier';
-import * as skin from '../skin';
+import { enumKeys } from '@/enum';
+import { dispatchRequestError, dispatchError } from '@/component/Notifier';
+import * as skin from '@/skin';
 
 
 const HealthPoint = {

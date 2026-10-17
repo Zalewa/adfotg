@@ -3,9 +3,9 @@ import Dropzone from 'react-dropzone';
 import * as request from 'superagent';
 
 import { Notification, type Note, NoteType,
-	dispatchRequestError } from '../component/Notifier';
-import { Loader } from '../ui/Loader';
-import * as skin from '../skin';
+	dispatchRequestError } from '@/component/Notifier';
+import { Loader } from '@/ui/Loader';
+import * as skin from '@/skin';
 
 const MyDropzone = (props : {
 	onUploading: () => void,

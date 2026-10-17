@@ -1,9 +1,9 @@
 import { useState, type ReactNode } from 'react';
 
-import { type FileTableEntry } from '../component/FileTable';
-import { UploadTable } from './StorageTables';
-import Uploader from '../component/Uploader';
-import { Section } from '../ui/Section';
+import { type FileTableEntry } from '@/component/FileTable';
+import { UploadTable } from '@/container/StorageTables';
+import Uploader from '@/component/Uploader';
+import { Section } from '@/ui/Section';
 
 
 interface UploadProps {

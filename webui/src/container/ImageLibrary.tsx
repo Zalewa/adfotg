@@ -1,14 +1,14 @@
 import { Component, type ReactNode } from 'react';
 import * as request from 'superagent';
 
-import { type FileTableEntry } from '../component/FileTable';
-import { AdfTable } from './StorageTables';
-import CreateMountImage from './CreateMountImage';
-import { dispatchRequestError } from '../component/Notifier';
-import * as res from '../res';
-import { Button } from '../ui/Button';
-import Modal from '../ui/Modal';
-import { Section } from '../ui/Section';
+import { type FileTableEntry } from '@/component/FileTable';
+import { AdfTable } from '@/container/StorageTables';
+import CreateMountImage from '@/container/CreateMountImage';
+import { dispatchRequestError } from '@/component/Notifier';
+import * as res from '@/res';
+import { Button } from '@/ui/Button';
+import Modal from '@/ui/Modal';
+import { Section } from '@/ui/Section';
 
 interface ImageLibraryProps {
 	onCreatedImage: ()=>void

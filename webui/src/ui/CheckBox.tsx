@@ -1,5 +1,5 @@
-import { ButtonMixin } from './Button';
-import * as skin from '../skin';
+import { ButtonMixin } from '@/ui/Button';
+import * as skin from '@/skin';
 
 export const CheckBox = (props: {
 	checked?: boolean,

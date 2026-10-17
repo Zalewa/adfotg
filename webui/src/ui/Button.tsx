@@ -2,8 +2,8 @@ import * as React from 'react';
 import { css } from '@emotion/react';
 import { lighten } from 'polished';
 
-import { Icon } from './Icon';
-import * as skin from '../skin';
+import { Icon } from '@/ui/Icon';
+import * as skin from '@/skin';
 
 export type ButtonPurpose = "submit" | "delete";
 

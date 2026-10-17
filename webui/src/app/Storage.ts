@@ -1,6 +1,6 @@
 import * as request from 'superagent';
 
-import { type SortDirection } from './Listing';
+import { type SortDirection } from '@/app/Listing';
 
 export interface FileRecord {
 	name: string

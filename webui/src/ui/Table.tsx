@@ -2,8 +2,8 @@ import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { rgba } from 'polished';
 
-import * as skin from '../skin';
-import * as responsive from '../responsive';
+import * as skin from '@/skin';
+import * as responsive from '@/responsive';
 
 const tableHeaderBorder = "1px solid black";
 

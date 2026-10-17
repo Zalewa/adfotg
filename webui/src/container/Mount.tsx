@@ -2,18 +2,18 @@ import * as React from 'react';
 import { Component, type ReactNode } from 'react';
 import * as request from 'superagent';
 
-import { ActionSet } from '../component/Actions';
-import { type FileTableEntry } from '../component/FileTable';
-import { MountImagesTable } from './StorageTables';
-import { MountImage } from '../component/MountImage';
-import { dispatchRequestError } from '../component/Notifier';
-import { Button } from '../ui/Button';
-import { ErrorLabel } from '../ui/Label';
-import { AppLink } from '../ui/Link';
-import { Section, Subsection } from '../ui/Section';
-import { TableLink } from '../ui/Table';
-import * as resrc from '../res';
-import * as skin from '../skin';
+import { ActionSet } from '@/component/Actions';
+import { type FileTableEntry } from '@/component/FileTable';
+import { MountImagesTable } from '@/container/StorageTables';
+import { MountImage } from '@/component/MountImage';
+import { dispatchRequestError } from '@/component/Notifier';
+import { Button } from '@/ui/Button';
+import { ErrorLabel } from '@/ui/Label';
+import { AppLink } from '@/ui/Link';
+import { Section, Subsection } from '@/ui/Section';
+import { TableLink } from '@/ui/Table';
+import * as resrc from '@/res';
+import * as skin from '@/skin';
 
 
 const MountStatus = {

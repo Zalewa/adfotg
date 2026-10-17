@@ -2,9 +2,9 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import styled from '@emotion/styled';
 
-import { Button, type ButtonPurpose } from './Button';
+import { Button, type ButtonPurpose } from '@/ui/Button';
 
-import * as skin from '../skin';
+import * as skin from '@/skin';
 
 const Outside = styled.div([skin.fullpage, {
 	backgroundColor: "rgba(0,0,0,0.5);",

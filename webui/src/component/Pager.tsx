@@ -2,7 +2,7 @@ import { type ReactNode } from 'react';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import { LinkText, type LinkTextProps } from '../ui/Link';
+import { LinkText, type LinkTextProps } from '@/ui/Link';
 
 export class Page {
 	public readonly start: number = 0

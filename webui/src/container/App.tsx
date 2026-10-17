@@ -4,15 +4,15 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { Global, css } from '@emotion/react';
 import { darken } from 'polished';
 
-import AdfWizard from './AdfWizard';
-import Home from './Home';
-import { GuruMeditation } from './GuruMeditation';
-import InspectMountImage from './InspectMountImage';
-import Notifier from '../component/Notifier';
-import PageNotFound from '../component/PageNotFound';
-import { HOME_LINK, UPLOAD_LINK } from '../routes';
-import Title from './Title';
-import * as skin from '../skin';
+import AdfWizard from '@/container/AdfWizard';
+import Home from '@/container/Home';
+import { GuruMeditation } from '@/container/GuruMeditation';
+import InspectMountImage from '@/container/InspectMountImage';
+import Notifier from '@/component/Notifier';
+import PageNotFound from '@/component/PageNotFound';
+import { HOME_LINK, UPLOAD_LINK } from '@/routes';
+import Title from '@/container/Title';
+import * as skin from '@/skin';
 
 export default class App extends Component {
 	render() {

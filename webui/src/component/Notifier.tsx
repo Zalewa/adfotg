@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { rgba } from 'polished';
 
-import { Button } from '../ui/Button';
-import { errorToString } from '../text';
+import { Button } from '@/ui/Button';
+import { errorToString } from '@/text';
 
-import { type BulkResult } from '../app/Storage';
+import { type BulkResult } from '@/app/Storage';
 
-import * as skin from '../skin';
+import * as skin from '@/skin';
 
 export const NoteType = {
 	Error: "error",

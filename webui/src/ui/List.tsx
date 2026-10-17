@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 
-import { ActionSet } from '../component/Actions';
-import * as res from '../res';
-import { Button } from './Button';
+import { ActionSet } from '@/component/Actions';
+import * as res from '@/res';
+import { Button } from '@/ui/Button';
 
 interface ListProps {
 	listing: string[]

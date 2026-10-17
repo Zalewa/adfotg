@@ -1,17 +1,17 @@
 import { type ReactNode, useEffect, useState } from 'react';
 
-import { Actions, ActionSet } from '../component/Actions';
-import FileTable, { type FileTableEntry } from "../component/FileTable";
-import Pager, { Page } from '../component/Pager';
-import { dispatchBulkResultErrors, dispatchRequestError } from '../component/Notifier';
+import { Actions, ActionSet } from '@/component/Actions';
+import FileTable, { type FileTableEntry } from "@/component/FileTable";
+import Pager, { Page } from '@/component/Pager';
+import { dispatchBulkResultErrors, dispatchRequestError } from '@/component/Notifier';
 
-import { Button } from '../ui/Button';
-import { ConfirmModal } from '../ui/Modal';
-import List from '../ui/List';
+import { Button } from '@/ui/Button';
+import { ConfirmModal } from '@/ui/Modal';
+import List from '@/ui/List';
 
 import { AdfOps, type FileOps, MountImagesOps, UploadOps,
 	type BulkResult, FileAttr, type FileRecord, type ListResult,
-	createSort } from "../app/Storage";
+	createSort } from "@/app/Storage";
 
 interface CommonTableProps {
 	actions?: ReactNode,

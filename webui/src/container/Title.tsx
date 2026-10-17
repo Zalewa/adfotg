@@ -4,16 +4,16 @@ import styled from '@emotion/styled';
 import { rgba } from 'polished';
 import * as request from 'superagent';
 
-import { HealthBar } from './Health';
-import { dispatchRequestError } from '../component/Notifier';
-import { HOME_LINK, UPLOAD_LINK } from '../routes';
-import Search from '../component/Search';
-import { Labelled } from '../ui/Label';
-import { AppLink, type AppLinkProps, Link } from '../ui/Link';
-import { Table, TableRecord, HeaderCell, LabelCell, DataCell } from '../ui/Table';
-import { formatSize } from '../text';
-import * as responsive from '../responsive';
-import * as skin from '../skin';
+import { HealthBar } from '@/container/Health';
+import { dispatchRequestError } from '@/component/Notifier';
+import { HOME_LINK, UPLOAD_LINK } from '@/routes';
+import Search from '@/component/Search';
+import { Labelled } from '@/ui/Label';
+import { AppLink, type AppLinkProps, Link } from '@/ui/Link';
+import { Table, TableRecord, HeaderCell, LabelCell, DataCell } from '@/ui/Table';
+import { formatSize } from '@/text';
+import * as responsive from '@/responsive';
+import * as skin from '@/skin';
 
 interface TitleProps {
 	refresh: boolean

@@ -1,16 +1,16 @@
 import { Component, type ReactNode } from 'react';
 import * as request from 'superagent';
 
-import { type FileTableEntry } from '../component/FileTable';
-import List from '../ui/List';
-import { Notification, NoteType } from '../component/Notifier';
-import Upload from './Upload';
-import { Button } from '../ui/Button';
-import { Form, FormItem } from '../ui/Form';
-import { LineInput } from '../ui/Input';
-import { errorToString } from '../text';
-import * as Strings from '../strings';
-import * as skin from '../skin';
+import { type FileTableEntry } from '@/component/FileTable';
+import List from '@/ui/List';
+import { Notification, NoteType } from '@/component/Notifier';
+import Upload from '@/container/Upload';
+import { Button } from '@/ui/Button';
+import { Form, FormItem } from '@/ui/Form';
+import { LineInput } from '@/ui/Input';
+import { errorToString } from '@/text';
+import * as Strings from '@/strings';
+import * as skin from '@/skin';
 
 interface AdfWizardProps {
 	search: string

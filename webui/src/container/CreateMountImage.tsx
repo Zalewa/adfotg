@@ -1,13 +1,13 @@
 import { Component, type ReactNode } from 'react';
 import * as request from 'superagent';
 
-import { Actions, ActionSet } from '../component/Actions';
-import List from '../ui/List';
-import { Button } from '../ui/Button';
-import { LineInput } from '../ui/Input';
-import { ErrorLabel } from '../ui/Label';
-import * as resrc from '../res';
-import { sorted } from '../strings';
+import { Actions, ActionSet } from '@/component/Actions';
+import List from '@/ui/List';
+import { Button } from '@/ui/Button';
+import { LineInput } from '@/ui/Input';
+import { ErrorLabel } from '@/ui/Label';
+import * as resrc from '@/res';
+import { sorted } from '@/strings';
 
 
 export interface CreateMountImageProps {
