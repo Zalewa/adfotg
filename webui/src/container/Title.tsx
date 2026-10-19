@@ -1,35 +1,23 @@
-import { Component, type ReactNode } from 'react';
-import { css } from '@emotion/react';
-import styled from '@emotion/styled';
-import { rgba } from 'polished';
-import * as request from 'superagent';
+import { useEffect, useState } from 'react'
+import { css } from '@emotion/react'
+import styled from '@emotion/styled'
+import { rgba } from 'polished'
+import * as request from 'superagent'
 
-import { HealthBar } from '@/container/Health';
-import { dispatchRequestError } from '@/component/Notifier';
-import { HOME_LINK, UPLOAD_LINK } from '@/routes';
-import Search from '@/component/Search';
-import { Labelled } from '@/ui/Label';
-import { AppLink, type AppLinkProps, Link } from '@/ui/Link';
-import { Table, TableRecord, HeaderCell, LabelCell, DataCell } from '@/ui/Table';
-import { formatSize } from '@/text';
-import * as responsive from '@/responsive';
-import * as skin from '@/skin';
+import { HealthBar } from '@/container/Health'
+import { dispatchRequestError } from '@/component/Notifier'
+import { HOME_LINK, UPLOAD_LINK } from '@/routes'
+import Search from '@/component/Search'
+import { Labelled } from '@/ui/Label'
+import { AppLink, type AppLinkProps, Link } from '@/ui/Link'
+import { Table, TableRecord, HeaderCell, LabelCell, DataCell } from '@/ui/Table'
+import { formatSize } from '@/text'
+import * as responsive from '@/responsive'
+import * as skin from '@/skin'
 
-interface TitleProps {
-	refresh: boolean
-	canSearch: boolean
-	search: string
-	onSearch: (s: string)=>void
-}
-
-interface TitleState {
-	title: string
-	searchPrompt: string
-}
-
-const TitleRow = styled.div({display: "flex"});
+const TitleRow = styled.div({display: "flex"})
 const TitleSection = (props: {fill?: boolean, children?: React.ReactNode}) =>
-	<div css={[{display: "block"}, props.fill && {flexGrow: 1}]} >{props.children}</div>;
+	<div css={[{display: "block"}, props.fill && {flexGrow: 1}]} >{props.children}</div>
 
 const AppTitle = css({
 	display: "block",
@@ -46,123 +34,126 @@ const AppTitle = css({
 	[`@media (${responsive.normalScreen})`]: {
 		fontSize: "4em",
 	},
-});
+})
 
-export default class Title extends Component<TitleProps, TitleState> {
-	constructor(props: TitleProps) {
-		super(props);
-		this.state = {
-			title: this.getMatchMediaTitle(),
-			searchPrompt: props.search
-		};
-		this.boundMatchMedia = this.matchMedia.bind(this)
+interface TitleProps {
+	refreshToken: number
+	canSearch: boolean
+	search: string
+	onSearch: (s: string)=>void
+}
+
+const Title = (props: TitleProps) => {
+	const [title, setTitle] = useState(getMatchMediaTitle())
+
+	const [searchPrompt, setSearchPrompt] = useState(props.search)
+
+	// Reset the search prompt if a different search prop arrives.
+	const [previousSearch, setPreviousSearch] = useState(props.search)
+	if (props.search !== previousSearch) {
+		setPreviousSearch(props.search)
+		setSearchPrompt(props.search)
 	}
 
-	private boundMatchMedia
+	function getMatchMediaTitle(): string {
+		return responsive.matchWidth.matches ? "ADF OTG" : "ADF On-The-Go"
+	}
 
-	render() {
-		return (
-			<div css={{
+	function onSearchEdited(searchPrompt: string): void {
+		setSearchPrompt(searchPrompt)
+	}
+
+	function onSearchSubmitted(): void {
+		props.onSearch(searchPrompt)
+	}
+
+	useEffect(() => {
+		function matchMedia(): void {
+			setTitle(getMatchMediaTitle())
+		}
+
+		responsive.matchWidth.addListener(matchMedia)
+		return () => {
+			responsive.matchWidth.removeListener(matchMedia)
+		}
+	}, [])
+
+	return (
+		<div
+			css={{
 				borderBottom: `1px solid ${skin.page.color}`,
 				display: "block",
 				marginBottom: "16px",
 				minHeight: "105px",
 				paddingBottom: "1px",
-			}}>
-				<TitleRow>
+			}}
+		>
+			<TitleRow>
 				<TitleSection fill>
-					<TitleAppLink css={AppTitle} to={HOME_LINK}>{this.state.title}</TitleAppLink>
+					<TitleAppLink css={AppTitle} to={HOME_LINK}>{title}</TitleAppLink>
 				</TitleSection>
 				<TitleSection>
-					<SpaceInfo refresh={this.props.refresh} />
+					<SpaceInfo refreshToken={props.refreshToken} />
 					<HealthBar />
 					<TitleRow>
 						<Link href="/api/help">API Help</Link>
 						<VersionInfo />
 					</TitleRow>
 				</TitleSection>
-				</TitleRow>
-				<TitleRow>
-					<TitleSection fill>
-						<TitleAppLink to={UPLOAD_LINK}>Upload</TitleAppLink>
+			</TitleRow>
+			<TitleRow>
+				<TitleSection fill>
+					<TitleAppLink to={UPLOAD_LINK}>Upload</TitleAppLink>
+				</TitleSection>
+				{props.canSearch && (
+					<TitleSection>
+						<Search
+							text={searchPrompt}
+							onEdit={onSearchEdited}
+							onSubmit={onSearchSubmitted}
+						/>
 					</TitleSection>
-					{this.renderSearch()}
-				</TitleRow>
-			</div>
-		);
-	}
-
-	private renderSearch(): ReactNode {
-		if (this.props.canSearch) {
-			return (<TitleSection>
-				<Search text={this.state.searchPrompt}
-					onEdit={this.onSearchEdited.bind(this)}
-					onSubmit={this.onSearchSubmitted.bind(this)} />
-			</TitleSection>);
-		} else {
-			return null;
-		}
-	}
-
-	componentDidMount() {
-		responsive.matchWidth.addListener(this.boundMatchMedia);
-	}
-
-	componentDidUpdate(props: TitleProps) {
-		if (props.search !== this.props.search) {
-			this.setState({searchPrompt: this.props.search});
-		}
-	}
-
-	componentWillUnmount() {
-		responsive.matchWidth.removeListener(this.boundMatchMedia);
-	}
-
-	private matchMedia(): void {
-		this.setState({title: this.getMatchMediaTitle()});
-	}
-
-	private getMatchMediaTitle(): string {
-		return responsive.matchWidth.matches ? "ADF OTG" : "ADF On-The-Go";
-	}
-
-	private onSearchEdited(searchPrompt: string): void {
-		this.setState({searchPrompt});
-	}
-
-	private onSearchSubmitted(): void {
-		this.props.onSearch(this.state.searchPrompt);
-	}
+				)}
+			</TitleRow>
+		</div>
+	)
 }
 
-interface VersionInfoState {
+interface VersionInfo {
 	version: string,
 	yearspan: string,
 	lastyear: string
 }
 
-class VersionInfo extends Component<{}, VersionInfoState> {
-	state: Readonly<VersionInfoState> = {
+const VersionInfo = () => {
+	const [versionInfo, setVersionInfo] = useState<VersionInfo>({
 		version: "",
 		yearspan: "",
-		lastyear: ""
+		lastyear: "",
+	})
+
+	function fetch() {
+		request
+			.get("/api/version")
+			.end((err, res) => {
+				dispatchRequestError(err)
+				if (!err) {
+					setVersionInfo(res.body)
+				}
+			})
 	}
 
-	render() {
-		return (<div css={{marginLeft: "auto", textAlign: "right"}}>
-			<Labelled label="Version:" title={this.state.yearspan}
-				contents={this.state.version + " (" + this.state.lastyear + ")"} />
-		</div>);
-	}
+	useEffect(fetch, [])
 
-	componentDidMount() {
-		request.get("/api/version").end((err, res) => {
-			dispatchRequestError(err);
-			if (!err) {
-				this.setState(res.body);
-			}
-		})
-	}
+	return (
+		<div css={{marginLeft: "auto", textAlign: "right"}}>
+			<Labelled
+				label="Version:"
+				title={versionInfo.yearspan}
+				contents={versionInfo.version + " (" + versionInfo.lastyear + ")"}
+			/>
+		</div>
+	)
 }
 
 interface FsStats {
@@ -171,17 +162,24 @@ interface FsStats {
 	avail: number
 }
 
-interface SpaceInfoState {
-	fsStats: FsStats[]
-}
+const SpaceInfo = ({refreshToken}: {refreshToken: number}) => {
+	const [fsStats, setFsStats] = useState<FsStats[]>([])
 
-class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
-	state: SpaceInfoState = {
-		fsStats: []
+	function fetch(): void {
+		request
+			.get("/api/filesystem")
+			.end((err, res) => {
+				dispatchRequestError(err)
+				if (!err) {
+					setFsStats(res.body ?? [])
+				}
+			})
 	}
 
-	render() {
-		return (<div>
+	useEffect(fetch, [refreshToken])
+
+	return (
+		<div>
 			<Table css={{margin: "0px"}}>
 				<thead>
 					<tr>
@@ -191,46 +189,25 @@ class SpaceInfo extends Component<{refresh: boolean}, SpaceInfoState> {
 					</tr>
 				</thead>
 				<tbody>
-					{this.renderStats()}
+					{fsStats.map((stat: FsStats) => (
+						<TableRecord key={stat.name}>
+							<LabelCell>{stat.name}</LabelCell>
+							<DataCell>{formatSize(stat.avail)}</DataCell>
+							<DataCell>{formatSize(stat.total)}</DataCell>
+						</TableRecord>
+					))}
 				</tbody>
 			</Table>
-			</div>);
-	}
-
-	componentDidUpdate(props: TitleProps) {
-		if (this.props.refresh !== props.refresh) {
-			this.refresh();
-		}
-	}
-
-	componentDidMount() {
-		this.refresh();
-	}
-
-	private renderStats(): ReactNode {
-		const el: ReactNode[] = [];
-		this.state.fsStats.forEach((stat: FsStats) => {
-			el.push(<TableRecord key={stat.name}>
-				<LabelCell>{stat.name}</LabelCell>
-				<DataCell>{formatSize(stat.avail)}</DataCell>
-				<DataCell>{formatSize(stat.total)}</DataCell>
-			</TableRecord>)
-		});
-		return el;
-	}
-
-	private refresh(): void {
-		request.get("/api/filesystem").end((err, res) => {
-			dispatchRequestError(err);
-			if (!err) {
-				this.setState({fsStats: res.body ?? []});
-			}
-		});
-	}
+		</div>
+	)
 }
 
 const TitleAppLink = (props: AppLinkProps) =>
 	<AppLink
 		css={{
 			fontSize: "1.5em",
-		}} {...props} />;
+		}}
+		{...props}
+	/>
+
+export default Title

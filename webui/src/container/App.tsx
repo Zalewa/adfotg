@@ -58,12 +58,12 @@ const App = () =>
 export default App;
 
 const AppRoute = () => {
-	const [ refreshSwitch, setRefreshSwitch ] = useState(false);
+	const [ refreshToken, setRefreshToken ] = useState(0);
 	const [ search, setSearch ] = useState("");
 	const location = useLocation();
 
 	useEffect(() => {
-		setRefreshSwitch(!refreshSwitch);
+		setRefreshToken(token => token + 1);
 	}, [location]);
 
 	function canSearch(): boolean {
@@ -72,10 +72,12 @@ const AppRoute = () => {
 	}
 
 	return <>
-		<Title refresh={refreshSwitch}
+		<Title
+			refreshToken={refreshToken}
 			canSearch={canSearch()}
 			search={search}
-			onSearch={(search) => setSearch(search)} />
+			onSearch={(search) => setSearch(search)}
+		/>
 		<Notifier />
 		<Routes>
 			<Route index element={<Home search={search} />} />
