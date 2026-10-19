@@ -1,157 +1,172 @@
-import { Component, type ReactNode } from 'react';
-import * as request from 'superagent';
+import { useEffect, useState, type ReactNode } from 'react'
+import * as request from 'superagent'
 
-import { type FileTableEntry } from '@/component/FileTable';
-import List from '@/ui/List';
-import { Notification, NoteType } from '@/component/Notifier';
-import Upload from '@/container/Upload';
-import { Button } from '@/ui/Button';
-import { Form, FormItem } from '@/ui/Form';
-import { LineInput } from '@/ui/Input';
-import { errorToString } from '@/text';
-import * as Strings from '@/strings';
-import * as skin from '@/skin';
+import { type FileTableEntry } from '@/component/FileTable'
+import List from '@/ui/List'
+import { Notification, NoteType } from '@/component/Notifier'
+import Upload from '@/container/Upload'
+import { Button } from '@/ui/Button'
+import { Form, FormItem } from '@/ui/Form'
+import { LineInput } from '@/ui/Input'
+import { errorToString } from '@/text'
+import * as Strings from '@/strings'
+import * as skin from '@/skin'
 
 interface AdfWizardProps {
 	search: string
 }
 
-interface AdfWizardState {
-	disks: DiskDescriptor[]
-	basename: string
-	selection: FileTableEntry[]
-	submitting: boolean
-	submitted: boolean
+function nextDiskKey(disks: DiskDescriptor[]): number {
+	return disks.length > 0
+		? disks[disks.length - 1].key + 1
+		: 1
 }
 
-export default class AdfWizard extends Component<AdfWizardProps, AdfWizardState> {
-	readonly state: AdfWizardState = {
-		disks: [],
-		basename: "adfotg",
-		selection: [],
-		submitting: false,
-		submitted: false
+const AdfWizard = ({search}: AdfWizardProps) => {
+	const [disks, setDisks] = useState<DiskDescriptor[]>([])
+	const [basename, setBasename] = useState("adfotg")
+	const [selection, setSelection] = useState<FileTableEntry[]>([])
+	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [isSubmitted, setIsSubmitted] = useState(false)
+
+	function createDisk(key: number, name: string, label: string, contents: FileOp[]): DiskDescriptor {
+		const descriptor = new DiskDescriptor()
+		descriptor.name = name
+		descriptor.label = label
+		descriptor.contents = contents
+		descriptor.key = key
+		return descriptor
 	}
 
-	private disks: DiskDescriptor[] = [];
-	private diskKey: number = 1;
-
-	render() {
-		return (<div>
-			<Upload actions={this.actions()}
-				search={this.props.search}
-				selected={this.state.selection}
-				onSelected={selection => this.setState({selection})} />
-			<Button onClick={this.addEmptyDisk.bind(this)} title="Add Empty ADF" />
-			{this.state.submitted && this.renderSubmitted()}
-			{this.state.disks.length > 0 && this.renderComposition()}
-		</div>);
+	function addDisk(name: string, label: string, contents: FileOp[]): void {
+		const newDisk = createDisk(-1, name, label, contents)
+		setDisks(disks => {
+			newDisk.key = nextDiskKey(disks)
+			return [...disks, newDisk]
+		})
+		setIsSubmitted(false)
 	}
 
-	private actions(): ReactNode {
-		return [
-			<Button key="distribute"
-				disabled={this.state.selection.length == 0 || this.state.submitting}
-				onClick={this.distributeDisks.bind(this)}
-				title="Distribute ADFs" />,
-			<label key="basenamelabel"
-				css={{alignSelf: "center"}}>Base name:</label>,
-			<LineInput key="basenamevalue" value={this.state.basename}
-				type="text"
-				onChange={e => this.setState({basename: e.target.value})} />
-		]
+	function addEmptyDisk(): void {
+		const diskKey = nextDiskKey(disks)
+		addDisk(
+			basename + "" + diskKey,
+			basename + " " + diskKey,
+			[],
+		)
 	}
 
-	private renderComposition(): ReactNode {
-		return <DiskComposition parent={this} disks={this.state.disks}
-			allowSubmit={!this.state.submitting} />
+	function distributeDisks(): void {
+		const files = selection
+		const distributor = new Distributor(files)
+		const diskDistribution: FileOp[][] = distributor.distribute()
+		const disks = diskDistribution.map((contents, index) => {
+			const name = basename + (index + 1)
+			const label = basename + " " + (index + 1)
+			return createDisk(index, name, label, contents)
+		})
+		setDisks(disks)
+		setIsSubmitted(false)
 	}
 
-	private renderSubmitted(): ReactNode {
-		if (this.state.disks.length == 0) {
-			return <Notification note={{
-				type: NoteType.Success,
-				message: "Disks created!"}} />
-		} else {
-			return <Notification note={{
-				type: NoteType.Error,
-				message: "Some disks were not created." }} />
-		}
-	}
-
-	private addEmptyDisk(): void {
-		this.addDisk(
-			this.state.basename + "" + this.diskKey,
-			this.state.basename + " " + this.diskKey,
-			[]);
-	}
-
-	private addDisk(name: string, label: string, contents: FileOp[]): void {
-		const descriptor = new DiskDescriptor();
-		descriptor.name = name;
-		descriptor.label = label;
-		descriptor.contents = contents.slice();
-		descriptor.key = this.diskKey++;
-		this.disks.push(descriptor);
-		this.setState({disks: this.disks, submitted: false});
-	}
-
-	public clearDisks() {
-		this.disks = []
-		this.diskKey = 1;
-		this.setState({disks: this.disks, submitted: false, submitting: false});
-	}
-
-	public discardDisk(disk: DiskDescriptor): void {
-		const idx = this.disks.findIndex(e => e.key == disk.key);
-		if (idx != -1) {
-			this.disks.splice(idx, 1);
-		}
-		this.setState({disks: this.disks, submitted: false});
-	}
-
-	private distributeDisks(): void {
-		this.clearDisks();
-		const files = this.state.selection;
-		const { basename } = this.state;
-		const distributor = new Distributor(files);
-		const disks: FileOp[][] = distributor.distribute();
-		for (let diskNum = 0; diskNum < disks.length; ++diskNum) {
-			const name = basename + (diskNum + 1);
-			const label = basename + " " + (diskNum + 1);
-			this.addDisk(name, label, disks[diskNum]);
-		}
-		this.setState({submitted: false});
-	}
-
-	public submit(): void {
-		this.setState({submitting: true, submitted: false});
-		this.submitAsync().then(() => {
-			if (this.state.submitting) {
-				if (this.disks.every(d => d.done)) {
-					this.disks = [];
+	function submit(): void {
+		setIsSubmitting(true)
+		setIsSubmitted(false)
+		submitAsync()
+			.then(() => {
+				setIsSubmitting(false)
+				setIsSubmitted(true)
+				if (disks.every(d => d.done)) {
+					// If everything was successful, clear the disks.
+					setDisks([])
+				} else {
+					// In case of failure, keep the disks so the user can see which failed.
+					setDisks([...disks])
 				}
-				this.setState({submitting: false, submitted: true, disks: this.disks});
-			}
-		});
+			})
 	}
 
-	private async submitAsync(): Promise<void> {
-		const disks = this.disks.slice();
-		const requests = disks.map(disk => {
-			return request.post("/api/adf/image/" + disk.name + ".adf")
-				.send({label: disk.label, contents: disk.contents});
-		});
-		for (let i = 0; i < requests.length; ++i) {
-			try {
-				await requests[i];
-				disks[i].done = true;
-			} catch (e) {
-				disks[i].error = errorToString(e);
-			}
-			this.setState({disks: this.disks});
+	async function submitAsync(): Promise<void> {
+		interface DiskRequest {
+			request: any
+			disk: DiskDescriptor
 		}
+		const requests: DiskRequest[] = disks.map(
+			disk => ({
+				disk,
+				request: request
+					.post("/api/adf/image/" + disk.name + ".adf")
+					.send({label: disk.label, contents: disk.contents}),
+			})
+		)
+		const resultingDisks = await Promise.all(
+			requests.map(async ({disk, request}) => {
+				try {
+					await request
+					disk.done = true
+				} catch (e) {
+					disk.error = errorToString(e)
+				}
+				return disk
+			})
+		)
+		setDisks(resultingDisks)
 	}
+
+	function actions(): ReactNode {
+		return (
+			<>
+				<Button
+					disabled={selection.length == 0 || isSubmitting}
+					onClick={distributeDisks}
+					title="Distribute ADFs"
+				/>
+				<label css={{alignSelf: "center"}}>Base name:</label>
+				<LineInput
+					type="text"
+					value={basename}
+					onChange={e => setBasename(e.target.value)}
+				/>
+			</>
+		)
+	}
+
+	const submitIsOkay = isSubmitted && disks.length == 0
+
+	return (
+		<div>
+			<Upload
+				actions={actions()}
+				search={search}
+				selected={selection}
+				onSelected={selection => setSelection([...selection])}
+			/>
+			<Button onClick={addEmptyDisk} title="Add Empty ADF" />
+			{isSubmitted && (
+				<Notification
+					note={
+						submitIsOkay
+							? {
+								type: NoteType.Success,
+								message: "Disks created!",
+							}
+							: {
+								type: NoteType.Error,
+								message: "Some disks were not created.",
+							}
+					}
+				/>
+			)}
+			{disks.length > 0 && (
+				<DiskComposition
+					disks={disks}
+					onDisksEdited={(disks) => setDisks(disks)}
+					allowSubmit={!isSubmitting}
+					onSubmit={submit}
+				/>
+			)}
+		</div>
+	)
 }
 
 class DiskDescriptor {
@@ -160,15 +175,15 @@ class DiskDescriptor {
 	public contents: FileOp[] = []
 
 	public error: string = ""
-	public done: boolean = false;
+	public done: boolean = false
 	public key: number = 0
 
 	public setName(v: string): void {
-		this.name = v;
+		this.name = v
 	}
 
 	public setLabel(v: string): void {
-		this.label = v;
+		this.label = v
 	}
 }
 
@@ -180,61 +195,86 @@ interface FileOp {
 }
 
 function getFileOpDisplayName(op: FileOp) {
-	return op.rename || op.name;
+	return op.rename || op.name
 }
-
 
 interface DiskCompositionProps {
-	parent: AdfWizard
 	disks: DiskDescriptor[]
+	onDisksEdited: (disks: DiskDescriptor[]) => void
 	allowSubmit: boolean
+	onSubmit: () => void
 }
 
-class DiskComposition extends Component<DiskCompositionProps> {
-	render() {
-		const { parent } = this.props;
-		return (<div>
-			<Button purpose="submit" onClick={parent.submit.bind(parent)}
-				disabled={!this.props.allowSubmit}
-				title="Submit" />
-			<Button onClick={parent.clearDisks.bind(parent)} title="Discard All" />
-			{this.renderDisks()}
-		</div>);
+const DiskComposition = ({
+	disks,
+	onDisksEdited,
+	allowSubmit,
+	onSubmit,
+}: DiskCompositionProps) => {
+	return (
+		<div>
+			<Button
+				purpose="submit"
+				onClick={onSubmit}
+				disabled={!allowSubmit}
+				title="Submit"
+			/>
+			<Button
+				onClick={() => onDisksEdited([])}
+				title="Discard All"
+			/>
+			{disks.map((disk: DiskDescriptor) =>
+				<DiskCompositor
+					key={disk.key}
+					disk={disk}
+					onDiscard={() => onDisksEdited(disks.filter(d => d.key != disk.key))}
+					onEdited={() => onDisksEdited([...disks])}
+				/>
+			)}
+		</div>
+	)
+}
+
+interface DiskCompositorProps {
+	disk: DiskDescriptor
+	onDiscard: () => void
+	onEdited: () => void
+}
+
+const DiskCompositor = ({
+	disk,
+	onDiscard,
+	onEdited,
+}: DiskCompositorProps) => {
+	if (disk.done) {
+		return (
+			<Notification
+				note={{
+					type: NoteType.Success,
+					message: "Disk '" + disk.name + "' done!",
+				}}
+			/>
+		)
 	}
 
-	private renderDisks(): ReactNode {
-		const { disks } = this.props;
-		return disks.map((disk: DiskDescriptor) =>
-			!disk.done ?
-				this.renderForm(disk) :
-				this.renderDone(disk)
-		);
-	}
-
-	private renderForm(disk: DiskDescriptor) {
-		const { parent, disks } = this.props;
-		return <DiskForm key={disk.key} name={disk.name}
-			label={disk.label} contents={disk.contents}
+	return (
+		<DiskForm
+			name={disk.name}
+			label={disk.label}
+			contents={disk.contents}
 			error={disk.error}
-			onDiscard={() => parent.discardDisk(disk)}
-			onNameEdited={s => {
-				disk.setName(s);
-				parent.setState({disks});
+			onDiscard={onDiscard}
+			onNameEdited={(name: string) => {
+				disk.setName(name)
+				onEdited()
 			}}
-			onLabelEdited={s => {
-				disk.setLabel(s);
-				parent.setState({disks});
+			onLabelEdited={(label: string) => {
+				disk.setLabel(label)
+				onEdited()
 			}}
 		/>
-	}
-
-	private renderDone(disk: DiskDescriptor) {
-		return <Notification key={disk.key} note={{
-			type: NoteType.Success,
-			message: "Disk '" + disk.name + "' done!"}} />
-	}
+	)
 }
-
 
 interface DiskFormProps {
 	name: string
@@ -246,85 +286,90 @@ interface DiskFormProps {
 	onLabelEdited: (value: string)=>void
 }
 
-interface DiskFormState {
-	nameError: string
-}
+const DiskForm = (props: DiskFormProps) => {
+	const { name, label, error, contents } = props
+	const [nameError, setNameError] = useState("")
 
-class DiskForm extends Component<DiskFormProps, DiskFormState> {
-	readonly state: DiskFormState = {
-		nameError: ""
+	function validateDiskName() {
+		request
+			.head("/api/adf/image/" + name + ".adf")
+			.end((err, res) => {
+				if (res.status == 404) {
+					// This is good! Stop processing.
+					setNameError("")
+				} else if (res.status == 200) {
+					setNameError("File already exists")
+				} else {
+					const message: string = err ? errorToString(err) : "unknown error"
+					setNameError(message)
+				}
+			})
 	}
 
-	render() {
-		const props = this.props;
-		const { name, label, error } = this.props;
-		return (<div css={[skin.Pane, {
-			margin: "1em",
-		}]}>
+	useEffect(validateDiskName, [name])
+
+	return (
+		<div
+			css={
+				[
+					skin.Pane,
+					{
+						margin: "1em",
+					},
+				]
+			}
+		>
 			<div css={{position: "absolute", right: 0, top: 0}} >
 				<Button onClick={props.onDiscard} title="X" />
 			</div>
 			{error && error.length > 0 && (
-				<Notification note={{type: NoteType.Error, message: error}} />)}
+				<Notification note={{type: NoteType.Error, message: error}} />
+			)}
 			<Form>
-				<FormItem label="Name" hint=".adf"
-					note={this.state.nameError ? {
-						type: NoteType.Error,
-						message: this.state.nameError} : undefined}>
-					<LineInput value={name} css={{width: "100%"}}
-						onChange={e => props.onNameEdited(e.target.value)} />
+				<FormItem
+					label="Name"
+					hint=".adf"
+					note={
+						nameError ? {
+							type: NoteType.Error,
+							message: nameError
+						} : undefined
+					}
+				>
+					<LineInput
+						css={{width: "100%"}}
+						value={name}
+						onChange={e => props.onNameEdited(e.target.value)}
+					/>
 				</FormItem>
 				<FormItem label="Label">
-					<LineInput value={label} css={{width: "100%"}}
-						onChange={e => props.onLabelEdited(e.target.value)} />
+					<LineInput
+						css={{width: "100%"}}
+						value={label}
+						onChange={e => props.onLabelEdited(e.target.value)}
+					/>
 				</FormItem>
 				<FormItem label="Contents">
-					<List css={{outline: "unset", maxHeight: "800px"}}
-						listing={this.items()}></List>
+					<List
+						css={{outline: "unset", maxHeight: "800px"}}
+						listing={contents.map(getFileOpDisplayName)}
+					/>
 				</FormItem>
 			</Form>
-		</div>)
-	}
-
-	componentDidMount() {
-		this.validateDiskName(this.props.name);
-	}
-
-	componentDidUpdate(props: DiskFormProps) {
-		if (props.name !== this.props.name) {
-			this.validateDiskName(this.props.name);
-		}
-	}
-
-	private validateDiskName(name: string): void {
-		request.head("/api/adf/image/" + name + ".adf").end((err, res) => {
-			if (res.status == 404) {
-				// This is good! Stop processing.
-				this.setState({nameError: ""});
-			} else if (res.status == 200) {
-				this.setState({nameError: "File already exists"});
-			} else {
-				const message: string = err ? errorToString(err) : "unknown error";
-				this.setState({nameError: message})
-			}
-		})
-	}
-
-	private items(): string[] {
-		return this.props.contents.map(getFileOpDisplayName);
-	}
+		</div>
+	)
 }
 
 class Distributor {
 	private static readonly ADF_SIZE = 880 * 1024
-	private static readonly BUFFER_SPACE = 15 * 1024;
-	private static readonly META_SPACE_PER_FILE = 2 * 1024;
-	private static readonly MAX_SIZE = Distributor.ADF_SIZE - Distributor.BUFFER_SPACE;
-	private static readonly MAX_FILENAME = 30;
-	private files: FileTableEntry[];
+	private static readonly BUFFER_SPACE = 15 * 1024
+	private static readonly META_SPACE_PER_FILE = 2 * 1024
+	private static readonly MAX_SIZE = Distributor.ADF_SIZE - Distributor.BUFFER_SPACE
+	private static readonly MAX_FILENAME = 30
+	private files: FileTableEntry[]
 
 	constructor(files: FileTableEntry[]) {
-		this.files = files.slice();
+		this.files = files.slice()
 	}
 
 	/**
@@ -333,76 +378,78 @@ class Distributor {
 	 * on each of the disks.
 	 */
 	public distribute(): FileOp[][] {
-		const distribution: FileOp[][] = [];
+		const distribution: FileOp[][] = []
 
 		// 1. Sort files by size descending
-		const sorted = this.files.sort((a, b) => b.size - a.size);
+		const sorted = this.files.sort((a, b) => b.size - a.size)
 
 		// 2. Split files that won't fit on a disk
-		const toobig = sorted.filter(e => e.size > Distributor.MAX_SIZE);
-		const splits: FileOp[] = [];
+		const toobig = sorted.filter(e => e.size > Distributor.MAX_SIZE)
+		const splits: FileOp[] = []
 		toobig.forEach(bigfile => {
-			const partsize = Distributor.MAX_SIZE;
-			const parts_count = Math.ceil(bigfile.size / partsize);
+			const partsize = Distributor.MAX_SIZE
+			const parts_count = Math.ceil(bigfile.size / partsize)
 			for (let i = 0; i < parts_count; ++i) {
-				const start = i * partsize;
-				const end = start + partsize;
+				const start = i * partsize
+				const end = start + partsize
 				const length = (end > bigfile.size) ?
-					(bigfile.size - start) : Distributor.MAX_SIZE;
+					(bigfile.size - start) : Distributor.MAX_SIZE
 				splits.push({
 					name: bigfile.name, start, length,
 					rename: this.trimFilename(bigfile.name, "." + Strings.leftpad("" + (i + 1), "0", 3))
-				});
+				})
 			}
-		});
+		})
 
 		// 3. Place the split files to fill the disks
-		splits.forEach(op => distribution.push([op]));
+		splits.forEach(op => distribution.push([op]))
 
 		// 4. Files that fit onto disks should be distributed
 		//    to try to fill up the whole disk
-		const fitting = sorted.filter(e => e.size <= Distributor.MAX_SIZE);
+		const fitting = sorted.filter(e => e.size <= Distributor.MAX_SIZE)
 		while (fitting.length > 0) {
-			const disk: FileTableEntry[] = [];
+			const disk: FileTableEntry[] = []
 			const takenspace = () => {
 				return Distributor.META_SPACE_PER_FILE * (disk.length + 1)
-					+ disk.reduce((prev, cur) => prev + cur.size, 0);
-			};
-			const freespace = () => Distributor.MAX_SIZE - takenspace();
+					+ disk.reduce((prev, cur) => prev + cur.size, 0)
+			}
+			const freespace = () => Distributor.MAX_SIZE - takenspace()
 			// 4.1. Start with largest file and put it on to the disk
 			const file = fitting.shift()
 			if (file != null) {
-				disk.push(file);
+				disk.push(file)
 			}
 			while (fitting.length > 0) {
 				// 4.2. Find next largest file that still fits
 				//      and put it on the disk
-				const idx = fitting.findIndex(e => e.size <= freespace());
+				const idx = fitting.findIndex(e => e.size <= freespace())
 				if (idx >= 0) {
-					const file = fitting[idx];
-					fitting.splice(idx, 1);
-					disk.push(file);
+					const file = fitting[idx]
+					fitting.splice(idx, 1)
+					disk.push(file)
 				} else {
-					break;
+					break
 				}
 			}
 			distribution.push(disk.map(f => {return {
 				name: f.name,
 				rename: this.trimFilename(f.name)}
-			}));
+			}))
 		}
 
-		return distribution;
+		return distribution
 	}
 
 	private trimFilename(name: string, trail?: string): string {
-		trail = trail || "";
-		const maxLen = Distributor.MAX_FILENAME;
+		trail = trail || ""
+		const maxLen = Distributor.MAX_FILENAME
 		if ((name + trail).length < maxLen) {
-			return name + trail;
+			return name + trail
 		} else {
-			const fitNameLen = maxLen - trail.length;
-			return name.substr(0, fitNameLen) + trail;
+			const fitNameLen = maxLen - trail.length
+			return name.substr(0, fitNameLen) + trail
 		}
 	}
 }
+
+export default AdfWizard
