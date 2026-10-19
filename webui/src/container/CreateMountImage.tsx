@@ -1,13 +1,13 @@
-import { Component, type ReactNode } from 'react';
-import * as request from 'superagent';
+import { useEffect, useState } from 'react'
+import * as request from 'superagent'
 
-import { Actions, ActionSet } from '@/component/Actions';
-import List from '@/ui/List';
-import { Button } from '@/ui/Button';
-import { LineInput } from '@/ui/Input';
-import { ErrorLabel } from '@/ui/Label';
-import * as resrc from '@/res';
-import { sorted } from '@/strings';
+import { Actions, ActionSet } from '@/component/Actions'
+import List from '@/ui/List'
+import { Button } from '@/ui/Button'
+import { LineInput } from '@/ui/Input'
+import { ErrorLabel } from '@/ui/Label'
+import * as resrc from '@/res'
+import { sorted } from '@/strings'
 
 
 export interface CreateMountImageProps {
@@ -15,107 +15,118 @@ export interface CreateMountImageProps {
 	onDone?: ()=>void
 }
 
-interface CreateMountImageState {
-	error?: Error
-	imageName: string
-	sortedAdfs: string[]
-	refreshing: boolean
-}
+const CreateMountImage = (props: CreateMountImageProps) => {
+	const [sortedAdfs, setSortedAdfs] = useState(() => sorted(props.adfs))
+	const [imageName, setImageName] = useState("")
+	const [isRefreshing, setIsRefreshing] = useState(true)
+	const [error, setError] = useState(undefined)
 
-export default class CreateMountImage extends Component<CreateMountImageProps, CreateMountImageState> {
-	constructor(props: CreateMountImageProps) {
-		super(props);
-		this.state = {
-			sortedAdfs: sorted(props.adfs),
-			imageName: "",
-			refreshing: true
-		}
-	}
+	function create(): void {
+		if (!imageName)
+			return
 
-	render() {
-		return (<div>
-			{this.state.refreshing ?
-				this.renderRefreshing() : this.renderWorkspace()}
-			{this.renderErrorWidget()}
-		</div>);
-	}
-
-	private renderWorkspace(): ReactNode {
-		const create = this.create.bind(this)
-		const onNameChange = this.onNameChange.bind(this)
-		return (<div>
-			<span>Create Mount Image with following ADFs:</span>
-			<List listing={this.state.sortedAdfs}
-				onOrderChange={(sortedAdfs) => this.setState({sortedAdfs})} />
-			<Actions submit fullrow>
-			<ActionSet>
-				<LineInput autoFocus type="text"
-					value={this.state.imageName}
-					onChange={e => onNameChange(e.target.value)}
-					onKeyPress={e => {
-						if (e.key === "Enter") {
-							create();
-						}
-					}} />
-			</ActionSet>
-			<ActionSet right>
-				<Button purpose="submit" onClick={create}
-					disabled={this.state.imageName.length == 0}
-					title="Create" />
-			</ActionSet>
-			</Actions>
-		</div>);
-	}
-
-	private renderRefreshing(): ReactNode {
-		if (!this.state.error) {
-			return (<div>
-				<div>Obtaining some extra data ...</div>
-				<div><img width="100%" src={resrc.loader} /></div>
-			</div>);
-		} else {
-			return (<div>An error has occurred during refresh.</div>);
-		}
-	}
-
-	private renderErrorWidget(): ReactNode {
-		if (this.state.error) {
-			return <ErrorLabel error={this.state.error} />;
-		}
-		return null;
-	}
-
-	componentDidMount() {
-		request.get("/api/adf/std").end((err, res) => {
-			if (err) {
-				this.setState({error: err})
-			} else {
-				const stdAdfs = res.body;
-				const sortedAdfs = this.state.sortedAdfs;
-				this.setState({
-					sortedAdfs: stdAdfs.concat(sortedAdfs),
-					refreshing: false
-				});
-			}
-		});
-	}
-
-	private create(): void {
-		if (!this.state.imageName)
-			return;
-		request.put("/api/mountimg/" + this.state.imageName + "/pack_adfs")
-			.send({adfs: this.state.sortedAdfs})
+		request
+			.put("/api/mountimg/" + imageName + "/pack_adfs")
+			.send({adfs: sortedAdfs})
 			.end((err) => {
 				if (err) {
-					this.setState({error: err});
+					setError(err)
 				} else {
-					if (this.props.onDone)
-						this.props.onDone();
+					setError(undefined)
+					if (props.onDone)
+						props.onDone()
 				}
-			});
+		})
 	}
 
-	private onNameChange(value: string): void {
-		this.setState({imageName: value});
+	function fetch(): void {
+		request
+			.get("/api/adf/std")
+			.end((err, res) => {
+				if (err) {
+					setError(err)
+				} else {
+					const stdAdfs = res.body
+					setSortedAdfs(adfs => stdAdfs.concat(adfs))
+				}
+				setIsRefreshing(false)
+			})
 	}
+
+	useEffect(fetch, [])
+
+	return (
+		<div>
+			{isRefreshing && <Refreshing />}
+			{!isRefreshing && error && <ErrorLabel error={error} />}
+			{!isRefreshing && (
+				<Workspace
+					adfs={sortedAdfs}
+					onAdfsOrderChange={setSortedAdfs}
+					imageName={imageName}
+					onImageNameChange={setImageName}
+					onCreate={create}
+				/>
+			)}
+		</div>
+	)
 }
+
+interface WorkspaceProps {
+	adfs: string[]
+	onAdfsOrderChange: (listing: string[]) => void
+	imageName: string
+	onImageNameChange: (name: string) => void
+	onCreate: () => void
+}
+
+const Workspace = ({
+	adfs,
+	onAdfsOrderChange,
+	imageName,
+	onImageNameChange,
+	onCreate
+}: WorkspaceProps) => {
+	return (
+		<div>
+			<span>Create Mount Image with the following ADFs:</span>
+			<List
+				listing={adfs}
+				onOrderChange={onAdfsOrderChange}
+			/>
+			<Actions submit fullrow>
+				<ActionSet>
+					<LineInput
+						autoFocus
+						type="text"
+						value={imageName}
+						onChange={e => onImageNameChange(e.target.value)}
+						onKeyDown={e => {
+							if (e.key === "Enter") {
+								e.stopPropagation()
+								onCreate()
+							}
+						}}
+					/>
+				</ActionSet>
+				<ActionSet right>
+					<Button
+						purpose="submit"
+						onClick={() => onCreate()}
+						disabled={imageName.length == 0}
+						title="Create"
+					/>
+				</ActionSet>
+			</Actions>
+		</div>
+	)
+}
+
+const Refreshing = () => (
+	<div>
+		<div>Obtaining some extra data ...</div>
+		<div><img width="100%" src={resrc.loader} /></div>
+	</div>
+)
+
+export default CreateMountImage
