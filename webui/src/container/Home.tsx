@@ -21,7 +21,7 @@ const Home = ({search}: HomeProps) => {
 				search={search}
 			/>
 			<ImageLibrary
-				refresh={refreshToken}
+				refreshToken={refreshToken}
 				onCreatedImage={promptRefresh}
 				onMountedImage={promptRefresh}
 				search={search}

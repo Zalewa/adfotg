@@ -1,95 +1,84 @@
-import { Component, type ReactNode } from 'react';
-import * as request from 'superagent';
+import { useState, type ReactNode } from 'react'
+import * as request from 'superagent'
 
-import { type FileTableEntry } from '@/component/FileTable';
-import { AdfTable } from '@/container/StorageTables';
-import CreateMountImage from '@/container/CreateMountImage';
-import { dispatchRequestError } from '@/component/Notifier';
-import * as res from '@/res';
-import { Button } from '@/ui/Button';
-import Modal from '@/ui/Modal';
-import { Section } from '@/ui/Section';
+import { type FileTableEntry } from '@/component/FileTable'
+import { AdfTable } from '@/container/StorageTables'
+import CreateMountImage from '@/container/CreateMountImage'
+import { dispatchRequestError } from '@/component/Notifier'
+import * as res from '@/res'
+import { Button } from '@/ui/Button'
+import Modal from '@/ui/Modal'
+import { Section } from '@/ui/Section'
 
 interface ImageLibraryProps {
 	onCreatedImage: ()=>void
 	onMountedImage: ()=>void
-	refresh: number
+	refreshToken: number
 	search: string
 }
 
-interface ImageLibraryState {
-	createImage: boolean
-	selection: FileTableEntry[]
-	refresh: number
-}
+const PAGE_SIZE = 50
 
-const PAGE_SIZE = 50;
+const ImageLibrary = (props: ImageLibraryProps) => {
+	const [isCreatingImage, setIsCreatingImage] = useState(false)
+	const [selection, setSelection] = useState<FileTableEntry[]>([])
 
-export default class ImageLibrary extends Component<ImageLibraryProps, ImageLibraryState> {
-	state: Readonly<ImageLibraryState> = {
-		createImage: false,
-		selection: [],
-		refresh: 0,
-	}
-
-	render() {
-		return (<Section title="ADFs">
-			{this.renderModal()}
-			<AdfTable
-				actions={this.renderActions()}
-				search={this.props.search}
-				refresh={this.state.refresh}
-				pageSize={PAGE_SIZE}
-				selected={this.state.selection}
-				onSelected={this.onImagesSelected.bind(this)}
-				onRenderFileActions={this.renderFileActions.bind(this)}
-			/>
-		</Section>);
-	}
-
-	private renderActions(): ReactNode {
+	function renderActions(): ReactNode {
 		return (
-			<Button onClick={this.showCreateImage.bind(this)}
-				disabled={this.state.selection.length == 0}
-				title="Create Mount Image" />
-		);
+			<Button
+				onClick={() => setIsCreatingImage(true) }
+				disabled={selection.length == 0}
+				title="Create Mount Image"
+			/>
+		)
 	}
 
-	private renderModal(): ReactNode {
-		if (this.state.createImage) {
-			return <Modal onClose={() => this.setState({createImage: false})}>
-				<CreateMountImage adfs={this.state.selection.map(e => e.name)}
-					onDone={this.onModalAccepted.bind(this)} />
-			</Modal>
-		}
-		return null;
+	function renderFileActions(file: FileTableEntry): ReactNode {
+		return (
+			<Button
+				table
+				title="Quick mount"
+				icon={res.usb_icon_horz}
+				onClick={() => quickMount(file.name)}
+			/>
+		)
 	}
 
-	private renderFileActions(file: FileTableEntry): ReactNode {
-		const quickMount = this.quickMount.bind(this)
-		return (<Button table title="Quick mount" icon={res.usb_icon_horz}
-			onClick={() => quickMount(file.name)} />)
-	}
-
-	private quickMount(file: string): void {
+	function quickMount(file: string): void {
 		request.post("/api/quickmount/adf/" + file).end((err) => {
-			dispatchRequestError(err);
-			if (!err && this.props.onMountedImage) {
-				this.props.onMountedImage();
+			dispatchRequestError(err)
+			if (!err && props.onMountedImage) {
+				props.onMountedImage()
 			}
-		});
+		})
 	}
 
-	private onImagesSelected(entries: FileTableEntry[]) {
-		this.setState({selection: entries});
+	function createImage(): void {
+		props.onCreatedImage()
+		setIsCreatingImage(false)
 	}
 
-	private showCreateImage(): void {
-		this.setState({createImage: true});
-	}
-
-	private onModalAccepted(): void {
-		this.props.onCreatedImage();
-		this.setState({createImage: false});
-	}
+	return (
+		<Section title="ADFs">
+			{isCreatingImage && (
+				<Modal onClose={() => setIsCreatingImage(false) }>
+					<CreateMountImage
+						adfs={selection.map(e => e.name)}
+						onDone={createImage}
+					/>
+				</Modal>
+			)}
+			<AdfTable
+				actions={renderActions()}
+				search={props.search}
+				refresh={props.refreshToken}
+				pageSize={PAGE_SIZE}
+				selected={selection}
+				onSelected={entries => setSelection([...entries])}
+				onRenderFileActions={renderFileActions}
+			/>
+		</Section>
+	)
 }
+
+export default ImageLibrary
