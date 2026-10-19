@@ -17,7 +17,7 @@ const Home = ({search}: HomeProps) => {
 	return (
 		<div>
 			<Mount
-				refresh={refreshToken}
+				refreshToken={refreshToken}
 				search={search}
 			/>
 			<ImageLibrary

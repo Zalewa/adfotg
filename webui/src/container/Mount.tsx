@@ -1,19 +1,18 @@
-import * as React from 'react';
-import { Component, type ReactNode } from 'react';
-import * as request from 'superagent';
+import { useEffect, useState, type ReactNode } from 'react'
+import * as request from 'superagent'
 
-import { ActionSet } from '@/component/Actions';
-import { type FileTableEntry } from '@/component/FileTable';
-import { MountImagesTable } from '@/container/StorageTables';
-import { MountImage } from '@/component/MountImage';
-import { dispatchRequestError } from '@/component/Notifier';
-import { Button } from '@/ui/Button';
-import { ErrorLabel } from '@/ui/Label';
-import { AppLink } from '@/ui/Link';
-import { Section, Subsection } from '@/ui/Section';
-import { TableLink } from '@/ui/Table';
-import * as resrc from '@/res';
-import * as skin from '@/skin';
+import { ActionSet } from '@/component/Actions'
+import { type FileTableEntry } from '@/component/FileTable'
+import { MountImagesTable } from '@/container/StorageTables'
+import { MountImage } from '@/component/MountImage'
+import { dispatchRequestError } from '@/component/Notifier'
+import { Button } from '@/ui/Button'
+import { ErrorLabel } from '@/ui/Label'
+import { AppLink } from '@/ui/Link'
+import { Section, Subsection } from '@/ui/Section'
+import { TableLink } from '@/ui/Table'
+import * as resrc from '@/res'
+import * as skin from '@/skin'
 
 
 const MountStatus = {
@@ -26,6 +25,12 @@ const MountStatus = {
 
 export type MountStatus = typeof MountStatus[keyof typeof MountStatus]
 
+const rescueStatuses: readonly MountStatus[] = [
+	MountStatus.NoImage,
+	MountStatus.BadImage,
+	MountStatus.OtherImageMounted,
+]
+
 interface MountInfo {
 	error?: string
 	mountStatus: MountStatus | null
@@ -33,109 +38,107 @@ interface MountInfo {
 }
 
 interface MountProps {
-	refresh: number
+	refreshToken: number
 	search: string
 }
 
-interface MountState {
-	mountInfo?: MountInfo
-	imagesSelection: FileTableEntry[]
-	refreshCounter: number
-}
+const PAGE_SIZE = 50
 
-const PAGE_SIZE = 50;
+const Mount = (props: MountProps) => {
+	const [imagesSelection, setImagesSelection] = useState<FileTableEntry[]>([])
+	const [mountInfo, setMountInfo] = useState<MountInfo>()
 
-export default class Mount extends Component<MountProps, MountState> {
-	readonly state: MountState = {
-		imagesSelection: [],
-		refreshCounter: 0,
+	function mountImage(image: string): void {
+		request
+			.post("/api/mount/" + image)
+			.end((err) => {
+				dispatchRequestError(err)
+				refresh()
+			})
 	}
 
-	render() {
-		return (<Section title="Mounting">
-			<MountArea mountInfo={this.state.mountInfo} onUnmount={this.unmount.bind(this)}
-				refreshCounter={this.state.refreshCounter} />
-			<MountImagesTable
-				search={this.props.search}
-				refresh={this.state.refreshCounter}
-				pageSize={PAGE_SIZE}
-				selected={this.state.imagesSelection}
-				onSelected={this.onImagesSelected.bind(this)}
-				onRenderFileActions={(entry) => this.renderFileActions(entry)}
-				onRenderName={(entry) => this.renderName(entry)}
-				/>
-		</Section>);
+	function unmountImage(): void {
+		request
+			.delete("/api/mount")
+			.end((err) => {
+				dispatchRequestError(err)
+				refresh()
+			})
 	}
 
-	componentDidMount() {
-		this.refresh();
+	function renderName(file: FileTableEntry): ReactNode {
+		return (
+			<AppLink
+				css={TableLink}
+				to={`/inspect/mountimg/${file.name}`}
+			>
+				{file.name}
+			</AppLink>
+		)
 	}
 
-	componentDidUpdate(props: MountProps) {
-		if (this.props.refresh !== props.refresh) {
-			this.setState({refreshCounter: this.state.refreshCounter + 1});
-			this.refresh();
-		}
-	}
-
-	private renderName(file: FileTableEntry): ReactNode {
-		return <AppLink css={TableLink} to={`/inspect/mountimg/${file.name}`}>{file.name}</AppLink>;
-	}
-
-	private renderFileActions(file: FileTableEntry): ReactNode {
-		const mountStatus = this.state.mountInfo && this.state.mountInfo.mountStatus
+	function renderFileActions(file: FileTableEntry): ReactNode {
+		const mountStatus = mountInfo && mountInfo.mountStatus
 		function canMount() {
-			return mountStatus === MountStatus.Unmounted || mountStatus === MountStatus.Mounted;
+			return mountStatus === MountStatus.Unmounted || mountStatus === MountStatus.Mounted
 		}
 		function cannotMountReason() {
 			if (mountStatus == null)
-				return "Cannot mount as current mount status is unknown.";
+				return "Cannot mount as current mount status is unknown."
 			else
-				return "Current mount status forbids mounting an image.";
+				return "Current mount status forbids mounting an image."
 		}
-		const mountTitle = canMount() ? "Mount this image" : cannotMountReason();
+		const mountTitle = canMount() ? "Mount this image" : cannotMountReason()
 
-		const mount = this.mount.bind(this)
-		return (<ActionSet>
-			<Button table title={mountTitle} icon={resrc.usb_icon_horz}
+		return (
+			<ActionSet>
+				<Button
+					table
+					title={mountTitle}
+					icon={resrc.usb_icon_horz}
 					disabled={!canMount()}
-					onClick={() => mount(file.name)} />
-		</ActionSet>);
+					onClick={() => mountImage(file.name)}
+				/>
+			</ActionSet>
+		)
 	}
 
-	private refresh(): void {
-		this.setState({});
-		request.get("/api/mount").end((err, res) => {
-			dispatchRequestError(err);
-			let mountStatus: MountStatus | null = null;
-			if (!err) {
-				mountStatus = res.body?.status;
-			}
-			this.setState({mountInfo: {
-				mountStatus: mountStatus,
-				error: err ? err.toString() : res.body?.error,
-				mountedImageName: res.body?.file
-			}});
-		})
+	function refresh(): void {
+		request
+			.get("/api/mount")
+			.end((err, res) => {
+				dispatchRequestError(err)
+				const mountStatus: MountStatus | null = !err
+					? res.body?.status
+					: null
+				setMountInfo({
+					mountStatus: mountStatus,
+					error: err ? err.toString() : res.body?.error,
+					mountedImageName: res.body?.file
+				})
+			})
 	}
 
-	private mount(image: string): void {
-		request.post("/api/mount/" + image).end((err) => {
-			dispatchRequestError(err);
-			this.refresh();
-		});
-	}
+	useEffect(refresh, [props.refreshToken])
 
-	private unmount(): void {
-		request.delete("/api/mount").end((err) => {
-			dispatchRequestError(err);
-			this.refresh();
-		});
-	}
-
-	private onImagesSelected(images: FileTableEntry[]) {
-		this.setState({imagesSelection: images});
-	}
+	return (
+		<Section title="Mounting">
+			<MountArea
+				mountInfo={mountInfo}
+				onUnmount={unmountImage}
+				refreshCounter={props.refreshToken}
+			/>
+			<MountImagesTable
+				search={props.search}
+				refresh={props.refreshToken}
+				pageSize={PAGE_SIZE}
+				selected={imagesSelection}
+				onSelected={(selection) => setImagesSelection([...selection])}
+				onRenderFileActions={renderFileActions}
+				onRenderName={renderName}
+			/>
+		</Section>
+	)
 }
 
 interface MountAreaProps {
@@ -145,19 +148,27 @@ interface MountAreaProps {
 }
 
 const MountArea = (props: MountAreaProps) => {
-	return (<Subsection title="Mounted Image">
-		{props.mountInfo && (<>
-			<MountStatusDisplay {...props.mountInfo} />
-			{props.mountInfo.mountedImageName &&
-				<MountImage showName={false} name={props.mountInfo.mountedImageName}
-					refreshCounter={props.refreshCounter} />
-			}
-			<MountActions mountStatus={props.mountInfo.mountStatus}
-				onUnmount={props.onUnmount}
-			/>
-		</>)}
-	</Subsection>);
-};
+	return (
+		<Subsection title="Mounted Image">
+			{props.mountInfo && (
+				<>
+					<MountStatusDisplay {...props.mountInfo} />
+					{props.mountInfo.mountedImageName &&
+						<MountImage
+							showName={false}
+							name={props.mountInfo.mountedImageName}
+							refreshCounter={props.refreshCounter}
+						/>
+					}
+					<MountActions
+						mountStatus={props.mountInfo.mountStatus}
+						onUnmount={props.onUnmount}
+					/>
+				</>
+			)}
+		</Subsection>
+	)
+}
 
 interface MountStatusProps {
 	error?: string
@@ -166,39 +177,43 @@ interface MountStatusProps {
 }
 
 type Display = {
-	text: string;
-	color: string;
+	text: string
+	color: string
 }
 
-class MountStatusDisplay extends Component<MountStatusProps> {
-	render() {
-		const display: Display = this.statusDisplay()
-		return <div>
-			<span css={{color: display.color}}>{display.text}</span>
-			{this.props.mountedImageName &&
-				<span>{this.props.mountedImageName}</span>}
-			{this.props.error && <ErrorLabel error={this.props.error} />}
-		</div>
-	}
-
-	private statusDisplay(): Display {
-		switch (this.props.mountStatus) {
+const MountStatusDisplay = (props: MountStatusProps) => {
+	function statusDisplay(): Display {
+		switch (props.mountStatus) {
 			case MountStatus.Mounted:
-				return {text: "Mounted: ", color: "lime"};
+				return {text: "Mounted: ", color: "lime"}
 			case MountStatus.Unmounted:
-				return {text: "Not mounted", color: "gray"};
+				return {text: "Not mounted", color: "gray"}
 			case MountStatus.NoImage:
-				return {text: "Image is missing", color: skin.dangerColor};
+				return {text: "Image is missing", color: skin.dangerColor}
 			case MountStatus.BadImage:
-				return {text: "Image error: " + this.props.error,
-						color: skin.dangerColor};
+				return {
+					text: "Image error: " + props.error,
+					color: skin.dangerColor,
+				}
 			case MountStatus.OtherImageMounted:
-				return {text: "An image outside the app is mounted.",
-						color: skin.dangerColor}
+				return {
+					text: "An image outside the app is mounted.",
+					color: skin.dangerColor,
+				}
 			default:
-				return {text: "Unknown State", color: "gray"};
+				return {text: "Unknown State", color: "gray"}
 		}
 	}
+
+	const {color, text}: Display = statusDisplay()
+	return (
+		<div>
+			<span css={{color}}>{text}</span>
+			{props.mountedImageName &&
+				<span>{props.mountedImageName}</span>}
+			{props.error && <ErrorLabel error={props.error} />}
+		</div>
+	)
 }
 
 interface MountActionsProps {
@@ -206,46 +221,26 @@ interface MountActionsProps {
 	onUnmount: ()=>void,
 }
 
-class MountActions extends React.Component<MountActionsProps> {
-	render() {
-		const actions = this.actions();
-		return (<div css={{
-			marginRight: actions ? "0.25em" : "0em",
+const MountActions = ({
+	mountStatus,
+	onUnmount,
+}: MountActionsProps) => {
+	const isMounted = mountStatus == MountStatus.Mounted
+	const needsRescue = mountStatus != null && rescueStatuses.includes(mountStatus)
+	const anyActions = isMounted || needsRescue
+
+	return (
+		<div css={{
+			marginRight: anyActions ? "0.25em" : "0em",
 		}}>
-			{actions}
-		</div>);
-	}
-
-	private actions(): ReactNode {
-		switch (this.props.mountStatus) {
-			case MountStatus.Mounted:
-				return this.mountedActions();
-			case MountStatus.Unmounted:
-				return this.unmountedActions();
-			case MountStatus.NoImage:
-			case MountStatus.BadImage:
-			case MountStatus.OtherImageMounted:
-				return this.rescueActions();
-			default:
-				return [];
-		}
-	}
-
-	private mountedActions(): ReactNode {
-		return [
-			<Button key="unmount" title="Unmount"
-				onClick={this.props.onUnmount} />,
-		];
-	}
-
-	private unmountedActions(): ReactNode {
-		return [];
-	}
-
-	private rescueActions(): ReactNode {
-		return [
-			<Button key="unmount" title="Force unmount"
-				onClick={this.props.onUnmount} />,
-		]
-	}
+			{isMounted && !needsRescue && (
+				<Button title="Unmount" onClick={onUnmount} />
+			)}
+			{needsRescue && (
+				<Button title="Force unmount" onClick={onUnmount} />
+			)}
+		</div>
+	)
 }
+
+export default Mount
