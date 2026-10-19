@@ -66,12 +66,11 @@ const FileTable = ({
 		if (idx == -1) {
 			const itemByName = props.listing.find(e => e.name == name);
 			if (itemByName != null) {
-				selected.push();
+				callbackSelected([...selected, itemByName]);
 			}
 		} else {
-			selected.splice(idx, 1);
+			callbackSelected(selected.filter(e => e.name != name));
 		}
-		callbackSelected(selected);
 	}
 
 	function callbackSelected(entries: FileTableEntry[]) {
