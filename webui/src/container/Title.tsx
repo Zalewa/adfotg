@@ -72,9 +72,9 @@ const Title = (props: TitleProps) => {
 			setTitle(getMatchMediaTitle())
 		}
 
-		responsive.matchWidth.addListener(matchMedia)
+		responsive.matchWidth.addEventListener("change", matchMedia)
 		return () => {
-			responsive.matchWidth.removeListener(matchMedia)
+			responsive.matchWidth.removeEventListener("change", matchMedia)
 		}
 	}, [])
 
